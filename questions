@@ -1,0 +1,3 @@
+1. For the DS3231M RTC, in the datasheet for the SDA pin it specifies a pullup resistor with voltage up to 5.5v (regardless of voltage on Vcc) required. What does this mean and how can I do it?
+
+2. For the DS3231M RTC module's VCC the datasheet specifies that a decoupling capacitor of between 0.1uF and 1.0uF must be used. What does this mean in a little more detail and how do I determine what exact value of capacitor to use?
