@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Traffic Modeling and Traffic Analysis for LoRaWAN Networks")
-		(date "2025-04-14")
+		(date "2025-04-15")
 		(rev "2")
 		(comment 2 "Author: Martin Aziz")
 		(comment 3 "A network for Medical devices")
@@ -2807,7 +2807,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 87.63) (xy 218.44 90.17)
+			(xy 218.44 90.17) (xy 218.44 92.71)
 		)
 		(stroke
 			(width 0)
@@ -2947,7 +2947,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 67.31) (xy 218.44 69.85)
+			(xy 218.44 67.31) (xy 218.44 72.39)
 		)
 		(stroke
 			(width 0)
@@ -3117,7 +3117,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 218.44 73.66 180)
+		(at 218.44 76.2 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3126,15 +3126,6 @@
 		(fields_autoplaced yes)
 		(uuid "04a7c703-1010-49a4-b48b-2f760ec57cba")
 		(property "Reference" "R6"
-			(at 220.98 72.3899 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "R"
 			(at 220.98 74.9299 0)
 			(effects
 				(font
@@ -3143,8 +3134,17 @@
 				(justify right)
 			)
 		)
+		(property "Value" "10k"
+			(at 220.98 77.4699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(property "Footprint" ""
-			(at 220.218 73.66 90)
+			(at 220.218 76.2 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3153,7 +3153,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 218.44 73.66 0)
+			(at 218.44 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3162,7 +3162,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 218.44 73.66 0)
+			(at 218.44 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3505,7 +3505,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49c")
 		)
 		(instances
 			(project ""
@@ -3610,7 +3610,7 @@
 				)
 			)
 		)
-		(property "Value" "220R"
+		(property "Value" "220"
 			(at 102.87 168.91 90)
 			(effects
 				(font
@@ -3955,7 +3955,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "R"
+		(property "Value" "10k"
 			(at 247.65 77.4699 0)
 			(effects
 				(font
@@ -3992,10 +3992,10 @@
 			)
 		)
 		(pin "2"
-			(uuid "363944a9-ac4a-482f-81b7-60e913d2d813")
+			(uuid "363944a9-ac4a-482f-81b7-60e913d2d814")
 		)
 		(pin "1"
-			(uuid "2b0de918-30b1-48ad-8693-93abaa914cc5")
+			(uuid "2b0de918-30b1-48ad-8693-93abaa914cc6")
 		)
 		(instances
 			(project ""
@@ -4024,7 +4024,7 @@
 				)
 			)
 		)
-		(property "Value" "220R"
+		(property "Value" "220"
 			(at 102.87 130.81 90)
 			(effects
 				(font
@@ -4093,7 +4093,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "R"
+		(property "Value" "10k"
 			(at 194.31 77.4699 0)
 			(effects
 				(font
@@ -4130,10 +4130,10 @@
 			)
 		)
 		(pin "2"
-			(uuid "363944a9-ac4a-482f-81b7-60e913d2d813")
+			(uuid "363944a9-ac4a-482f-81b7-60e913d2d815")
 		)
 		(pin "1"
-			(uuid "2b0de918-30b1-48ad-8693-93abaa914cc5")
+			(uuid "2b0de918-30b1-48ad-8693-93abaa914cc7")
 		)
 		(instances
 			(project ""
@@ -4162,7 +4162,7 @@
 				)
 			)
 		)
-		(property "Value" "220R"
+		(property "Value" "220"
 			(at 102.87 149.86 90)
 			(effects
 				(font
@@ -4477,7 +4477,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49d")
 		)
 		(instances
 			(project ""
@@ -4543,7 +4543,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49e")
 		)
 		(instances
 			(project ""
@@ -4744,7 +4744,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49f")
 		)
 		(instances
 			(project ""
@@ -4757,7 +4757,7 @@
 	)
 	(symbol
 		(lib_id "power:VCC")
-		(at 218.44 90.17 180)
+		(at 218.44 92.71 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4766,7 +4766,7 @@
 		(fields_autoplaced yes)
 		(uuid "b31e5e8a-66a6-47e2-af6a-a30c2847b2b6")
 		(property "Reference" "#PWR014"
-			(at 218.44 86.36 0)
+			(at 218.44 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4775,7 +4775,7 @@
 			)
 		)
 		(property "Value" "VCC"
-			(at 218.44 95.25 0)
+			(at 218.44 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4783,7 +4783,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 218.44 90.17 0)
+			(at 218.44 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4792,7 +4792,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 218.44 90.17 0)
+			(at 218.44 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4801,7 +4801,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VCC\""
-			(at 218.44 90.17 0)
+			(at 218.44 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4810,7 +4810,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f4a0")
 		)
 		(instances
 			(project ""
@@ -5093,7 +5093,7 @@
 				)
 			)
 		)
-		(property "Value" "220R"
+		(property "Value" "220"
 			(at 102.87 107.95 90)
 			(effects
 				(font
@@ -5198,7 +5198,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "1f2b56a8-ec2c-46e0-96b9-bf8bbadaca9b")
+			(uuid "1f2b56a8-ec2c-46e0-96b9-bf8bbadaca9c")
 		)
 		(instances
 			(project ""
@@ -5543,7 +5543,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f49b")
+			(uuid "8ed4f9c5-53df-42d3-b0ec-3ca3b4f2f4a1")
 		)
 		(instances
 			(project ""
@@ -5717,7 +5717,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Push")
-		(at 218.44 82.55 270)
+		(at 218.44 85.09 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5726,15 +5726,6 @@
 		(fields_autoplaced yes)
 		(uuid "f1fa65ba-97a4-48c7-80cf-764359f05fbf")
 		(property "Reference" "SW2"
-			(at 222.25 81.2799 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "SW_Push"
 			(at 222.25 83.8199 90)
 			(effects
 				(font
@@ -5743,8 +5734,17 @@
 				(justify left)
 			)
 		)
+		(property "Value" "SW_Push"
+			(at 222.25 86.3599 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(property "Footprint" ""
-			(at 223.52 82.55 0)
+			(at 223.52 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5753,7 +5753,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 223.52 82.55 0)
+			(at 223.52 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5762,7 +5762,7 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, two pins"
-			(at 218.44 82.55 0)
+			(at 218.44 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5919,7 +5919,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "1f2b56a8-ec2c-46e0-96b9-bf8bbadaca9b")
+			(uuid "1f2b56a8-ec2c-46e0-96b9-bf8bbadaca9d")
 		)
 		(instances
 			(project ""
