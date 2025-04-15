@@ -13,6 +13,167 @@
 		(comment 4 "Traffic Modeling and Traffic Analysis for LoRaWAN Networks:")
 	)
 	(lib_symbols
+		(symbol "Device:Buzzer"
+			(pin_names
+				(offset 0.0254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "BZ"
+				(at 3.81 1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Buzzer"
+				(at 3.81 -1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at -0.635 2.54 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at -0.635 2.54 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Buzzer, polarized"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "quartz resonator ceramic"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "*Buzzer*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Buzzer_0_1"
+				(polyline
+					(pts
+						(xy -1.651 1.905) (xy -1.143 1.905)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.397 2.159) (xy -1.397 1.651)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 3.175)
+					(mid 3.1612 0)
+					(end 0 -3.175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 3.175) (xy 0 -3.175)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Buzzer_1_1"
+				(pin passive line
+					(at -2.54 2.54 0)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -2.54 -2.54 0)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Device:C"
 			(pin_numbers
 				(hide yes)
@@ -2184,6 +2345,18 @@
 		)
 	)
 	(rectangle
+		(start 193.04 109.22)
+		(end 213.36 123.19)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 0180ebbb-8e03-43a1-93bb-22598e130a36)
+	)
+	(rectangle
 		(start 185.42 55.88)
 		(end 205.74 100.33)
 		(stroke
@@ -2331,6 +2504,17 @@
 		)
 		(uuid "711b2548-79d1-4d12-baa4-30eca33594a0")
 	)
+	(text "Buzzer out of stock from\ngrobotronics.com currently.\nCan simulate with LED"
+		(exclude_from_sim no)
+		(at 214.376 120.142 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "b3fd56ab-a1d3-4357-8483-43375f4dc9b6")
+	)
 	(text "MENU_BTN_SELECT"
 		(exclude_from_sim no)
 		(at 248.666 54.61 0)
@@ -2457,6 +2641,16 @@
 	)
 	(wire
 		(pts
+			(xy 176.53 110.49) (xy 198.12 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1408082e-a9d5-4473-a3dc-5dafd0a93bfb")
+	)
+	(wire
+		(pts
 			(xy 208.28 67.31) (xy 218.44 67.31)
 		)
 		(stroke
@@ -2577,6 +2771,16 @@
 	)
 	(wire
 		(pts
+			(xy 176.53 110.49) (xy 176.53 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "469a0b06-a849-475b-b98a-1dbf36cacd54")
+	)
+	(wire
+		(pts
 			(xy 132.08 64.77) (xy 138.43 64.77)
 		)
 		(stroke
@@ -2647,6 +2851,16 @@
 	)
 	(wire
 		(pts
+			(xy 198.12 110.49) (xy 198.12 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5f351bd1-dd95-469b-a454-ad90cd0e86d2")
+	)
+	(wire
+		(pts
 			(xy 95.25 172.72) (xy 99.06 172.72)
 		)
 		(stroke
@@ -2674,6 +2888,16 @@
 			(type default)
 		)
 		(uuid "6451456d-a0d5-49ed-9c91-b807bbb2d5f4")
+	)
+	(wire
+		(pts
+			(xy 198.12 113.03) (xy 199.39 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "69247da7-bd7f-403e-b1a7-894ac307e736")
 	)
 	(wire
 		(pts
@@ -2734,6 +2958,16 @@
 			(type default)
 		)
 		(uuid "849864b4-a850-4105-880d-4d39b7eda76f")
+	)
+	(wire
+		(pts
+			(xy 198.12 118.11) (xy 199.39 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85428e2b-7e70-4dcf-8022-176016c69f56")
 	)
 	(wire
 		(pts
@@ -3024,6 +3258,16 @@
 			(type default)
 		)
 		(uuid "cbfd12d4-fb2b-4bd6-b13d-936640394111")
+	)
+	(wire
+		(pts
+			(xy 176.53 85.09) (xy 163.83 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3f452f6-9570-4ffd-85ca-3932af9c5654")
 	)
 	(wire
 		(pts
@@ -5003,6 +5247,142 @@
 			(project ""
 				(path "/823843db-cbc4-413a-a2ac-ffbd107e023e"
 					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 198.12 118.11 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c7cf0066-3ffe-4d21-baa0-d2d5c7507f8f")
+		(property "Reference" "#PWR021"
+			(at 191.77 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 196.596 116.332 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 198.12 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a858dfd5-9d49-4bb7-b69d-9d53e4a3073f")
+		)
+		(instances
+			(project "Hardware"
+				(path "/823843db-cbc4-413a-a2ac-ffbd107e023e"
+					(reference "#PWR021")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:Buzzer")
+		(at 201.93 115.57 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ca79a851-bfa2-4d31-aea1-5ffc65015771")
+		(property "Reference" "BZ1"
+			(at 205.74 114.2999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Buzzer"
+			(at 205.74 116.8399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 201.295 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 201.295 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Buzzer, polarized"
+			(at 201.93 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5341ff99-0cd4-44a1-886e-711f543c17ff")
+		)
+		(pin "2"
+			(uuid "230b2da7-c61e-421d-a326-8ca1abb4e9e4")
+		)
+		(instances
+			(project ""
+				(path "/823843db-cbc4-413a-a2ac-ffbd107e023e"
+					(reference "BZ1")
 					(unit 1)
 				)
 			)
