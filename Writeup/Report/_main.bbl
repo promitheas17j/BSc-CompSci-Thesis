@@ -21,14 +21,22 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{schumacher1995monitoring}
-S.~Schumacher, ``Monitoring vital signs to identify postoperative
-  complications.'' \emph{Medsurg Nursing: Official Journal of the Academy of
-  Medical-surgical Nurses}, vol.~4, no.~2, pp. 142--145, 1995.
+\bibitem{d2014defining}
+T.~A. D'Amico, ``Defining and improving postoperative care,'' \emph{The Journal
+  of Thoracic and Cardiovascular Surgery}, vol. 148, no.~5, pp. 1792--1793,
+  2014.
 
-\bibitem{mithani2018routine}
-M.~H.~A. Mithani, S.~El~Khalid, S.~A. Khan, I.~Sharif, and A.~S. Awan, ``Is
-  routine measurement of post-operative hemoglobin and electrolytes necessary
-  in every patient after transurethral resection of the prostate?'' 2018.
+\bibitem{kare2024post}
+S.~K. Kare, K.~R. Kumar, L.~P. Kumar, and N.~Naidu, ``Post-operative
+  complications in elderly patients undergoing hip fracture surgery: An
+  observational study,'' \emph{Asian Journal of Medical Sciences}, vol.~15,
+  no.~3, pp. 191--195, 2024.
+
+\bibitem{Surwit_Tam_2008}
+\BIBentryALTinterwordspacing
+E.~A. Surwit and T.~Y. Tam, ``Postoperative care,'' Jan 2008. [Online].
+  Available:
+  \url{https://www.glowm.com/section-view/heading/Postoperative%20Care/item/36}
+\BIBentrySTDinterwordspacing
 
 \end{thebibliography}
