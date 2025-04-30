@@ -1,0 +1,20 @@
+// menu.h
+
+#ifndef MENU_H
+#define MENU_H
+
+#include <stdint.h>
+#include "states.h"
+
+struct Menu {
+	const char **options;
+	uint8_t num_options;
+};
+
+extern struct Menu menu_table[];
+
+void handle_menu(states current_state);
+uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options);
+void lcd_print_line(const char *option);
+
+#endif
