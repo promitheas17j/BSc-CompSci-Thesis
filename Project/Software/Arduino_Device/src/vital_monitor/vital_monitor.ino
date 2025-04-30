@@ -1,46 +1,32 @@
 #include "Waveshare_LCD1602.h"
 // #include <Wire.h>
 
-const int BTN_PREV = 4;
-const int BTN_SELECT = 7;
-const int BTN_NEXT = 8;
-const int LED_BLUE = A5;
-const int LED_GREEN = A4;
-const int LED_YELLOW = A3;
-const int LED_RED = A2;
+const uint8_t BTN_PREV = 4;
+const uint8_t BTN_SELECT = 7;
+const uint8_t BTN_NEXT = 8;
+const uint8_t LED_BLUE = A5;
+const uint8_t LED_GREEN = A4;
+const uint8_t LED_YELLOW = A3;
+const uint8_t LED_RED = A2;
+
+enum class states : uint8_t {
+	IDLE,
+	CONNECTED,
+	DISCONNECTED,
+	READING,
+	PROCESSING,
+	TRANSMITTING
+}
 
 Waveshare_LCD1602 lcd(16,2);
 
 char str_current_option[] = "Booting...";
-int prev_button_state = 0;
-int select_button_state = 0;
-int next_button_state = 0;
+uint8_t prev_button_state = 0;
+uint8_t select_button_state = 0;
+uint8_t next_button_state = 0;
 
-void lcd_print_menu(char *option) {
-	lcd.clear();
-	lcd.setCursor(0, 0);
-	lcd.send_string(option);  
-	lcd.setCursor(0, 1);
-	lcd.send_string("<    SELECT    >");
-}
-
-void cycle_leds() {
-	digitalWrite(LED_BLUE, HIGH);
-	delay(200);
-	digitalWrite(LED_BLUE, LOW);
-	delay(200);
-	digitalWrite(LED_GREEN, HIGH);
-	delay(200);
-	digitalWrite(LED_GREEN, LOW);
-	delay(200);
-	digitalWrite(LED_YELLOW, HIGH);
-	delay(200);
-	digitalWrite(LED_YELLOW, LOW);
-	delay(200);
-	digitalWrite(LED_RED, HIGH);
-	delay(200);
-	digitalWrite(LED_RED, LOW);
-}
+void lcd_print_menu(char *option);
+void cycle_leds();
 
 void setup() {
 	Serial.begin(9600);
@@ -106,3 +92,30 @@ void loop() {
 
 	// delay(1000);
 }
+
+void lcd_print_menu(char *option) {
+	lcd.clear();
+	lcd.setCursor(0, 0);
+	lcd.send_string(option);  
+	lcd.setCursor(0, 1);
+	lcd.send_string("<    SELECT    >");
+}
+
+void cycle_leds() {
+	digitalWrite(LED_BLUE, HIGH);
+	delay(200);
+	digitalWrite(LED_BLUE, LOW);
+	delay(200);
+	digitalWrite(LED_GREEN, HIGH);
+	delay(200);
+	digitalWrite(LED_GREEN, LOW);
+	delay(200);
+	digitalWrite(LED_YELLOW, HIGH);
+	delay(200);
+	digitalWrite(LED_YELLOW, LOW);
+	delay(200);
+	digitalWrite(LED_RED, HIGH);
+	delay(200);
+	digitalWrite(LED_RED, LOW);
+}
+
