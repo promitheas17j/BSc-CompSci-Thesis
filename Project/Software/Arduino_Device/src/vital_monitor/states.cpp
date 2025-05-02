@@ -20,12 +20,20 @@ const uint8_t NUM_STATES = sizeof(stateTable) / sizeof(stateTable[0]);
 states state_disconnected() {
 	log_msg("INFO", "State: DISCONNECTED");
 	digitalWrite(LED_BLUE, LOW);
+	// TODO: Add check here to detect as soon as a device has connected and move to the CONNECTED state automatically.
+	if (digitalRead(BT_STATE) == HIGH) {
+		change_state(CONNECTED);
+		return CONNECTED;
+	}
 	return DISCONNECTED;
 }
 
 states state_connected() {
 	log_msg("INFO", "State: CONNECTED");
 	digitalWrite(LED_BLUE, HIGH);
+	if (HM10_UART.available()) {
+		Serial.write(HM10_UART.read());
+	}
 	return CONNECTED;
 }
 

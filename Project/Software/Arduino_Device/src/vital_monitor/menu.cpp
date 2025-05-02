@@ -11,11 +11,11 @@
 
 extern Waveshare_LCD1602 lcd; // defined in vital_monitor.ino
 
-const char *menu_disconnected[] = {"Scan", "Setup"};
+const char *menu_disconnected[] = {"No connection"};
 const char *menu_connected[] = {"Read", "Disconnect"};
-const char *menu_reading[] = {"Cancel reading"};
-const char *menu_processing[] = {"Abort process"};
-const char *menu_transmitting[] = {"Abort Tx"};
+const char *menu_reading[] = {"Reading..."};
+const char *menu_processing[] = {"Processing..."};
+const char *menu_transmitting[] = {"Sending..."};
 
 struct Menu menu_table[] = {
 	{menu_disconnected, sizeof(menu_disconnected) / sizeof(menu_disconnected[0])},
@@ -61,9 +61,13 @@ void handle_menu(states current_state) {
 }
 
 uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
+	bool interactive = (num_options > 1);
 	if (g_current_option_index != g_last_option_index_displayed) {
-		lcd_print_line(options[g_current_option_index]);
+		lcd_print_line(options[g_current_option_index], interactive);
 		g_last_option_index_displayed = g_current_option_index;
+	}
+	if (!interactive) {
+		return 255; // if not an interactive menu but just a static one, simply return 255 and skip button handling
 	}
 	// Edge detection - remember last button states (only do something when button state changes)
 	static uint8_t last_prev_btn_state = 0;
@@ -91,11 +95,16 @@ uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	return 255; // 255 = nothing selected yet
 }
 
-void lcd_print_line(const char *option) {
+void lcd_print_line(const char *option, bool is_interactive) {
 	lcd.clear();
 	lcd.setCursor(0, 0);
-	lcd.send_string(option);  
+	lcd.send_string(option);
 	lcd.setCursor(0, 1);
-	lcd.send_string("<    SELECT    >");
+	if (is_interactive) {
+		lcd.send_string("<    SELECT    >");
+	}
+	else {
+		lcd.send_string("");
+	}
 }
 
