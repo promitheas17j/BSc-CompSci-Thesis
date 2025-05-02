@@ -70,17 +70,17 @@ uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	static uint8_t last_next_btn_state = 0;
 	static uint8_t last_select_btn_state = 0;
 	// PREV button rising edge
-	if (g_prev_button_state == HIGH && last_prev_btn_state == LOW) { // NOTE:Make if condition clearer
+	if (g_prev_button_state == HIGH && last_prev_btn_state == LOW) {
 		log_msg("DEBUG", "PREV PRESSED");
 		g_current_option_index = (g_current_option_index == 0) ? num_options - 1 : g_current_option_index - 1;
 	}
 	// NEXT button rising edge
-	if (g_next_button_state && !last_next_btn_state) { // NOTE:Make if condition clearer
+	if (g_next_button_state == HIGH && last_next_btn_state == LOW) {
 		log_msg("DEBUG", "NEXT PRESSED");
 		g_current_option_index = (g_current_option_index + 1) % num_options;
 	}
 	// SELECT button rising edge
-	if (g_select_button_state && !last_select_btn_state) { // NOTE:Make if condition clearer
+	if (g_select_button_state == HIGH && last_select_btn_state == LOW) {
 		log_msg("DEBUG", "SELECT PRESSED");
 		return g_current_option_index;
 	}
