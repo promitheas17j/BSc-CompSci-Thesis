@@ -1,5 +1,6 @@
 Selection/
 Project/Hardware/Hardware-backups/
+*.lck
 Writeup/Report/*.log
 Writeup/Report/*.aux
 README.pdf
