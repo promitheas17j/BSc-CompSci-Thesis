@@ -28,5 +28,6 @@ extern struct ButtonDebounce g_select_button;
 extern struct ButtonDebounce g_next_button;
 
 extern bool debug_enabled;
+extern bool g_selection_pending;
 
 #endif

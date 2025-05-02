@@ -13,6 +13,7 @@ uint8_t g_next_button_state = 0;
 states g_current_state = DISCONNECTED;
 uint8_t g_current_option_index = 0;
 uint8_t g_last_option_index_displayed = 255;
+bool g_selection_pending = true;
 
 struct ButtonDebounce g_prev_button = {LOW, LOW, 0};
 struct ButtonDebounce g_select_button = {LOW, LOW, 0};

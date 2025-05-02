@@ -30,17 +30,15 @@ void handle_menu(states current_state) {
 	const char **options = menu_table[state_index].options;
 	uint8_t num_options = menu_table[state_index].num_options;
 	uint8_t result = handle_menu_options_buttons(options, num_options);
-	// uint8_t result = 1; // DEBUG LINE
-	if (result != 255) {
+	if (result == 255 && !g_selection_pending && !g_select_button_state) {
+		g_selection_pending = true;
+	}
+	if ((result != 255) && (g_selection_pending == true)) {
 		char msg[64];
 		snprintf(msg, sizeof(msg), "Selected option: %s", options[result]);
 		log_msg("INFO", msg);
 		if (current_state == DISCONNECTED) {
 			if (strcmp(options[result], "Setup") == 0) {
-			// FIX: Commenting out the line above and using the Serial monitor to control state change removes the issue of 'bouncing' present when using the SELECT button.
-			// Look into how the handle_menu_options_buttons functions handles selection of menu options
-
-			// if (Serial.read() == '1') { // DEBUG LINE
 				change_state(CONNECTED);
 				state_connected();
 			}
@@ -52,7 +50,6 @@ void handle_menu(states current_state) {
 		}
 		else if (current_state == CONNECTED) {
 			if (strcmp(options[result], "Disconnect") == 0) {
-			// if (Serial.read() == '2') { // DEBUG LINE
 				change_state(DISCONNECTED);
 				state_disconnected();
 			}
@@ -73,7 +70,7 @@ uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	static uint8_t last_next_btn_state = 0;
 	static uint8_t last_select_btn_state = 0;
 	// PREV button rising edge
-	if (g_prev_button_state && !last_prev_btn_state) { // NOTE:Make if condition clearer
+	if (g_prev_button_state == HIGH && last_prev_btn_state == LOW) { // NOTE:Make if condition clearer
 		log_msg("DEBUG", "PREV PRESSED");
 		g_current_option_index = (g_current_option_index == 0) ? num_options - 1 : g_current_option_index - 1;
 	}

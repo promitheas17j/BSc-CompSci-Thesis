@@ -31,6 +31,15 @@ void log_msg(const char *msg_level, const char *msg) {
 	Serial.println(buffer);
 }
 
+void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
+	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+		return;
+	}
+	char buffer[128];
+	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
+	Serial.println(buffer);
+}
+
 void cycle_leds() {
 	uint8_t cycle_time = 100;
 	digitalWrite(LED_BLUE, HIGH);

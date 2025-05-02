@@ -48,6 +48,7 @@ void change_state(states new_state) {
 	g_current_state = new_state;
 	g_current_option_index = 0;
 	g_last_option_index_displayed = 255;
+	g_selection_pending = false; // prevent "bouncing" of multiple menu options after selection
 	char msg[64];
 	snprintf(msg, sizeof(msg), "Current state: %s", state_to_string(g_current_state));
 	log_msg("DEBUG", msg);
