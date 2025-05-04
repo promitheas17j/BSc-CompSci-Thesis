@@ -25,6 +25,7 @@ extern struct StateTable stateTable[];
 extern const uint8_t NUM_STATES;
 
 extern states state_disconnected();
+extern states state_setup();
 extern states state_connected();
 extern states state_reading();
 extern states state_processing();

@@ -35,16 +35,14 @@ states handle_menu(states current_state) {
 	if (result == 255 && !g_selection_pending && !g_select_button_state) {
 		g_selection_pending = true;
 	}
-	if ((result != 255) && (g_selection_pending == true)) {
+	if ((result != 255) && (g_selection_pending)) {
 		char msg[64];
 		snprintf(msg, sizeof(msg), "Selected option: %s", options[result]);
 		log_msg("DEBUG", msg);
-		if (current_state == DISCONNECTED) {
-			if (strcmp(options[result], "Setup") == 0) {
+		if (current_state == DISCONNECTED && (strcmp(options[result], "Setup") == 0)) {
 				g_selection_pending = false;
-				g_previous_state = current_state;
+				// g_previous_state = current_state; // NOTE: Do I still need this?
 				return SETUP;
-			}
 		}
 		else if (current_state == SETUP) {
 			if (strcmp(options[result], "Setup BP") == 0) {
@@ -67,11 +65,9 @@ states handle_menu(states current_state) {
 				return READING;
 			}
 			else if (strcmp(options[result], "Setup") == 0) {
-				if (strcmp(options[result], "Setup") == 0) {
-					g_selection_pending = false;
-					g_previous_state = current_state;
-					return SETUP;
-				}
+				g_selection_pending = false;
+				// g_previous_state = current_state; // NOTE: Do I still need this?
+				return SETUP;
 			}
 			else if (strcmp(options[result], "Disconnect") == 0) {
 				g_selection_pending = false;
@@ -91,28 +87,26 @@ states handle_menu(states current_state) {
 uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	bool interactive = (num_options > 1);
 	if (g_current_option_index != g_last_option_index_displayed) {
-		lcd_print_line(options[g_current_option_index], interactive);
+		lcd_print_line(options[g_current_option_index], interactive); // NOTE: Should I still update the lcd from this function?
 		g_last_option_index_displayed = g_current_option_index;
 	}
 	if (!interactive) {
 		return 255; // if not an interactive menu but just a static one, simply return 255 and skip button handling
 	}
 	// Edge detection - remember last button states (only do something when button state changes)
-	static uint8_t last_prev_btn_state = 0;
-	static uint8_t last_next_btn_state = 0;
-	static uint8_t last_select_btn_state = 0;
+	static uint8_t last_prev_btn_state = 0, last_next_btn_state = 0, last_select_btn_state = 0;
 	// PREV button rising edge
-	if (g_prev_button_state == HIGH && last_prev_btn_state == LOW) {
+	if (g_prev_button_state && !last_prev_btn_state) {
 		log_msg("DEBUG", "PREV PRESSED");
 		g_current_option_index = (g_current_option_index == 0) ? num_options - 1 : g_current_option_index - 1;
 	}
 	// NEXT button rising edge
-	if (g_next_button_state == HIGH && last_next_btn_state == LOW) {
+	if (g_next_button_state && !last_next_btn_state) {
 		log_msg("DEBUG", "NEXT PRESSED");
 		g_current_option_index = (g_current_option_index + 1) % num_options;
 	}
 	// SELECT button rising edge
-	if (g_select_button_state == HIGH && last_select_btn_state == LOW) {
+	if (g_select_button_state && !last_select_btn_state) {
 		log_msg("DEBUG", "SELECT PRESSED");
 		return g_current_option_index;
 	}
