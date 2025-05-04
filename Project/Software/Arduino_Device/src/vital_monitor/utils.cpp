@@ -69,3 +69,35 @@ const char* state_to_string(states s) {
 		default: return "UNKNOWN";
 	}
 }
+
+bool validate_message(const char *msg) {
+	if (strncmp(msg, "BP:", 3) == 0) {
+		log_msg("DEBUG", "Received data is from a BP device.");
+		const char* data = msg + 3;
+		int systolic, diastolic, consumed = 0;
+		if (sscanf(data, "%d/%d%n", &systolic, &diastolic, &consumed) == 2) {
+			if (data[consumed] == '\0') {
+				return true;
+			}
+		}
+	}
+	else if (strncmp(msg, "TEMP:", 5) == 0) {
+		log_msg("DEBUG", "Received data is from a TEMP device.");
+		const char* data = msg + 5;
+		char* endptr;
+		strtod(data, &endptr);
+		if (endptr != data && *endptr == '\0') {
+			return true;
+		}
+	}
+	else if (strncmp(msg, "HR:", 3) == 0) {
+		log_msg("DEBUG", "Received data is from a HR device.");
+		const char* data = msg + 3;
+		char* endptr;
+		strtol(data, &endptr, 10);
+		if (endptr != data && *endptr == '\0') {
+			return true;
+		}
+	}
+	return false;
+}

@@ -7,6 +7,7 @@
 
 typedef enum {
 	DISCONNECTED = 0,
+	SETUP,
 	CONNECTED,
 	READING,
 	PROCESSING,
@@ -30,4 +31,6 @@ extern states state_processing();
 extern states state_transmitting();
 
 void change_state(states new_state);
+states check_bt_connection(states current_state);
+
 #endif

@@ -11,21 +11,23 @@
 
 extern Waveshare_LCD1602 lcd; // defined in vital_monitor.ino
 
-const char *menu_disconnected[] = {"No connection"};
-const char *menu_connected[] = {"Read", "Disconnect"};
+const char *menu_disconnected[] = {"No connection", "Setup"};
+const char *menu_setup[] = {"Setup BP", "Setup Temp", "Setup HR", "Back"};
+const char *menu_connected[] = {"Read", "Setup", "Disconnect"};
 const char *menu_reading[] = {"Reading..."};
 const char *menu_processing[] = {"Processing..."};
 const char *menu_transmitting[] = {"Sending..."};
 
 struct Menu menu_table[] = {
 	{menu_disconnected, sizeof(menu_disconnected) / sizeof(menu_disconnected[0])},
+	{menu_setup, sizeof(menu_setup) / sizeof(menu_setup[0])},
 	{menu_connected, sizeof(menu_connected) / sizeof(menu_connected[0])},
 	{menu_reading, sizeof(menu_reading) / sizeof(menu_reading[0])},
 	{menu_processing, sizeof(menu_processing) / sizeof(menu_processing[0])},
 	{menu_transmitting, sizeof(menu_transmitting) / sizeof(menu_transmitting[0])}
 };
 
-void handle_menu(states current_state) {
+states handle_menu(states current_state) {
 	uint8_t state_index = (uint8_t)current_state;
 	const char **options = menu_table[state_index].options;
 	uint8_t num_options = menu_table[state_index].num_options;
@@ -36,28 +38,54 @@ void handle_menu(states current_state) {
 	if ((result != 255) && (g_selection_pending == true)) {
 		char msg[64];
 		snprintf(msg, sizeof(msg), "Selected option: %s", options[result]);
-		log_msg("INFO", msg);
+		log_msg("DEBUG", msg);
 		if (current_state == DISCONNECTED) {
 			if (strcmp(options[result], "Setup") == 0) {
-				change_state(CONNECTED);
-				state_connected();
+				g_selection_pending = false;
+				g_previous_state = current_state;
+				return SETUP;
 			}
-			else if (strcmp(options[result], "Scan") == 0) {
-				change_state(CONNECTED);
-				state_connected();
-				log_msg("INFO", "Scan selected - not implemented yet.");
+		}
+		else if (current_state == SETUP) {
+			if (strcmp(options[result], "Setup BP") == 0) {
+				log_msg("DEBUG", "Blood pressure setup selected.");
+			}
+			else if (strcmp(options[result], "Setup Temp") == 0) {
+				log_msg("DEBUG", "Temperature setup selected.");
+			}
+			else if (strcmp(options[result], "Setup HR") == 0) {
+				log_msg("DEBUG", "Heart rate setup selected.");
+			}
+			else if (strcmp(options[result], "Back") == 0) {
+				log_msg("DEBUG", "Going back.");
+				return g_previous_state;
 			}
 		}
 		else if (current_state == CONNECTED) {
-			if (strcmp(options[result], "Disconnect") == 0) {
-				change_state(DISCONNECTED);
-				state_disconnected();
+			if (strcmp(options[result], "Read") == 0) {
+				g_selection_pending = false;
+				return READING;
 			}
-			else if (strcmp(options[result], "Read") == 0) {
-				log_msg("INFO", "Read selected - not implemented yet.");
+			else if (strcmp(options[result], "Setup") == 0) {
+				if (strcmp(options[result], "Setup") == 0) {
+					g_selection_pending = false;
+					g_previous_state = current_state;
+					return SETUP;
+				}
+			}
+			else if (strcmp(options[result], "Disconnect") == 0) {
+				g_selection_pending = false;
+				digitalWrite(5, LOW);
+				delay(100);
+				digitalWrite(5, HIGH);
+				delay(100);
+				digitalWrite(5, LOW);
+				log_msg("DEBUG", "Sent pulse to pin 5 (connected to BRK)");
+				return DISCONNECTED;
 			}
 		}
 	}
+	return current_state;
 }
 
 uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {

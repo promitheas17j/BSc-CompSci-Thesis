@@ -22,6 +22,7 @@ extern uint8_t g_prev_button_state;
 extern uint8_t g_select_button_state;
 extern uint8_t g_next_button_state;
 extern states g_current_state;
+extern states g_previous_state;
 extern uint8_t g_current_option_index;
 extern uint8_t g_last_option_index_displayed;
 

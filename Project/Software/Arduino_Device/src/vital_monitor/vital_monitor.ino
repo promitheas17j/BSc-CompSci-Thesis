@@ -1,3 +1,5 @@
+// vital_monitor.ino
+
 #include "globals.h"
 #include "menu.h"
 #include "utils.h"
@@ -13,6 +15,7 @@ uint8_t g_prev_button_state = 0;
 uint8_t g_select_button_state = 0;
 uint8_t g_next_button_state = 0;
 states g_current_state = DISCONNECTED;
+states g_previous_state = DISCONNECTED;
 uint8_t g_current_option_index = 0;
 uint8_t g_last_option_index_displayed = 255;
 bool g_selection_pending = true;
@@ -25,19 +28,16 @@ bool debug_enabled = true;
 
 void setup() {
 	Serial.begin(9600);
+	// Wait for Serial connection before proceeding with the rest of the code
 	while (!Serial) {
 		;
 	}
-	// HM10_UART.begin(115200);
 	HM10_UART.begin(9600);
-	delay(500);
-	HM10_UART.println("AT+RESET");
-	delay(500);
-	while (HM10_UART.available()) {
-		Serial.write(HM10_UART.read());
-	}
-	// while (!HM10_UART) {
-	// 	;
+	// delay(500);
+	// HM10_UART.println("AT+RESET");
+	// delay(500);
+	// while (HM10_UART.available()) {
+	// 	Serial.write(HM10_UART.read());
 	// }
 	lcd.init();
 	lcd.clear();
@@ -52,38 +52,47 @@ void setup() {
 	pinMode(LED_GREEN, OUTPUT);
 	pinMode(LED_YELLOW, OUTPUT);
 	pinMode(LED_RED, OUTPUT);
-	pinMode(11, INPUT);
-	cycle_leds();
+	pinMode(BT_STATE, INPUT);
 	digitalWrite(LED_BLUE, LOW);
 	digitalWrite(LED_GREEN, LOW);
 	digitalWrite(LED_YELLOW, LOW);
 	digitalWrite(LED_RED, LOW);
+	delay(1000); // attempt to let HM-10 stabilise so I dont get floating BT_STATE values which could be HIGH
+	cycle_leds();
 	char msg[64];
 	snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
 	log_msg("DEBUG", msg);
 }
 
 void loop() {
-	// char msg[64];
-	// snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
-	// log_msg("DEBUG", msg);
+	g_prev_button_state = debounceReadButton(BTN_PREV, &g_prev_button);
+	g_select_button_state = debounceReadButton(BTN_SELECT, &g_select_button);
+	g_next_button_state = debounceReadButton(BTN_NEXT, &g_next_button);
 
-	if (Serial.available()) {
-		HM10_UART.write(Serial.read());
+	states next_state;
+	
+	if (g_current_state == DISCONNECTED || g_current_state == CONNECTED || g_current_state == SETUP) {
+		next_state = handle_menu(g_current_state);
 	}
-	if (HM10_UART.available()) {
-		Serial.write(HM10_UART.read());
+	else if (g_current_state == READING) {
+		next_state = state_reading();
 	}
-
-	if (digitalRead(BT_STATE) == HIGH) {
-		digitalWrite(LED_BLUE, HIGH);
+	else if (g_current_state == PROCESSING) {
+		next_state = state_processing();
+	}
+	else if (g_current_state == TRANSMITTING) {
+		next_state = state_transmitting();
 	}
 	else {
-		digitalWrite(LED_BLUE, LOW);
+		next_state = g_current_state;
 	}
-	// g_prev_button_state = debounceReadButton(BTN_PREV, &g_prev_button);
-	// g_select_button_state = debounceReadButton(BTN_SELECT, &g_select_button);
-	// g_next_button_state = debounceReadButton(BTN_NEXT, &g_next_button);
 
-	// handle_menu(g_current_state);
+	next_state = check_bt_connection(next_state);
+	// g_current_state = check_bt_connection(next_state);
+
+	if (next_state != g_current_state) {
+		change_state(next_state);
+		g_current_state = next_state;
+	}
+	// }
 }
