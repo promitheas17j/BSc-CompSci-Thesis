@@ -23,6 +23,9 @@ struct ButtonDebounce g_next_button = {LOW, LOW, 0};
 
 bool debug_enabled = true;
 
+// const uint8_t g_received_data_buffer_size = 11; // largest expected valid received data is 11 characters long (e.g. TEMP:38.5\n is 10 characters, with the null terminator it becomes 11). If at some point in the future bigger data streams are required simply change here. Don't forget to take into account the necessary '\0' null terminator.
+char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
+
 void setup() {
 	Serial.begin(9600);
 	// Wait for Serial connection before proceeding with the rest of the code

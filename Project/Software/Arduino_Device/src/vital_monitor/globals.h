@@ -24,6 +24,10 @@ extern uint8_t g_next_button_state;
 extern uint8_t g_current_option_index;
 extern uint8_t g_last_option_index_displayed;
 
+#define G_RECEIVED_DATA_BUFFER_SIZE 11
+
+extern char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
+
 extern const unsigned long g_startup_time;
 
 extern states g_current_state;

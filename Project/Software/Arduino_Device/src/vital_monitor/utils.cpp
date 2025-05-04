@@ -28,7 +28,8 @@ void log_msg(const char *msg_level, const char *msg) {
 	}
 	char buffer[64];
 	snprintf(buffer, sizeof(buffer), "[%s]: %s", msg_level, msg);
-	Serial.println(buffer);
+	Serial.print(buffer);
+	Serial.print("\n");
 }
 
 void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
@@ -37,7 +38,8 @@ void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
 	}
 	char buffer[128];
 	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
-	Serial.println(buffer);
+	Serial.print(buffer);
+	Serial.print("\n");
 }
 
 void cycle_leds() {
@@ -100,4 +102,32 @@ bool validate_message(const char *msg) {
 		}
 	}
 	return false;
+}
+
+void update_led_based_on_state() {
+	if (g_current_state == DISCONNECTED) {
+		digitalWrite(LED_BLUE, LOW);
+	}
+	else if (g_current_state == CONNECTED) {
+		digitalWrite(LED_BLUE, HIGH);
+	}
+	else if (g_current_state == SETUP) {
+		if (g_previous_state == CONNECTED) {
+			digitalWrite(LED_BLUE, HIGH);
+		}
+		else {
+			digitalWrite(LED_BLUE, LOW);
+		}
+	}
+	// else if (g_current_state == READING) {
+	// 	if (g_previous_state == CONNECTED || g_previous_state == READING) {
+	// 		digitalWrite(LED_BLUE, HIGH);
+	// 	}
+	// 	else {
+	// 		digitalWrite(LED_BLUE, LOW);
+	// 	}
+	// }
+	// else if (g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
+	// 	// Keep LED unchanged.
+	// }
 }

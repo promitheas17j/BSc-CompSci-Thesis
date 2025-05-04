@@ -18,5 +18,6 @@ void log_msg(const char *msg_level, const char *msg, const bool optional_val);
 void cycle_leds();
 const char* state_to_string(states s);
 bool validate_message(const char *msg);
+void update_led_based_on_state();
 
 #endif

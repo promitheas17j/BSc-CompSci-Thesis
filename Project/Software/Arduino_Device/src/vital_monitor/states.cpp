@@ -44,6 +44,18 @@ states state_connected() {
 states state_reading() {
 	char input_buffer[64];
 	uint8_t index = 0;
+	static unsigned long last_high_time = 0;
+	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
+	uint8_t bt_pin_state = digitalRead(BT_STATE);
+	if (bt_pin_state == HIGH) {
+		last_high_time = millis();
+	}
+	else {
+		if ((millis() - last_high_time) > disconnect_threshold) {
+			log_msg("WARN", "Bluetooth disconnected during READING");
+			return DISCONNECTED;
+		}
+	}
 	while (HM10_UART.available()) {
 		log_msg("DEBUG", "Reading data");
 		char incoming_byte = HM10_UART.read();
@@ -61,6 +73,8 @@ states state_reading() {
 			if (validate_message(input_buffer)) {
 				HM10_UART.println("ACK");
 				log_msg("INFO", "Valid data received. ACK sent.");
+				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
+				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				return PROCESSING;
 			}
 			else {
@@ -81,8 +95,10 @@ states state_reading() {
 }
 
 states state_processing() {
+	char msg[64];
+	snprintf(msg, sizeof(msg), "Data buffer contains:\n\t %s", g_received_data_buffer);
+	log_msg("DEBUG", msg);
 	return TRANSMITTING;
-	// return PROCESSING;
 }
 
 states state_transmitting() {
@@ -108,12 +124,13 @@ void change_state(states new_state) {
 		}
 		log_msg("DEBUG", "Flushed UART buffer before entering READING state");
 	}
-	for (uint8_t i = 0; i < NUM_STATES; i++) {
-		if (stateTable[i].state == new_state) {
-			stateTable[i].func();
-			break;
-		}
-	}
+	update_led_based_on_state();
+	// for (uint8_t i = 0; i < NUM_STATES; i++) {
+	// 	if (stateTable[i].state == new_state) {
+	// 		stateTable[i].func();
+	// 		break;
+	// 	}
+	// }
 }
 
 states check_bt_connection(states current_state) {
