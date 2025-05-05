@@ -41,18 +41,25 @@ states handle_menu(states current_state) {
 		log_msg("DEBUG", msg);
 		if (current_state == DISCONNECTED && (strcmp(options[result], "Setup") == 0)) {
 				g_selection_pending = false;
-				// g_previous_state = current_state; // NOTE: Do I still need this?
 				return SETUP;
 		}
 		else if (current_state == SETUP) {
 			if (strcmp(options[result], "Setup BP") == 0) {
 				log_msg("DEBUG", "Blood pressure setup selected.");
+				g_selection_pending = false;
+				return SETUP_BP;
 			}
 			else if (strcmp(options[result], "Setup Temp") == 0) {
 				log_msg("DEBUG", "Temperature setup selected.");
+				g_selection_pending = false;
+				return SETUP_TEMP;
+
 			}
 			else if (strcmp(options[result], "Setup HR") == 0) {
 				log_msg("DEBUG", "Heart rate setup selected.");
+				g_selection_pending = false;
+				return SETUP_HR;
+
 			}
 			else if (strcmp(options[result], "Back") == 0) {
 				log_msg("DEBUG", "Going back.");
@@ -66,7 +73,6 @@ states handle_menu(states current_state) {
 			}
 			else if (strcmp(options[result], "Setup") == 0) {
 				g_selection_pending = false;
-				// g_previous_state = current_state; // NOTE: Do I still need this?
 				return SETUP;
 			}
 			else if (strcmp(options[result], "Disconnect") == 0) {
@@ -87,7 +93,7 @@ states handle_menu(states current_state) {
 uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	bool interactive = (num_options > 1);
 	if (g_current_option_index != g_last_option_index_displayed) {
-		lcd_print_line(options[g_current_option_index], interactive); // NOTE: Should I still update the lcd from this function?
+		lcd_print_line(options[g_current_option_index], interactive);
 		g_last_option_index_displayed = g_current_option_index;
 	}
 	if (!interactive) {

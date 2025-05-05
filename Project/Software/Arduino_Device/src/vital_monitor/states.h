@@ -8,6 +8,9 @@
 typedef enum {
 	DISCONNECTED = 0,
 	SETUP,
+	SETUP_BP,
+	SETUP_TEMP,
+	SETUP_HR,
 	CONNECTED,
 	READING,
 	PROCESSING,
@@ -26,6 +29,9 @@ extern const uint8_t NUM_STATES;
 
 extern states state_disconnected();
 extern states state_setup();
+extern states state_setup_bp();
+extern states state_setup_temp();
+extern states state_setup_hr();
 extern states state_connected();
 extern states state_reading();
 extern states state_processing();

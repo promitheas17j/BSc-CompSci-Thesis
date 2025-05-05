@@ -18,13 +18,30 @@
 #define LED_RED A2
 #define BT_STATE 11
 
+#define G_RECEIVED_DATA_BUFFER_SIZE 11
+#define G_BP_SYS_MIN_ADDR 0
+#define G_BP_SYS_MAX_ADDR 1
+#define G_BP_DIAS_MIN_ADDR 2
+#define G_BP_DIAS_MAX_ADDR 3
+#define G_TEMP_MIN_ADDR 4
+#define G_TEMP_MAX_ADDR 6
+#define G_HR_MIN_ADDR 8
+#define G_HR_MAX_ADDR 9
+
 extern uint8_t g_prev_button_state;
 extern uint8_t g_select_button_state;
 extern uint8_t g_next_button_state;
 extern uint8_t g_current_option_index;
 extern uint8_t g_last_option_index_displayed;
+extern uint8_t g_bp_systolic_threshold_min;
+extern uint8_t g_bp_systolic_threshold_max;
+extern uint8_t g_bp_diastolic_threshold_min;
+extern uint8_t g_bp_diastolic_threshold_max;
+extern uint8_t g_hr_threshold_min;
+extern uint8_t g_hr_threshold_max;
 
-#define G_RECEIVED_DATA_BUFFER_SIZE 11
+extern uint16_t g_temp_threshold_min;
+extern uint16_t g_temp_threshold_max;
 
 extern char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 

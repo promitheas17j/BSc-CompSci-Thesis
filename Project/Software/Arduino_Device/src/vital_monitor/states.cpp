@@ -6,10 +6,14 @@
 #include "utils.h"
 #include <stdio.h>
 #include <Arduino.h>
+#include <EEPROM.h>
 
 struct StateTable stateTable[] = {
 	{DISCONNECTED, state_disconnected},
 	{SETUP, state_setup},
+	{SETUP_BP, state_setup_bp},
+	{SETUP_TEMP, state_setup_temp},
+	{SETUP_HR, state_setup_hr},
 	{CONNECTED, state_connected},
 	{READING, state_reading},
 	{PROCESSING, state_processing},
@@ -20,24 +24,33 @@ const uint8_t NUM_STATES = sizeof(stateTable) / sizeof(stateTable[0]);
 
 // TODO: Implement logic for each state
 states state_disconnected() {
-	digitalWrite(LED_BLUE, LOW);
+	// digitalWrite(LED_BLUE, LOW);
 	return DISCONNECTED;
 }
 
 states state_setup() {
-	digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
 	return SETUP;
+}
+
+states state_setup_bp() {
+	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	return SETUP_BP;
+}
+
+states state_setup_temp() {
+	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	return SETUP_TEMP;
+}
+
+states state_setup_hr() {
+	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	return SETUP_HR;
 }
 
 states state_connected() {
 	log_msg("INFO", "Bluetooth device connected.");
-	digitalWrite(LED_BLUE, HIGH);
-	// if (HM10_UART.available()) {
-	// 	Serial.write(HM10_UART.read());
-	// }
-	// if (digitalRead(BT_STATE) == LOW){
-	// 	return DISCONNECTED;
-	// }
+	// digitalWrite(LED_BLUE, HIGH);
 	return CONNECTED;
 }
 
@@ -103,7 +116,6 @@ states state_processing() {
 
 states state_transmitting() {
 	return CONNECTED;
-	// return TRANSMITTING;
 }
 
 void change_state(states new_state) {
@@ -114,7 +126,9 @@ void change_state(states new_state) {
 	g_current_option_index = 0;
 	g_last_option_index_displayed = 255;
 	g_selection_pending = false; // prevent "bouncing" of multiple menu options after selection
-	lcd_print_line(menu_table[(uint8_t)g_current_state].options[0], menu_table[(uint8_t)g_current_state].num_options > 1);
+	if (g_current_state != SETUP_BP && g_current_state != SETUP_TEMP && g_current_state != SETUP_HR) {
+		lcd_print_line(menu_table[(uint8_t)g_current_state].options[0], menu_table[(uint8_t)g_current_state].num_options > 1);
+	}
 	char msg[64];
 	snprintf(msg, sizeof(msg), "State: %s", state_to_string(g_current_state));
 	log_msg("INFO", msg);
@@ -125,12 +139,6 @@ void change_state(states new_state) {
 		log_msg("DEBUG", "Flushed UART buffer before entering READING state");
 	}
 	update_led_based_on_state();
-	// for (uint8_t i = 0; i < NUM_STATES; i++) {
-	// 	if (stateTable[i].state == new_state) {
-	// 		stateTable[i].func();
-	// 		break;
-	// 	}
-	// }
 }
 
 states check_bt_connection(states current_state) {
@@ -139,13 +147,6 @@ states check_bt_connection(states current_state) {
 	static unsigned long last_high_time = 0, last_check_time = 0;
 	static bool is_connected = false;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
-	// char msg[1024];
-	// snprintf(msg, sizeof(msg), "bt_pin_state: %u\tis_connected: %d\tlast_high_time: %lu", bt_pin_state, is_connected, last_high_time);
-	// log_msg("DEBUG",msg);
-
-	// if ((millis() - last_check_time) < check_interval) {
-	// 	return current_state;
-	// }
 	if ((millis() - g_startup_time) < stabilisation_period) {
 		return current_state;
 	}
