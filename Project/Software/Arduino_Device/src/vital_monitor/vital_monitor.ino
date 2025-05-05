@@ -18,6 +18,16 @@ uint8_t g_current_option_index = 0, g_last_option_index_displayed = 255;
 bool g_selection_pending = true;
 const unsigned long g_startup_time = millis();
 
+uint8_t g_bp_systolic_threshold_min;
+uint8_t g_bp_systolic_threshold_max;
+uint8_t g_bp_diastolic_threshold_min;
+uint8_t g_bp_diastolic_threshold_max;
+uint8_t g_hr_threshold_min;
+uint8_t g_hr_threshold_max;
+
+uint16_t g_temp_threshold_min;
+uint16_t g_temp_threshold_max;
+
 struct ButtonDebounce g_prev_button = {LOW, LOW, 0};
 struct ButtonDebounce g_select_button = {LOW, LOW, 0};
 struct ButtonDebounce g_next_button = {LOW, LOW, 0};

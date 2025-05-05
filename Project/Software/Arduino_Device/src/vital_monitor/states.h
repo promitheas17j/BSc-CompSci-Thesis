@@ -8,13 +8,13 @@
 typedef enum {
 	DISCONNECTED = 0,
 	SETUP,
-	SETUP_BP,
-	SETUP_TEMP,
-	SETUP_HR,
 	CONNECTED,
 	READING,
 	PROCESSING,
-	TRANSMITTING
+	TRANSMITTING,
+	SETUP_BP,
+	SETUP_TEMP,
+	SETUP_HR
 } states;
 
 typedef states (*StateFunc)();

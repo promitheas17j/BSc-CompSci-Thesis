@@ -35,6 +35,61 @@ states state_setup() {
 
 states state_setup_bp() {
 	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	static uint8_t step = 0; // 0=systolic min, 1=systolic max, 2=diastolic min, 3=diastolic max
+	// static bool changed = false;
+	uint8_t* current_value_ptr = nullptr;
+	const char* label = "";
+	// Select which variable we're editing based on step
+	switch (step) {
+		case 0:
+			current_value_ptr = &g_bp_systolic_threshold_min;
+			label = "SYS MIN";
+			break;
+		case 1:
+			current_value_ptr = &g_bp_systolic_threshold_max;
+			label = "SYS MAX";
+			break;
+		case 2:
+			current_value_ptr = &g_bp_diastolic_threshold_min;
+			label = "DIAS MIN";
+			break;
+		case 3:
+			current_value_ptr = &g_bp_diastolic_threshold_max;
+			label = "DIAS MAX";
+			break;
+		default:
+			// All steps completed → save to EEPROM
+			EEPROM.write(G_BP_SYS_MIN_ADDR, g_bp_systolic_threshold_min);
+			EEPROM.write(G_BP_SYS_MAX_ADDR, g_bp_systolic_threshold_max);
+			EEPROM.write(G_BP_DIAS_MIN_ADDR, g_bp_diastolic_threshold_min);
+			EEPROM.write(G_BP_DIAS_MAX_ADDR, g_bp_diastolic_threshold_max);
+			log_msg("INFO", "BP thresholds saved to EEPROM");
+			step = 0; // reset step for next time
+			return SETUP; // go back to setup menu
+	}
+	// Display current label and value
+	char line1[16];
+	char line2[16];
+	snprintf(line1, sizeof(line1), "%s: %u", label, *current_value_ptr);
+	snprintf(line2, sizeof(line2), "< +  SELECT  ->");
+	lcd_print_line(line1, true);
+	// Button handling
+	// static uint8_t last_prev_state = 0, last_next_state = 0, last_select_state = 0;
+	// if (g_prev_button_state && !last_prev_state) {
+	// 	if (*current_value_ptr > 0) (*current_value_ptr)--;
+	// 	changed = true;
+	// }
+	// if (g_next_button_state && !last_next_state) {
+	// 	if (*current_value_ptr < 255) (*current_value_ptr)++;
+	// 	changed = true;
+	// }
+	// if (g_select_button_state && !last_select_state) {
+	// 	log_msg("DEBUG", "SELECT pressed: moving to next step");
+	// 	step++;
+	// }
+	// last_prev_state = g_prev_button_state;
+	// last_next_state = g_next_button_state;
+	// last_select_state = g_select_button_state;
 	return SETUP_BP;
 }
 
@@ -143,8 +198,9 @@ void change_state(states new_state) {
 
 states check_bt_connection(states current_state) {
 	// const unsigned long stable_threshold = 3000, check_interval = 500; // 3 second HIGH, only check 2 times per second
-	const unsigned long stable_threshold = 3000, stabilisation_period = 5000; // 3 second HIGH, wait 5 seconds after boot before checking
-	static unsigned long last_high_time = 0, last_check_time = 0;
+	const unsigned long stable_threshold = 1000, stabilisation_period = 5000; // 3 second HIGH, wait 5 seconds after boot before checking
+	static unsigned long last_high_time = 0;
+	// static unsigned long last_check_time = 0;
 	static bool is_connected = false;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
 	if ((millis() - g_startup_time) < stabilisation_period) {
