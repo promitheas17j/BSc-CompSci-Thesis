@@ -213,6 +213,9 @@ states state_processing() {
 				);
 			snprintf(msg, sizeof(msg), "BP %d/%d %s", sys, dia, ok ? "OK" : "ALERT");
 			log_msg("INFO", msg);
+			if (!ok) {
+				return TRANSMITTING;
+			}
 		}
 		else {
 			log_msg("WARN", "BP parse error.");
@@ -225,6 +228,9 @@ states state_processing() {
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
 			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
 			log_msg("INFO", msg);
+			if (!ok) {
+				return TRANSMITTING;
+			}
 		}
 		else {
 			log_msg("WARN", "TEMP parse error.");
@@ -236,15 +242,19 @@ states state_processing() {
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		snprintf(msg, sizeof(msg), "HR %u %s", hr, ok ? "OK" : "ALERT");
 		log_msg("INFO", msg);
+		if (!ok) {
+			return TRANSMITTING;
+		}
 	}
 	else {
 		log_msg("WARN", "Unknown data type");
 	}
-	return TRANSMITTING;
+	return CONNECTED;
 }
 
 states state_transmitting() {
-	// TODO: Get data from processing and transmit it to LoRaWAN network
+	log_msg("INFO", "Ready to send data to cloud using LoRaWAN");
+	// TODO: Actually send data from global buffer g_received_data_buffer to cloud
 	return CONNECTED;
 }
 
