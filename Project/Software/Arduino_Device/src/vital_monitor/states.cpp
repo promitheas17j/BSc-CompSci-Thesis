@@ -203,6 +203,43 @@ states state_processing() {
 	char msg[64];
 	snprintf(msg, sizeof(msg), "Data buffer contains:\n\t %s", g_received_data_buffer);
 	log_msg("DEBUG", msg);
+	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
+		uint8_t sys, dia;
+		if (sscanf(g_received_data_buffer + 3, "%d/%d", &sys, &dia) == 2) {
+			bool ok = (sys >= g_bp_systolic_threshold_min &&
+					sys <= g_bp_systolic_threshold_max &&
+					dia >= g_bp_diastolic_threshold_min &&
+					dia <= g_bp_systolic_threshold_max
+				);
+			snprintf(msg, sizeof(msg), "BP %d/%d %s", sys, dia, ok ? "OK" : "ALERT");
+			log_msg("INFO", msg);
+		}
+		else {
+			log_msg("WARN", "BP parse error.");
+		}
+	}
+	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
+		uint8_t whole, decimal, n;
+		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu%n", &whole, &decimal, &n) == 2) && (g_received_data_buffer[5 + n] == '\0')) {
+			uint16_t temperature = whole * 10 + decimal;
+			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
+			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
+			log_msg("INFO", msg);
+		}
+		else {
+			log_msg("WARN", "TEMP parse error.");
+		}
+	}
+	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
+		char *p = g_received_data_buffer + 3;
+		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
+		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
+		snprintf(msg, sizeof(msg), "HR %u %s", hr, ok ? "OK" : "ALERT");
+		log_msg("INFO", msg);
+	}
+	else {
+		log_msg("WARN", "Unknown data type");
+	}
 	return TRANSMITTING;
 }
 
