@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <SoftwareSerial.h>
+#include <EEPROM.h>
+#include "Waveshare_LCD1602.h"
 #include "utils.h"
 #include "states.h"
 
@@ -27,6 +29,16 @@
 #define G_TEMP_MAX_ADDR 6
 #define G_HR_MIN_ADDR 8
 #define G_HR_MAX_ADDR 9
+#define G_BP_SYSTOLIC_THRESHOLD_MIN 90
+#define G_BP_SYSTOLIC_THRESHOLD_MAX 140
+#define G_BP_DIASTOLIC_THRESHOLD_MIN 60
+#define G_BP_DIASTOLIC_THRESHOLD_MAX 90
+#define G_TEMP_THRESHOLD_MIN 360
+#define G_TEMP_THRESHOLD_MAX 370
+#define G_HR_THRESHOLD_MIN 60
+#define G_HR_THRESHOLD_MAX 100
+
+extern Waveshare_LCD1602 lcd;
 
 extern uint8_t g_prev_button_state;
 extern uint8_t g_select_button_state;
@@ -56,6 +68,7 @@ extern struct ButtonDebounce g_next_button;
 
 extern bool debug_enabled;
 extern bool g_selection_pending;
+extern bool g_multi_reset;
 
 extern SoftwareSerial HM10_UART;
 

@@ -22,7 +22,6 @@ struct StateTable stateTable[] = {
 
 const uint8_t NUM_STATES = sizeof(stateTable) / sizeof(stateTable[0]);
 
-// TODO: Implement logic for each state
 states state_disconnected() {
 	// digitalWrite(LED_BLUE, LOW);
 	return DISCONNECTED;
@@ -34,72 +33,110 @@ states state_setup() {
 }
 
 states state_setup_bp() {
-	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
-	static uint8_t step = 0; // 0=systolic min, 1=systolic max, 2=diastolic min, 3=diastolic max
-	// static bool changed = false;
-	uint8_t* current_value_ptr = nullptr;
-	const char* label = "";
-	// Select which variable we're editing based on step
-	switch (step) {
-		case 0:
-			current_value_ptr = &g_bp_systolic_threshold_min;
-			label = "SYS MIN";
-			break;
-		case 1:
-			current_value_ptr = &g_bp_systolic_threshold_max;
-			label = "SYS MAX";
-			break;
-		case 2:
-			current_value_ptr = &g_bp_diastolic_threshold_min;
-			label = "DIAS MIN";
-			break;
-		case 3:
-			current_value_ptr = &g_bp_diastolic_threshold_max;
-			label = "DIAS MAX";
-			break;
-		default:
-			// All steps completed → save to EEPROM
-			EEPROM.write(G_BP_SYS_MIN_ADDR, g_bp_systolic_threshold_min);
-			EEPROM.write(G_BP_SYS_MAX_ADDR, g_bp_systolic_threshold_max);
-			EEPROM.write(G_BP_DIAS_MIN_ADDR, g_bp_diastolic_threshold_min);
-			EEPROM.write(G_BP_DIAS_MAX_ADDR, g_bp_diastolic_threshold_max);
-			log_msg("INFO", "BP thresholds saved to EEPROM");
-			step = 0; // reset step for next time
-			return SETUP; // go back to setup menu
-	}
-	// Display current label and value
-	char line1[16];
-	char line2[16];
-	snprintf(line1, sizeof(line1), "%s: %u", label, *current_value_ptr);
-	snprintf(line2, sizeof(line2), "< +  SELECT  ->");
-	lcd_print_line(line1, true);
-	// Button handling
-	// static uint8_t last_prev_state = 0, last_next_state = 0, last_select_state = 0;
-	// if (g_prev_button_state && !last_prev_state) {
-	// 	if (*current_value_ptr > 0) (*current_value_ptr)--;
-	// 	changed = true;
-	// }
-	// if (g_next_button_state && !last_next_state) {
-	// 	if (*current_value_ptr < 255) (*current_value_ptr)++;
-	// 	changed = true;
-	// }
-	// if (g_select_button_state && !last_select_state) {
-	// 	log_msg("DEBUG", "SELECT pressed: moving to next step");
-	// 	step++;
-	// }
-	// last_prev_state = g_prev_button_state;
-	// last_next_state = g_next_button_state;
-	// last_select_state = g_select_button_state;
-	return SETUP_BP;
+	static const char*  bp_prompts[4] = {
+		"SYS min:", "SYS max:",
+		"DIA min:", "DIA max:"
+	};
+	static uint8_t*    bp_values[4] = {
+		&g_bp_systolic_threshold_min,
+		&g_bp_systolic_threshold_max,
+		&g_bp_diastolic_threshold_min,
+		&g_bp_diastolic_threshold_max
+	};
+	static const uint8_t bp_lo[4] = {
+		G_BP_SYSTOLIC_THRESHOLD_MIN,
+		G_BP_SYSTOLIC_THRESHOLD_MIN,
+		G_BP_DIASTOLIC_THRESHOLD_MIN,
+		G_BP_DIASTOLIC_THRESHOLD_MIN
+	};
+	static const uint8_t bp_hi[4] = {
+		G_BP_SYSTOLIC_THRESHOLD_MAX,
+		G_BP_SYSTOLIC_THRESHOLD_MAX,
+		G_BP_DIASTOLIC_THRESHOLD_MAX,
+		G_BP_DIASTOLIC_THRESHOLD_MAX
+	};
+	static const uint8_t bp_addr[4] = {
+		G_BP_SYS_MIN_ADDR,
+		G_BP_SYS_MAX_ADDR,
+		G_BP_DIAS_MIN_ADDR,
+		G_BP_DIAS_MAX_ADDR
+	};
+	return multi_threshold_setup_u8(
+		bp_prompts, bp_values, bp_lo, bp_hi, bp_addr,
+		sizeof(bp_prompts) / sizeof(bp_prompts[0]),
+		SETUP_BP,      // this state’s enum
+		// g_current_state,
+		// SETUP          // return here when done
+		g_previous_state
+	);
 }
 
 states state_setup_temp() {
-	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	static const char* temp_prompts[2] = {
+		"TEMP min:",
+		"TEMP max:"
+	};
+	static uint16_t* temp_values[2] = {
+		&g_temp_threshold_min,
+		&g_temp_threshold_max
+	};
+	static const uint16_t temp_lo[2] = {
+		G_TEMP_THRESHOLD_MIN,
+		G_TEMP_THRESHOLD_MIN
+	};
+	static const uint16_t temp_hi[2] = {
+		G_TEMP_THRESHOLD_MAX,
+		G_TEMP_THRESHOLD_MAX
+	};
+	static const uint16_t temp_addr[2] = {
+		G_TEMP_MIN_ADDR,
+		G_TEMP_MAX_ADDR
+	};
+	return multi_threshold_setup_u16(
+		temp_prompts,
+		temp_values,
+		temp_lo,
+		temp_hi,
+		temp_addr,
+		sizeof(temp_prompts) / sizeof(temp_prompts[0]),
+		SETUP_TEMP,
+		g_previous_state
+	);
 	return SETUP_TEMP;
 }
 
 states state_setup_hr() {
-	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	static const char* hr_prompts[2] = {
+		"HR min:",
+		"HR max:"
+	};
+	static uint8_t* hr_values[2] = {
+		&g_hr_threshold_min,
+		&g_hr_threshold_max
+	};
+	static const uint8_t hr_lo[2] = {
+		G_HR_THRESHOLD_MIN,
+		G_HR_THRESHOLD_MIN
+	};
+	static const uint8_t hr_hi[2] = {
+		G_HR_THRESHOLD_MAX,
+		G_HR_THRESHOLD_MAX
+	};
+	static const uint8_t hr_addr[2] = {
+		G_HR_MIN_ADDR,
+		G_HR_MAX_ADDR
+	};
+	return multi_threshold_setup_u8(
+		hr_prompts,
+		hr_values,
+		hr_lo,
+		hr_hi,
+		hr_addr,
+		sizeof(hr_prompts) / sizeof(hr_prompts[0]),
+		SETUP_HR,
+		g_previous_state
+	);
+
 	return SETUP_HR;
 }
 
@@ -110,7 +147,7 @@ states state_connected() {
 }
 
 states state_reading() {
-	char input_buffer[64];
+	char input_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 	uint8_t index = 0;
 	static unsigned long last_high_time = 0;
 	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
@@ -139,14 +176,14 @@ states state_reading() {
 			log_msg("DEBUG", "Received string: ");
 			log_msg("DEBUG", input_buffer);
 			if (validate_message(input_buffer)) {
-				HM10_UART.println("ACK");
+				HM10_UART.print("ACK");
 				log_msg("INFO", "Valid data received. ACK sent.");
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				return PROCESSING;
 			}
 			else {
-				HM10_UART.println("RETRY");
+				HM10_UART.print("RETRY");
 				log_msg("INFO", "Invalid data received. Retry request sent.");
 			}
 			index = 0;
@@ -170,6 +207,7 @@ states state_processing() {
 }
 
 states state_transmitting() {
+	// TODO: Get data from processing and transmit it to LoRaWAN network
 	return CONNECTED;
 }
 
@@ -178,6 +216,9 @@ void change_state(states new_state) {
 		g_previous_state = g_current_state;
 	}
 	g_current_state = new_state;
+	if (new_state == SETUP_BP || new_state == SETUP_TEMP || new_state == SETUP_HR) {
+		g_multi_reset = true;
+	}
 	g_current_option_index = 0;
 	g_last_option_index_displayed = 255;
 	g_selection_pending = false; // prevent "bouncing" of multiple menu options after selection
@@ -208,7 +249,12 @@ states check_bt_connection(states current_state) {
 	}
 
 	// States that ignore connection changes completely:
-	if (current_state == PROCESSING || current_state == TRANSMITTING || current_state == SETUP) {
+	if (current_state == PROCESSING ||
+			current_state == TRANSMITTING ||
+			current_state == SETUP ||
+			current_state == SETUP_BP ||
+			current_state == SETUP_TEMP ||
+			current_state == SETUP_HR) {
 		return current_state;
 	}
 	if (bt_pin_state == HIGH) {

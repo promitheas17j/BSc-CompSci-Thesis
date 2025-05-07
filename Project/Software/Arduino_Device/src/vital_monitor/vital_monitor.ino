@@ -32,9 +32,10 @@ struct ButtonDebounce g_prev_button = {LOW, LOW, 0};
 struct ButtonDebounce g_select_button = {LOW, LOW, 0};
 struct ButtonDebounce g_next_button = {LOW, LOW, 0};
 
+bool g_multi_reset = false;
+
 bool debug_enabled = true;
 
-// const uint8_t g_received_data_buffer_size = 11; // largest expected valid received data is 11 characters long (e.g. TEMP:38.5\n is 10 characters, with the null terminator it becomes 11). If at some point in the future bigger data streams are required simply change here. Don't forget to take into account the necessary '\0' null terminator.
 char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
 void setup() {
@@ -44,6 +45,7 @@ void setup() {
 	while (!Serial) {
 		;
 	}
+	log_msg("INFO", "Booting...");
 	HM10_UART.begin(9600);
 	lcd.init();
 	lcd.clear();
@@ -51,47 +53,48 @@ void setup() {
 	lcd.send_string("Booting...");
 
 	// Read stores thresholds from EEPROM
-	uint8_t g_bp_systolic_threshold_min = EEPROM.read(G_BP_SYS_MIN_ADDR);
-	uint8_t g_bp_systolic_threshold_max = EEPROM.read(G_BP_SYS_MAX_ADDR);
-	uint8_t g_bp_diastolic_threshold_min = EEPROM.read(G_BP_DIAS_MIN_ADDR);
-	uint8_t g_bp_diastolic_threshold_max = EEPROM.read(G_BP_DIAS_MAX_ADDR);
-	// Read low byte and then OR it with (high byte shifted 8 bits left)
-	// e.g.
-	// temp_min = 0x6C | (0x01 << 8)
-	// temp_min = 0x0100 + 0x6C
-	// temp_min = 0x016C
-	// temp_min = 364
-	uint16_t g_temp_threshold_min = EEPROM.read(G_TEMP_MIN_ADDR) | (EEPROM.read(G_TEMP_MIN_ADDR + 1) << 8);
-	uint16_t g_temp_threshold_max = EEPROM.read(G_TEMP_MAX_ADDR) | (EEPROM.read(G_TEMP_MAX_ADDR + 1) << 8);
-	uint8_t g_hr_threshold_min = EEPROM.read(G_HR_MIN_ADDR);
-	uint8_t g_hr_threshold_max = EEPROM.read(G_HR_MAX_ADDR);
+	g_bp_systolic_threshold_min = EEPROM.read(G_BP_SYS_MIN_ADDR);
+	g_bp_systolic_threshold_max = EEPROM.read(G_BP_SYS_MAX_ADDR);
+	g_bp_diastolic_threshold_min = EEPROM.read(G_BP_DIAS_MIN_ADDR);
+	g_bp_diastolic_threshold_max = EEPROM.read(G_BP_DIAS_MAX_ADDR);
+	/*
+	   Read low byte and then OR it with (high byte shifted 8 bits left)
+	   e.g.
+	   temp_min = 0x6C | (0x01 << 8)
+	   temp_min = 0x0100 + 0x6C
+	   temp_min = 0x016C
+	   temp_min = 364
+	*/
+	g_temp_threshold_min = EEPROM.read(G_TEMP_MIN_ADDR) | (EEPROM.read(G_TEMP_MIN_ADDR + 1) << 8);
+	g_temp_threshold_max = EEPROM.read(G_TEMP_MAX_ADDR) | (EEPROM.read(G_TEMP_MAX_ADDR + 1) << 8);
+	g_hr_threshold_min = EEPROM.read(G_HR_MIN_ADDR);
+	g_hr_threshold_max = EEPROM.read(G_HR_MAX_ADDR);
 
 	// Check if thresholds are uninitialised (if uninitialised then default value is likely 255)
 	if (g_bp_systolic_threshold_min == 255) {
-		g_bp_systolic_threshold_min = 90;
+		g_bp_systolic_threshold_min = G_BP_SYSTOLIC_THRESHOLD_MIN;
 	}
 	if (g_bp_systolic_threshold_max == 255) {
-		g_bp_systolic_threshold_max = 140;
+		g_bp_systolic_threshold_max = G_BP_SYSTOLIC_THRESHOLD_MAX ;
 	}
 	if (g_bp_diastolic_threshold_min == 255) {
-		g_bp_diastolic_threshold_min = 60;
+		g_bp_diastolic_threshold_min = G_BP_DIASTOLIC_THRESHOLD_MIN ;
 	}
 	if (g_bp_diastolic_threshold_max == 255) {
-		g_bp_diastolic_threshold_max = 90;
+		g_bp_diastolic_threshold_max = G_BP_DIASTOLIC_THRESHOLD_MAX ;
 	}
 	if (g_temp_threshold_min == 0xFFFF) {
-		g_temp_threshold_min = 364;
+		g_temp_threshold_min = G_TEMP_THRESHOLD_MIN ;
 	}
 	if (g_temp_threshold_max == 0xFFFF) {
-		g_temp_threshold_max = 366;
+		g_temp_threshold_max = G_TEMP_THRESHOLD_MAX ;
 	}
 	if (g_hr_threshold_min == 255) {
-		g_hr_threshold_min = 60;
+		g_hr_threshold_min = G_HR_THRESHOLD_MIN ;
 	}
 	if (g_hr_threshold_max == 255) {
-		g_hr_threshold_max = 100;
+		g_hr_threshold_max = G_HR_THRESHOLD_MAX ;
 	}
-
 
 	pinMode(BTN_PREV, INPUT);
 	pinMode(BTN_SELECT, INPUT);
@@ -109,6 +112,16 @@ void setup() {
 	char msg[64];
 	snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
 	log_msg("DEBUG", msg);
+	log_msg("DEBUG", "\n\n");
+	log_msg("INFO", "BP SYST MIN = ", (unsigned)g_bp_systolic_threshold_min);
+	log_msg("INFO", "BP SYST MAX = ", (unsigned)g_bp_systolic_threshold_max);
+	log_msg("INFO", "BP DIAS MIN = ", (unsigned)g_bp_diastolic_threshold_min);
+	log_msg("INFO", "BP DIAS MAX = ", (unsigned)g_bp_diastolic_threshold_max);
+	log_msg("INFO", "TEMP MIN = ", (unsigned)g_temp_threshold_min);
+	log_msg("INFO", "TEMP MAX = ", (unsigned)g_temp_threshold_max);
+	log_msg("INFO", "HR MIN = ", (unsigned)g_hr_threshold_min);
+	log_msg("INFO", "HR MAX = ", (unsigned)g_hr_threshold_max);
+	log_msg("INFO", "Booted");
 }
 
 void loop() {
