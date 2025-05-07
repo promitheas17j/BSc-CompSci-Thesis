@@ -61,6 +61,7 @@ extern const unsigned long g_startup_time;
 
 extern states g_current_state;
 extern states g_previous_state;
+extern states g_setup_caller_state;
 
 extern struct ButtonDebounce g_prev_button;
 extern struct ButtonDebounce g_select_button;

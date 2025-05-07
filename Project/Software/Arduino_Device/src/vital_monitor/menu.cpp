@@ -63,7 +63,9 @@ states handle_menu(states current_state) {
 			}
 			else if (strcmp(options[result], "Back") == 0) {
 				log_msg("DEBUG", "Going back.");
-				return g_previous_state;
+				g_selection_pending = false;
+				log_msg("DEBUG", state_to_string(g_setup_caller_state));
+				return g_setup_caller_state;
 			}
 		}
 		else if (current_state == CONNECTED) {

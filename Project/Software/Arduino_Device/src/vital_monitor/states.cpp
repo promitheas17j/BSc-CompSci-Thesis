@@ -28,7 +28,7 @@ states state_disconnected() {
 }
 
 states state_setup() {
-	// digitalWrite(LED_BLUE, digitalRead(BT_STATE));
+	digitalWrite(LED_BLUE, digitalRead(BT_STATE));
 	return SETUP;
 }
 
@@ -259,6 +259,12 @@ states state_transmitting() {
 }
 
 void change_state(states new_state) {
+	if (new_state == SETUP
+			&& g_current_state != SETUP_BP
+			&& g_current_state != SETUP_TEMP
+			&& g_current_state != SETUP_HR) {
+		g_setup_caller_state = g_current_state;
+	}
 	if (new_state != g_current_state) {
 		g_previous_state = g_current_state;
 	}

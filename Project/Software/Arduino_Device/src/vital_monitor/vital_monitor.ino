@@ -13,7 +13,7 @@ SoftwareSerial HM10_UART(9, 10);
 
 // Global variable initialisations
 uint8_t g_prev_button_state = 0, g_select_button_state = 0, g_next_button_state = 0;
-states g_current_state = DISCONNECTED, g_previous_state = DISCONNECTED;
+states g_current_state = DISCONNECTED, g_previous_state = DISCONNECTED, g_setup_caller_state = DISCONNECTED;
 uint8_t g_current_option_index = 0, g_last_option_index_displayed = 255;
 bool g_selection_pending = true;
 const unsigned long g_startup_time = millis();
