@@ -1,10 +1,151 @@
 \chapter*{Manuals}
 \addcontentsline{toc}{chapter}{Manuals}
 
-\section*{Installation Manual}
+\section*{User Manual}
 \addcontentsline{toc}{section}{Installation Manual}
+\paragraph{This device is designed to collect key health metrics in the post-operative phase via Bluetooth, and help you and your medical professionals monitor said vital signs. The three measurements it is capable of collecting and monitoring currently are blood pressure, temperature, and heart rate. It allows setting ranges for each metric, so that if a reading is outside these ranges it can automatically send it to the cloud and alert your medical professionals in order to allow them to more efficiently take care of you.}
+
+\subsection{Getting Started}
+\subsubsection{Power On}
+\begin{itemize}
+	\item Plug in device or add 6xAA standard batteries
+	\item The LCD display will briefly display a message informing you it is booting, followed by "No connection" if there is no device currently set to auto-connect within Bluetooth range, or "Read" if there is a device within range and it automatically connects.
+	% TODO: Add pictures of each screen under the correct bullet point
+\end{itemize}
+
+\subsection{Menu Navigation}
+\subsubsection{Buttons}
+\begin{itemize}
+	\item \textbf{Prev} (left)
+	\item \textbf{Select} (middle)
+	\item \textbf{Next} (right)
+\end{itemize}
+\subsubsection{Basic Actions}
+\begin{itemize}
+	\item \textbf{Prev/Next:} Move the highlighted option or adjust values
+	\item \textbf{Select:} Confirm choice or save a value
+\end{itemize}
+
+\subsection{Main Menus}
+\subsubsection{\underline{Device has no active Bluetooth connections}}
+\begin{itemize}
+	\item \textbf{No connection}
+	\begin{itemize}
+		\item Displays when there are no active Bluetooth connections
+		\item Pressing select on this option has no effect
+	\end{itemize}
+	\item \textbf{Setup}
+	\begin {itemize}
+		\item Allows setting up the acceptable range for each vital sign, where values read from Bluetooth which are within this range will be considered healthy readings
+		\item Pressing select on this option switches to the Setup menu
+	\end{itemize}
+\end{itemize}
+\subsubsection{\underline{Device has at least one active Bluetooth connection}}
+\begin{itemize}
+	\item \textbf{Read}
+	\begin{itemize}
+		\item Enter mode where waiting for incoming Bluetooth data from a paired sensor
+		\item Buttons have no effect here. When data comes in, device will automatically check the data or remain in this mode if invalid data received.
+	\end{itemize}
+	\item \textbf{Setup}
+	\begin{itemize}
+		\item Allows setting up the acceptable range for each vital sign, where values read from Bluetooth which are within this range will be considered healthy readings
+		\item Pressing select on this option switches to the Setup menu
+	\end{itemize}
+	\item \textbf{Disconnect}
+	\begin{itemize}
+		\item Disconnect all connected sensors \textbf{Note: Not implemented yet}
+	\end{itemize}
+\end{itemize}
+\subsubsection{\underline{Menu to set acceptable ranges for each vital sign}}
+\begin{itemize}
+	\item \textbf{Setup BP}
+	\begin{itemize}
+		\item Set minimum and maximum for systolic and diastolic blood pressure
+		\item Prev button decreases the value, Next increases it. Select confirms the value.
+	\end{itemize}
+	\item \textbf{Setup Temp}
+	\begin{itemize}
+		\item Set minimum and maximum for temperature.
+		\item Prev button decreases the value, Next increases it. Select confirms the value.
+	\end{itemize}
+	\item \textbf{Setup HR}
+	\begin{itemize}
+		\item Set minimum and maximum for heart rate.
+		\item Prev button decreases the value, Next increases it. Select confirms the value.
+	\end{itemize}
+	\item \textbf{Back}
+	\begin{itemize}
+		\item Returns to the previous menu
+	\end{itemize}
+
+	\item The maximum can not be less than the minimum for any given vital sign. For example, concerning the systolic blood pressure maximum, it must be equal to or more than the minimum for systolic blood pressure.
+\end{itemize}
+
+\subsection{Configuring Acceptable Ranges}
+\subsubsection{\underline{Blood Pressure (BP)}}
+\begin{enumerate}
+	\item Select \textbf{Setup BP}
+	\item Adjust \textbf{SYS min} (systolic mimimum) until reached desired value
+	\item Press the Select button to commit that value
+	\item Adjust \textbf{SYS max} (systolic maximum) until reached desired value
+	\item Press the Select button to commit that value
+	\item Adjust \textbf{DIA min} (diastolic mimimum) until reached desired value
+	\item Press the Select button to commit that value
+	\item Adjust \textbf{DIA max} (diastolic maximum) until reached desired value
+	\item Press the Select button to commit that value
+	\item After the fourth value, return to Setup
+\end{enumerate}
+\textbf{Note: If you accidentally set a "max" below its corresponding "min", the device will display a short error message (Err: Max \textless\ Min. Re-enter. It will then prompt you to re-enter both values.}
+\subsubsection{\underline{Temperature (TEMP)}}
+\begin{enumerate}
+	\item Select \textbf{Setup Temp}
+	\item Adjust \textbf{TEMP min} until reached desired value
+	\item Press the Select button to commit that value
+	\item Adjust \textbf{TEMP max} until reached desired value
+	\item Press the Select button to commit that value
+	\item Returns to Setup
+\end{enumerate}
+\subsubsection{\underline{Heart Rate (HR)}}
+\begin{enumerate}
+	\item Select \textbf{Setup HR}
+	\item Adjust \textbf{HR min} until reached desired value
+	\item Press the Select button to commit that value
+	\item Adjust \textbf{HR max} until reached desired value
+	\item Press the Select button to commit that value
+	\item Returns to Setup
+\end{enumerate}
+
+\subsection{Taking Readings}
+\begin{enumerate}
+	\item \textbf{Ensure you have at least one paired external sensore of type BP/TEMP/HR}
+	\item In Connected menu, select \textbf{Read}
+	\item The device listens coninuously until it gets a valid reading. When a new reading arrives, it is automatically processed and transmitted to the cloud if necessary.
+\end{enumerate}
+
+\subsection{Readings In Range or Out of Range}
+\begin{itemize}
+	\item Within range:
+	\begin{itemize}
+		\item No action - device remains in Connected state
+	\end{itemize}
+\end{itemize}
+\begin{itemize}
+	\item Out of range:
+	\begin{itemize}
+		\item The device transitions to the Transmitting state and sends the reading to you cloud central console via LoRaWAN
+		\item You or your medical professionals can then review the reading remotely.
+	\end{itemize}
+\end{itemize}
+
+\subsection{Maintenance \& Care}
+\begin{itemize}
+	\item Keep the LCD and buttons free from dust and moisture.
+	\item Store in a dry, room-temperature environment.
+	\item Clear with a soft, dry cloth - do not use solvents or other liquids.
+\end{itemize}
 
 \newpage
-\section*{User Manual}
+\section*{Technical Manual}
 \addcontentsline{toc}{section}{User Manual}
 
