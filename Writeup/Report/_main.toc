@@ -43,5 +43,55 @@
 \contentsline {section}{Appendix A}{15}{section*.11}%
 \contentsline {section}{Appendix B}{16}{section*.12}%
 \contentsline {chapter}{Manuals}{17}{chapter*.13}%
-\contentsline {section}{Installation Manual}{17}{section*.14}%
-\contentsline {section}{User Manual}{18}{section*.15}%
+\contentsline {section}{User Manual}{17}{section*.14}%
+\contentsline {paragraph}{This device is designed to collect key health metrics in the post-operative phase via Bluetooth, and help you and your medical professionals monitor said vital signs. The three measurements it is capable of collecting and monitoring currently are blood pressure, temperature, and heart rate. It allows setting ranges for each metric, so that if a reading is outside these ranges it can automatically send it to the cloud and alert your medical professionals in order to allow them to more efficiently take care of you.}{17}{section*.15}%
+\contentsline {subsection}{\numberline {5.6.1}Getting Started}{17}{subsection.5.6.1}%
+\contentsline {subsubsection}{Power On}{17}{section*.16}%
+\contentsline {subsection}{\numberline {5.6.2}Menu Navigation}{17}{subsection.5.6.2}%
+\contentsline {subsubsection}{Buttons}{17}{section*.17}%
+\contentsline {subsubsection}{Basic Actions}{18}{section*.18}%
+\contentsline {subsection}{\numberline {5.6.3}Main Menus}{18}{subsection.5.6.3}%
+\contentsline {subsubsection}{\underline {Device has no active Bluetooth connections}}{18}{section*.19}%
+\contentsline {subsubsection}{\underline {Device has at least one active Bluetooth connection}}{18}{section*.20}%
+\contentsline {subsubsection}{\underline {Menu to set acceptable ranges for each vital sign}}{19}{section*.21}%
+\contentsline {subsection}{\numberline {5.6.4}Configuring Acceptable Ranges}{19}{subsection.5.6.4}%
+\contentsline {subsubsection}{\underline {Blood Pressure (BP)}}{19}{section*.22}%
+\contentsline {subsubsection}{\underline {Temperature (TEMP)}}{20}{section*.23}%
+\contentsline {subsubsection}{\underline {Heart Rate (HR)}}{20}{section*.24}%
+\contentsline {subsection}{\numberline {5.6.5}Taking Readings}{21}{subsection.5.6.5}%
+\contentsline {subsection}{\numberline {5.6.6}Readings In Range or Out of Range}{21}{subsection.5.6.6}%
+\contentsline {subsection}{\numberline {5.6.7}Maintenance \& Care}{21}{subsection.5.6.7}%
+\contentsline {section}{Technical Manual}{22}{section*.25}%
+\contentsline {paragraph}{This manual is intended to be read by people wishing to gain a better understanding of the structure of the codebase for this project, so that they can effectively extend, modify, or otherwise change it.}{22}{section*.26}%
+\contentsline {paragraph}{This firmware implements a finite-state machine to manage all functions of the device. These include:}{22}{section*.27}%
+\contentsline {paragraph}{All user interaction with the device takes place on a 16x2 I\textsuperscript {2}C LCD, navigated by 3 physical buttons.}{22}{section*.28}%
+\contentsline {subsection}{\numberline {5.6.8}Directory \& File Structure}{22}{subsection.5.6.8}%
+\contentsline {subsection}{\numberline {5.6.9}Global Definitions \& Naming Conventions}{23}{subsection.5.6.9}%
+\contentsline {subsubsection}{Macros:}{23}{section*.29}%
+\contentsline {subsubsection}{Global variables:}{23}{section*.30}%
+\contentsline {paragraph}{All lowercase, and are prefixed with \textbf {g\_}}{23}{section*.31}%
+\contentsline {subsubsection}{State Enumeration (states):}{25}{section*.32}%
+\contentsline {paragraph}{The \lstinline |states| enum defines each major step of the device's operation:}{25}{section*.33}%
+\contentsline {subsection}{\numberline {5.6.10}State Machine Architecture}{25}{subsection.5.6.10}%
+\contentsline {subsubsection}{\lstinline |stateTable[]|}{25}{section*.34}%
+\contentsline {paragraph}{An array mapping each \lstinline |states| value to its handler \lstinline |StateFunc|}{25}{section*.35}%
+\contentsline {subsubsection}{\lstinline |loop()| \& Transition Logic}{26}{section*.36}%
+\contentsline {subsubsection}{\lstinline |check_bt_connection()|}{26}{section*.37}%
+\contentsline {subsubsection}{\lstinline |change_state()|}{27}{section*.38}%
+\contentsline {subsection}{\numberline {5.6.11}Menu System}{27}{subsection.5.6.11}%
+\contentsline {subsubsection}{Menu Tables ( \lstinline |menu_table[]| )}{27}{section*.39}%
+\contentsline {subsubsection}{\lstinline |handle_menu()|}{27}{section*.40}%
+\contentsline {subsection}{\numberline {5.6.12}Button \& LCD Utility Functions}{28}{subsection.5.6.12}%
+\contentsline {subsubsection}{\lstinline |debounceReadButton()|}{28}{section*.41}%
+\contentsline {paragraph}{Standard 20ms software debounce; tracks \lstinline |stable_state|.}{28}{section*.42}%
+\contentsline {subsubsection}{\lstinline |log_msg()|}{28}{section*.43}%
+\contentsline {paragraph}{Takes two required parameters: the level of the log message, and the message itself. There are two overloaded versions which take a third optional argument (\lstinline |const bool| and \lstinline |unsigned|). Respects \lstinline |debug_enabled|.}{28}{section*.44}%
+\contentsline {subsubsection}{\lstinline |handle_value_adjust_u8, handle_value_adjust_u16|}{28}{section*.45}%
+\contentsline {subsubsection}{\lstinline |validate_message()|}{28}{section*.46}%
+\contentsline {subsection}{\numberline {5.6.13}Threshold-Setup Framework}{29}{subsection.5.6.13}%
+\contentsline {paragraph}{Two template functions:}{29}{section*.47}%
+\contentsline {paragraph}{Behaviour on entry (\lstinline |g_multi_reset| flag):}{29}{section*.48}%
+\contentsline {paragraph}{Per-step UI loop:}{29}{section*.49}%
+\contentsline {subsection}{\numberline {5.6.14}Bluetooth Data Flow}{29}{subsection.5.6.14}%
+\contentsline {subsection}{\numberline {5.6.15}EEPROM Storage}{30}{subsection.5.6.15}%
+\contentsline {subsection}{\numberline {5.6.16}LCD Driver Adjustments}{31}{subsection.5.6.16}%

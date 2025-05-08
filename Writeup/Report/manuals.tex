@@ -2,7 +2,7 @@
 \addcontentsline{toc}{chapter}{Manuals}
 
 \section*{User Manual}
-\addcontentsline{toc}{section}{Installation Manual}
+\addcontentsline{toc}{section}{User Manual}
 \paragraph{This device is designed to collect key health metrics in the post-operative phase via Bluetooth, and help you and your medical professionals monitor said vital signs. The three measurements it is capable of collecting and monitoring currently are blood pressure, temperature, and heart rate. It allows setting ranges for each metric, so that if a reading is outside these ranges it can automatically send it to the cloud and alert your medical professionals in order to allow them to more efficiently take care of you.}
 
 \subsection{Getting Started}
@@ -147,5 +147,284 @@
 
 \newpage
 \section*{Technical Manual}
-\addcontentsline{toc}{section}{User Manual}
+\addcontentsline{toc}{section}{Technical Manual}
+\paragraph{This manual is intended to be read by people wishing to gain a better understanding of the structure of the codebase for this project, so that they can effectively extend, modify, or otherwise change it.}
+\paragraph{This firmware implements a finite-state machine to manage all functions of the device. These include:}
+\begin{itemize}
+	\item Connection handling
+	\item Configuration of the acceptable ranges for Blood Pressure, Temperature, and Heart Rate
+	\item Data acquisition, validation, threshold checking, and transmission to cloud via LoRaWAN
+\end{itemize}
+\paragraph{All user interaction with the device takes place on a 16x2 I\textsuperscript{2}C LCD, navigated by 3 physical buttons.}
+% TODO: Add information about GREEN, YELLOW, and RED LEDs, as well as the buzzer, when they are connected and working
 
+\subsection{Directory \& File Structure}
+\begin{lstlisting}
+/src
+ +-- globals.h          // Pin, global variable, & EEPROM address definitions, extern globals  
+ +-- menu.h/.cpp        // Menu definitions & handlers  
+ +-- states.h/.cpp      // State functions & FSM table  
+ +-- utils.h/.cpp       // Button debounce, logging, value adjustment, validation  
+ +-- Waveshare_LCD1602.* // Customized LCD driver  
+ +-- vital_monitor.ino   // setup() / loop() wiring FSM + peripherals  
+\end{lstlisting}
+
+\subsection{Global Definitions \& Naming Conventions}
+\subsubsection{Macros:}
+\begin{itemize}
+	\item \lstinline|BTN_PREV|, \lstinline|BTN_SELECT|, \lstinline|BTN_NEXT:| GPIO pins connected to the Previous, Select, and Next buttons respectively
+	\item \lstinline|LED_BLUE|, \lstinline|LED_GREEN|, \lstinline|LED_YELLOW|, \lstinline|LED_RED:| GPIO pins driving the four status LEDs
+	\item \lstinline|BT_STATE:| GPIO pin reading the Bluetooth module's connection status (HIGH = connected)
+	\item \lstinline|G_*_ADDR:| EEPROM addresses for storing each threshold, where * will have information about the vital sign, and whether it is a min or a max. All uppercase, and are prefixed with \textbf{G\_}
+	\item[] \par\hspace*{2em} e.g. \lstinline|G_TEMP_MIN_ADDR| (the address storing the minimum threshold for temperature) or \lstinline|G_BP_SYS_MAX_ADDR| (the address storing the maximum threshold for blood pressure, specifically the systolic value)
+	\item \lstinline|G_*_THRESHOLD_MIN, G_*_THRESHOLD_MAX:| Default (factory) minimum and maximum allowable values for each vital sign. All uppercase, and are prefixed with \textbf{G\_}
+\end{itemize}
+
+\subsubsection{Global variables:}
+\paragraph{All lowercase, and are prefixed with \textbf{g\_}}
+\begin{itemize}
+	\item \textbf{Button states:}
+	\begin{itemize}
+		\item \lstinline|g_prev_button_state|, \lstinline|g_select_button_state|, \lstinline|g_next_button_state:| Debounced current readings of the Prev/Select/Next buttons.
+	\end{itemize}
+
+	\item \textbf{Menu navigation:}
+	\begin{itemize}
+		\item \lstinline|g_current_option_index:| Index of the currently highlighted menu entry.
+		\item \lstinline|g_last_option_index_displayed:| Last index sent to the LCD (to avoid unnecessary redraws every loop).
+		\item \lstinline|g_selection_pending:| Flag indicating a Select press is awaiting handling.
+	\end{itemize}
+
+	\item \textbf{Threshold values:}
+	\begin{itemize}
+		\item \textbf{Blood pressure}
+		\begin{itemize}
+			\item \lstinline|g_bp_systolic_threshold_min|, \lstinline|g_bp_systolic_threshold_max:| User-configurable BP bounds (uint8\_t)
+		\end{itemize}
+		\item \textbf{Temperature}
+		\begin{itemize}
+			\item \lstinline|g_temp_threshold_min|, \lstinline|g_temp_threshold_max:| User-configurable TEMP bounds (uint16\_t). Stored as the temperature$\times$10 (e.g. 36.5$^\circ$C stored as 365 to save 2 bytes in memory compared to storing it as a float or double which would require 4 bytes).
+		\end{itemize}
+		\item \textbf{Heart rate}
+		\begin{itemize}
+			\item \lstinline|g_hr_threshold_min|, \lstinline|g_hr_threshold_max:| User-configurable HR bounds (uint8\_t).
+		\end{itemize}
+	\end{itemize}
+
+	\item \textbf{Finite-State Machine Control:}
+	\begin{itemize}
+		\item \lstinline|g_current_state|, \lstinline|g_previous_state|: Current and last state in the finite-state machine.
+		\item \lstinline|g_setup_caller_state|: Remembers which state launched the Setup menu (for "Back" logic, after entering a setup sub-state such as "Setup BP", which would then set \lstinline|g_previous_state| to the "setup" state instead of "Disconnected" or "Connected").
+		\item \lstinline|g_multi_reset|: Signals entry into a multi-step threshold setup to initialise its values without needing to create a separate sub-state for each individual value (for example no need to create a sub-state for each of the following: systolic minimum, systolic maximum, diastolic minimum, diastolic maximum).
+	\end{itemize}
+
+	\item \textbf{Data buffer:}
+	\begin{itemize}
+		\item \lstinline|g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE]:| Holds the latest NUL-terminated Bluetooth message (e.g. "BP:120/80").
+	\end{itemize}
+	
+	\item \textbf{Debug:}
+	\begin{itemize}
+		\item \lstinline|debug_enabled:| Enables or silences \lstinline|log_msg("DEBUG", ...)| output.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{State Enumeration (states):}
+\paragraph{The \lstinline|states| enum defines each major step of the device's operation:}
+\begin{itemize}
+	\item \lstinline|DISCONNECTED|
+	\item[] No active Bluetooth connections; waiting to connect. User may enter \lstinline|SETUP|.
+	\item \lstinline|CONNECTED|
+	\item[] Bluetooth is up; user may begin reading data, enter \lstinline|SETUP|, or disconnect the connected Bluetooth devices.
+	\item \lstinline|SETUP|
+	\item[] Main configuration menu, where user can choose to edit BP, TEMP, or HR thresholds.
+	\item \lstinline|SETUP_BP|, \lstinline|SETUP_TEMP|, \lstinline|SETUP_HR|
+	\item[] Sub-menus for adjusting blood pressure, temperature, or heart-rate limits.
+	\item \lstinline|READING|
+	\item[] Actively listening to receive a measurement string from the Bluetooth module.
+	\item \lstinline|PROCESSING|
+	\item[] Parsing the incoming data and checking it against the configured thresholds.
+	\item \lstinline|TRANSMITTING|
+	\item[] Sending an out-of-range measurement onward via LoRaWAN, then returning to \lstinline|CONNECTED|.
+\end{itemize}
+
+\subsection{State Machine Architecture}
+\subsubsection{\lstinline|stateTable[]|}
+\paragraph{An array mapping each \lstinline|states| value to its handler \lstinline|StateFunc|}.
+\begin{lstlisting}[language=C++]
+struct StateTable stateTable[] = {
+	{DISCONNECTED, state_disconnected},
+	{SETUP, state_setup},
+	{SETUP_BP, state_setup_bp},
+	{SETUP_TEMP, state_setup_temp},
+	{SETUP_HR, state_setup_hr},
+	{CONNECTED, state_connected},
+	{READING, state_reading},
+	{PROCESSING, state_processing},
+	{TRANSMITTING, state_transmitting}
+};
+\end{lstlisting}
+\subsubsection{\lstinline|loop()| \& Transition Logic}
+\begin{lstlisting}
+if (g_current_state in {DISCONNECTED, CONNECTED, SETUP})
+	next_state = handle_menu(g_current_state);
+else if (g_current_state == READING)
+	next_state = state_reading();
+... etc ...
+next_state = check_bt_connection(next_state);
+if (next_state != g_current_state)
+	change_state(next_state);
+\end{lstlisting}
+
+\subsubsection{\lstinline|check_bt_connection()|}
+\begin{itemize}
+	\item Monitors the \lstinline|BT_STATE| input pin to detect stable Bluetooth connection or disconnection events, and drives FSM transition accordingly.
+	\item Suppresses connection checks during certain states where it is irrelevant
+	\item[] (\lstinline|PROCESSING|, \lstinline|TRANSMITTING|, \lstinline|SETUP|, \lstinline|SETUP_BP|, \lstinline|SETUP_TEMP|, \lstinline|SETUP_HR|, ).
+	\item Returns a \lstinline|states| enum value, either:
+	\begin{itemize}
+		\item Unchanged (\lstinline|current_state|)
+		\item[] If still within the initial stabilisation period, or if in a state that should ignore Bluetooth changes.
+		\item \lstinline|CONNECTED|
+		\item[] Upon detecting a sustained HIGH on \lstinline|BT_STATE|.
+		\item \lstinline|DISCONNECTED|
+		\item[] Upon detecting a sustained LOW on \lstinline|BT_STATE| after a previous HIGH.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{\lstinline|change_state()|}
+\begin{itemize}
+	\item Updates \lstinline|g_previous_state| and \lstinline|g_setup_caller_state| (for Setup menu "Back").
+	\item Clears LCD and resets menu indices when entering new state.
+	\item Triggers LED update.
+\end{itemize}
+
+\subsection{Menu System}
+\subsubsection{Menu Tables ( \lstinline|menu_table[]| )}
+\begin{itemize}
+	\item Disconnected: \lstinline|{"No connection", "Setup"}|
+	\item Setup: \lstinline|{"Setup BP", "Setup Temp","Setup HR", "Back"}|
+	\item Connected: \lstinline|{"Read", "Setup", "Disconnect"}|
+	\item Reading/Processing/Transmitting: single-item static menus (no prev/select/next button functionality)
+\end{itemize}
+
+\subsubsection{\lstinline|handle_menu()|}
+\begin{enumerate}
+	\item Calls \lstinline|handle_menu_options_buttons()|, which:
+	\begin{itemize}
+		\item Edge-detects Prev/Select/Next buttons.
+		\item Wraps navigation index so that pressing Next on the last entry wraps around to the first entry and vice-versa.
+		\item Returns 0-N where N is the number of options for that state's menu. Return value is the index of the selected option.
+		\item Returns 255 if no selection was made.
+	\end{itemize}
+	\item Once Select is detected, dispatches to a new state:
+	\begin{itemize}
+		\item In \lstinline|DISCONNECTED|: "Setup" $\rightarrow$ \lstinline|SETUP|.
+		\item In \lstinline|SETUP|, enters corresponding \lstinline|SETUP_*| sub-state or returns
+		\item[] via \lstinline|g_setup_caller_state|
+		\item In \lstinline|CONNECTED|:
+		\item[] "Read" $\rightarrow$ \lstinline|READING|,
+		\item[] "Setup" $\rightarrow$ \lstinline|SETUP|,
+		\item[] "Disconnect" $\rightarrow$ \lstinline|DISCONNECTED|
+	\end{itemize}
+\end{enumerate}
+
+\subsection{Button \& LCD Utility Functions}
+\subsubsection{\lstinline|debounceReadButton()|}
+\paragraph{Standard 20ms software debounce; tracks \lstinline|stable_state|.}
+\subsubsection{\lstinline|log_msg()|}
+\paragraph{Takes two required parameters: the level of the log message, and the message itself. There are two overloaded versions which take a third optional argument (\lstinline|const bool| and \lstinline|unsigned|). Respects \lstinline|debug_enabled|.}
+\subsubsection{\lstinline|handle_value_adjust_u8, handle_value_adjust_u16|}
+\begin{itemize}
+	\item Support tap for single increment/decrement, as well as hold for auto-repeat.
+	\item Parameterised by step size, hold delay, and repeat interval. Step size is the amount to increment/decrement, hold delay is how long to wait before considering a button press as a hold, and repeat interval is used to control speed of press and hold increment/decrement.
+	
+\end{itemize}
+\subsubsection{\lstinline|validate_message()|}
+\begin{itemize}
+	\item Ensures \lstinline|g_received_data_buffer| matches one of:
+	\begin{itemize}
+		\item \textbf{BP:2-3 digits/2-3 digits}
+		\item \textbf{TEMP: dd.d}
+		\item \textbf{HR:2-3 digits}
+	\end{itemize}
+	\item Rejects malformed strings before processing.
+\end{itemize}
+
+\subsection{Threshold-Setup Framework}
+\paragraph{Two template functions:}
+\begin{itemize}
+	\item \lstinline|multi_threshold_setup_u8()| for 8-bit thresholds.
+	\item \lstinline|multi_threshold_setup_u16()| for 16-bit temperature thresholds.
+\end{itemize}
+\paragraph{Behaviour on entry (\lstinline|g_multi_reset| flag):}
+\begin{itemize}
+	\item Reset \lstinline|step|, \lstinline|last_drawn|, \lstinline|last_select|
+	\item Clamp existing \lstinline|*values[i]| to \lstinline|[lo[i]..hi[i]]| blocking the user from incrementing/decrementing past the default minimum and maximum allowable values for each vital sign (\lstinline|G_*_THRESHOLD_MIN| and \lstinline|G_*_THRESHOLD_MAX|).
+\end{itemize}
+\paragraph{Per-step UI loop:}
+\begin{enumerate}
+	\item Clear \& redraw prompt + current \lstinline|*values[step]|.
+	\item Call \lstinline|handle_value_adjust|.
+	\item On \textbf{Select} button rising edge:
+	\begin{itemize}
+		\item If max$<$min (for paired steps), display error and repeat this step.
+		\item Otherwise write changed values to EEPROM.
+		\item Advance \lstinline|step|; if \lstinline|step == count|, return to \lstinline|previous_state|.
+	\end{itemize}
+\end{enumerate}
+
+\subsection{Bluetooth Data Flow}
+\begin{enumerate}
+	\item \lstinline|state_reading()|
+	\begin{itemize}
+		\item Monitors \lstinline|BT_STATE| pin for disconnect.
+		\item Reads bytes until \lstinline|\n|.
+		\item Strips optional \lstinline|\r|.
+		\item Validates via \lstinline|validate_message()|.
+		\item Sends \lstinline|ACK| or \lstinline|RETRY| over Bluetooth module's UART.
+		\item On valid data, copies it into \lstinline|g_received_data_buffer| and transitions to the \lstinline|PROCESSING| state.
+	\end{itemize}
+	\item \lstinline|state_processing()|
+	\begin{itemize}
+		\item Parses buffer depending on prefix ("BP:", "TEMP:", "HR:").
+		\item Checks parsed values against \lstinline|g_*_threshold_{min,max}|.
+		\item If out-of-range, returns \lstinline|TRANSMITTING| state, otherwise returns \lstinline|CONNECTED| state.
+	\end{itemize}
+	\item \lstinline|state_transmitting()|
+	\begin{itemize}
+		\item Placeholder to send \lstinline|g_received_data_buffer| to cloud via LoRaWAN (Not implemented yet).
+		\item Always returns \lstinline|CONNECTED| state.
+	\end{itemize}
+\end{enumerate}
+
+\subsection{EEPROM Storage}
+\begin{itemize}
+	\item Addresses:
+	\begin{itemize}
+		\item \textbf{BP:} bytes 0-3 (one byte each, min/max for systolic and diastolic)
+		\item \textbf{TEMP:} 4-7 (two bytes each, min/max) (uint16\_t little-endian)
+		\item \textbf{HR:} 8-9 (one byte each, min/max)
+	\end{itemize}
+	\item Initialisation (in \lstinline|setup()|):
+	\begin{itemize}
+		\item Read each address; if uninitialised (0xFF/0xFFFF) as they will be on the very first boot of the device, load default macros
+		\item[] (\lstinline|G_*_THRESHOLD_MIN|, \lstinline|G_*_THRESHOLD_MAX|)
+		\item[] For temperature which is a uint16\_t, need to read in a special way:
+\begin{lstlisting}[language=C++]
+g_temp_threshold_min = EEPROM.read(G_TEMP_MIN_ADDR) |
+	(EEPROM.read(G_TEMP_MIN_ADDR + 1) << 8);
+\end{lstlisting}
+		\item[] Read the low byte first and logical OR it with the high byte, shifted 8-bits left.
+	\end{itemize}
+	\item Writing:
+	\begin{itemize}
+		\item Only write when new value $\neq$ stored value to minimise wear on the EEPROM cells (limited writes).
+	\end{itemize}
+\end{itemize}
+
+\subsection{LCD Driver Adjustments}
+\begin{itemize}
+	\item Based on manufacturer's Waveshare\_LCD1602 library
+	\item Had to comment out the line: \lstinline|Wire.setPins(4, 5);|
+\end{itemize}

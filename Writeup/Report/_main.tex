@@ -1,6 +1,29 @@
 \documentclass[12pt,a4paper]{report}
 \usepackage{ADG}
 \usepackage{cite}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{color}
+
+\definecolor{lightgray}{gray}{0.95}
+
+\lstset{
+	breaklines=true,
+	breakatwhitespace=false,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	basicstyle=\ttfamily,
+	backgroundcolor=\color{lightgray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray},
+	stringstyle=\color{red},
+	numberstyle=\color{orange}
+	columns=fullflexible,
+	extendedchars=true,
+	keepspaces=true,
+	showspaces=false,
+	showstringspaces=false,
+	language=C++,
+}
 
 \begin{document}
 
