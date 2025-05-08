@@ -1,0 +1,43 @@
+\begin{landscape}
+\thispagestyle{empty}
+\begin{tikzpicture}
+
+% Actors
+\umlactor[x=-5, y=2]{Nurse}
+\umlactor[x=-5, y=-4]{Doctor}
+\umlactor[x=-5, y=-6]{Technician}
+
+% System boundary
+\umlusecase[x=-1, y=4, name=ConfigureDevice]{Configure Device}
+\umlusecase[x=0, y=2, name=ViewReal-TimeReadings]{View Real-Time Readings}
+\umlusecase[x=-1, y=-0, name=ReceiveAlerts]{Receive Alerts}
+\umlusecase[x=-1, y=-4, name=ViewPatientHistory]{View Patient History}
+\umlusecase[x=8, y=-4, name=AcknowledgeAlerts]{Acknowledge Alerts}
+\umlusecase[x=-1, y=-6, name=MaintainDevice]{Maintain Device}
+
+% Included use cases
+\umlusecase[x=9, y=4, name=SetThresholds]{Set Thresholds}
+\umlusecase[x=9, y=2, name=ConnectviaLorawan]{View on Cloud}
+\umlusecase[x=9, y=-0, name=TransmitviaLoRaWAN]{Transmit via LoRaWAN}
+\umlusecase[x=9, y=-6, name=UpdateFirmware]{Update Firmware}
+
+% Include relations
+\umlinclude[pos=0.6, below]{ConfigureDevice}{SetThresholds}
+\umlinclude[pos=0.6, below]{ViewReal-TimeReadings}{ConnectviaBluetooth}
+\umlinclude[pos=0.6, below]{ReceiveAlerts}{TransmitviaLoRaWAN}
+\umlinclude[pos=0.6, below]{MaintainDevice}{UpdateFirmware}
+
+% Associations
+\umlassoc{Nurse}{ConfigureDevice}
+\umlassoc{Nurse}{ViewReal-TimeReadings}
+\umlassoc{Nurse}{ReceiveAlerts}
+\umlassoc{Doctor}{ViewPatientHistory}
+\umlassoc{Doctor}{AcknowledgeAlerts}
+\umlassoc{Technician}{MaintainDevice}
+
+% System box label
+\node[draw, dashed, fit=(ConfigureDevice)(MaintainDevice)(ViewReal-TimeReadings)(ReceiveAlerts)(ViewPatientHistory)(AcknowledgeAlerts), inner sep=2.2cm, label=below:{\textbf{Use Case Diagram}}] {};
+
+\end{tikzpicture}
+\end{landscape}
+

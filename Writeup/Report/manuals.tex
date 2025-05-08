@@ -3,7 +3,7 @@
 
 \section*{User Manual}
 \addcontentsline{toc}{section}{User Manual}
-\paragraph{This device is designed to collect key health metrics in the post-operative phase via Bluetooth, and help you and your medical professionals monitor said vital signs. The three measurements it is capable of collecting and monitoring currently are blood pressure, temperature, and heart rate. It allows setting ranges for each metric, so that if a reading is outside these ranges it can automatically send it to the cloud and alert your medical professionals in order to allow them to more efficiently take care of you.}
+This device is designed to collect key health metrics in the post-operative phase via Bluetooth, and help you and your medical professionals monitor said vital signs. The three measurements it is capable of collecting and monitoring currently are blood pressure, temperature, and heart rate. It allows setting ranges for each metric, so that if a reading is outside these ranges it can automatically send it to the cloud and alert your medical professionals in order to allow them to more efficiently take care of you.
 
 \subsection{Getting Started}
 \subsubsection{Power On}
@@ -148,14 +148,14 @@
 \newpage
 \section*{Technical Manual}
 \addcontentsline{toc}{section}{Technical Manual}
-\paragraph{This manual is intended to be read by people wishing to gain a better understanding of the structure of the codebase for this project, so that they can effectively extend, modify, or otherwise change it.}
-\paragraph{This firmware implements a finite-state machine to manage all functions of the device. These include:}
+This manual is intended to be read by people wishing to gain a better understanding of the structure of the codebase for this project, so that they can effectively extend, modify, or otherwise change it.
+This firmware implements a finite-state machine to manage all functions of the device. These include:
 \begin{itemize}
 	\item Connection handling
 	\item Configuration of the acceptable ranges for Blood Pressure, Temperature, and Heart Rate
 	\item Data acquisition, validation, threshold checking, and transmission to cloud via LoRaWAN
 \end{itemize}
-\paragraph{All user interaction with the device takes place on a 16x2 I\textsuperscript{2}C LCD, navigated by 3 physical buttons.}
+All user interaction with the device takes place on a 16x2 I\textsuperscript{2}C LCD, navigated by 3 physical buttons.
 % TODO: Add information about GREEN, YELLOW, and RED LEDs, as well as the buzzer, when they are connected and working
 
 \subsection{Directory \& File Structure}
@@ -181,7 +181,7 @@
 \end{itemize}
 
 \subsubsection{Global variables:}
-\paragraph{All lowercase, and are prefixed with \textbf{g\_}}
+All lowercase, and are prefixed with \textbf{g\_}
 \begin{itemize}
 	\item \textbf{Button states:}
 	\begin{itemize}
@@ -230,7 +230,7 @@
 \end{itemize}
 
 \subsubsection{State Enumeration (states):}
-\paragraph{The \lstinline|states| enum defines each major step of the device's operation:}
+The \lstinline|states| enum defines each major step of the device's operation:
 \begin{itemize}
 	\item \lstinline|DISCONNECTED|
 	\item[] No active Bluetooth connections; waiting to connect. User may enter \lstinline|SETUP|.
@@ -250,7 +250,7 @@
 
 \subsection{State Machine Architecture}
 \subsubsection{\lstinline|stateTable[]|}
-\paragraph{An array mapping each \lstinline|states| value to its handler \lstinline|StateFunc|}.
+An array mapping each \lstinline|states| value to its handler \lstinline|StateFunc|
 \begin{lstlisting}[language=C++]
 struct StateTable stateTable[] = {
 	{DISCONNECTED, state_disconnected},
@@ -331,9 +331,9 @@ if (next_state != g_current_state)
 
 \subsection{Button \& LCD Utility Functions}
 \subsubsection{\lstinline|debounceReadButton()|}
-\paragraph{Standard 20ms software debounce; tracks \lstinline|stable_state|.}
+Standard 20ms software debounce; tracks \lstinline|stable_state|.
 \subsubsection{\lstinline|log_msg()|}
-\paragraph{Takes two required parameters: the level of the log message, and the message itself. There are two overloaded versions which take a third optional argument (\lstinline|const bool| and \lstinline|unsigned|). Respects \lstinline|debug_enabled|.}
+Takes two required parameters: the level of the log message, and the message itself. There are two overloaded versions which take a third optional argument (\lstinline|const bool| and \lstinline|unsigned|). Respects \lstinline|debug_enabled|.
 \subsubsection{\lstinline|handle_value_adjust_u8, handle_value_adjust_u16|}
 \begin{itemize}
 	\item Support tap for single increment/decrement, as well as hold for auto-repeat.
@@ -352,17 +352,17 @@ if (next_state != g_current_state)
 \end{itemize}
 
 \subsection{Threshold-Setup Framework}
-\paragraph{Two template functions:}
+Two template functions:
 \begin{itemize}
 	\item \lstinline|multi_threshold_setup_u8()| for 8-bit thresholds.
 	\item \lstinline|multi_threshold_setup_u16()| for 16-bit temperature thresholds.
 \end{itemize}
-\paragraph{Behaviour on entry (\lstinline|g_multi_reset| flag):}
+Behaviour on entry (\lstinline|g_multi_reset| flag):
 \begin{itemize}
 	\item Reset \lstinline|step|, \lstinline|last_drawn|, \lstinline|last_select|
 	\item Clamp existing \lstinline|*values[i]| to \lstinline|[lo[i]..hi[i]]| blocking the user from incrementing/decrementing past the default minimum and maximum allowable values for each vital sign (\lstinline|G_*_THRESHOLD_MIN| and \lstinline|G_*_THRESHOLD_MAX|).
 \end{itemize}
-\paragraph{Per-step UI loop:}
+Per-step UI loop:
 \begin{enumerate}
 	\item Clear \& redraw prompt + current \lstinline|*values[step]|.
 	\item Call \lstinline|handle_value_adjust|.
