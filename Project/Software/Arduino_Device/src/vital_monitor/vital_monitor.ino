@@ -135,8 +135,8 @@ void setup() {
 void loop() {
 	// while (digitalRead(BTN_SELECT) == LOW) {
 		// rtc.setHour(13);     // Set the time to 12:00:00 (24hr format)
-		// rtc.setMinute(46);
-		// rtc.setSecond(0);
+		// rtc.setMinute(32);
+		// rtc.setSecond();
 		// rtc.setDate(9);   // Set the date to January 1st, 2014
 	// }
 	bool CenturyBit;
