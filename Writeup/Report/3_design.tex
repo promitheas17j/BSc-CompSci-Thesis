@@ -1,10 +1,54 @@
 \chapter{Analysis and Design}
 
-\section{Introduction}
-Introduce what this chapter is going to present.
-\section{Next section title}
+\section{Introduction} % Section 3.1
+This chapter will present the analysis and design porition of the project. Identified are the system users and their needs, which are then translated into technical requirements, and finally the system's functional and architectural design is described. Several diagrams are included to aid with visualising the behaviour, workflow, and structure of the system.
 
-\section{Next section title}
+\section{User Needs and Requirements} % Section 3.2
+When developing any technology it is imperative to have a solid foundation upon which to build on and refer to throughout the development process. It should help provide a clear understanding of the problem, the needs expectations of the people who will be using it, and give some insight into how the original problem will be solved in the implementation stage. In the case of this project, the users include nurses and doctors, and the patients who will be using the device. There are several different users each with different required levels of control and functionalities, therefore it is crucial to translate their needs into measurable and clearly defined requirements that will steer the design and eventually implementation of the system.
 
-\section{Summary}
-Summarise what was said in this chapter and link with the next chapter.
+The following pages present two key tables accomplishing that task: the \textbf{User Needs table} which outlines the what is required of the system by the users to solve their problem, and the \textbf{User Requirements table} which turns those needs into specific, quantifiable, and actionable requirements for the system to fulfil.
+
+\input{tables/user_needs_table}
+\clearpage
+\input{tables/user_requirements_table}
+\clearpage
+
+\section{System Behaviour and Workflow} % Section 3.3
+\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+
+State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING, PROCESSING, TRANSMITTING)
+
+Use case diagram: Showing interactions between users (nurses, doctors, patients) and the system
+
+Activity flowchart: Visualise workflow
+
+\section{System Architecture and Design} % Section 3.4
+\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+
+High-Level Architecture diagram: Overview of the system from the medical devices to the cloud with the BT module and arduino in the middle
+
+Block diagram: Overview of circuit
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/schematic_rev2}
+\caption{Detailed circuit shcemtatic of all all components in the device}
+\label{fig:circuit_diagram}
+\end{figure}
+
+\section{User Interface Design} % Section 3.5
+\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+
+Navigation Flow diagram: Show how a user might navigate around the device menus
+
+Will discuss about usability and simplicity
+
+\section{Project Planning} % Section 3.6
+\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+
+Gantt chart here
+
+Will discuss how project timeline led to certain design decisions being made
+
+\section{Summary} % Section 3.7
+This chapter expanded on the design of the system, starting from the user needs analysis, behaviour of the system, system architecture, and design of the interface. The provided diagrams show the organisation of the system, laying the foundation for the implementation which will be discussed in detail in the next chapter.

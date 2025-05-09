@@ -1,0 +1,44 @@
+\pagestyle{empty}
+\begin{landscape}
+% \begin{table}[H]
+% \centering
+\begin{longtable}{|p{2cm}|>{\RaggedRight\arraybackslash}p{6cm}|>{\RaggedRight\arraybackslash}p{6cm}|>{\RaggedRight\arraybackslash}p{6cm}|p{2cm}|}
+\caption{User Needs Table}
+\label{tab:user_requirements_table} \\
+\hline 
+\textbf{Req. ID} & \textbf{User Requirement Name} & \textbf{Description} & \textbf{Justification/Comment} & \textbf{Reference}\\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Req. ID} & \textbf{User Requirement Name} & \textbf{Description} & \textbf{Justification/Comment} & \textbf{Reference}\\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
+UR-01 & Temperature Reading & 5 times/12 hours\newline Accuracy: to nearest 0.1$^\circ$C & 5 readings in a single 12 hour period should be enough to detect any changes in temperature early enough after get out of bounds & UN-01 \\
+\hline
+UR-02 & Blood Pressure Reading & 1 time/12 hours\newline Accuracy: $\pm$3mmHg for both systolic and diastolic & The recommended number of times to measure BP is once per day & UN-01 \\
+\hline
+UR-03 & Heart Rate Reading & 3 readings spaced 2 minutes apart / hour, and keeping the average of the 3 readings as final BPM value\newline Accuracy: $\pm$ 5 BPM & In a clinical/hospital environment there would be constant EKG measurement so there is no reason medically not to measure heart rate as often as possible. However to conserve battery, avoid network congestion, and keep the processor constantly working, 3 readings averaged on the hour is sufficient for this system & UN-01 \\
+\hline
+UR-04 & Bluetooth Pairing with Medical Devices & Visual interface to display BT connection status, and allow force disconnecting a device which has connected if it is not a medical device & Pairing with a device should be incredibly easy seeing as a likely user group will be elderly individuals & UN-02 \\
+\hline
+UR-05 & Per Vital Sign Configuration & Visual interface to be able to select a vital sign that will be measured, and set the upper and lower acceptable limits for it. This must persist across power loss and general restarting of the device. In addition, the limits must make sense in the context of the vital sign they relate to. For example it should be impossible to set an upper limit of 60$^\circ$C for temperature & Each patient has different medical needs and as such will need customised ranges for the acceptable readings. Furthermore, the patients should not be required to have to set these limits in the event of a power loss of the device or device restart & UN-03 \\
+\hline
+UR-06 & Data Processing and sending to the cloud & Process each data reading in the context of the device type's pre-set limits (lower/upper). Readings which are below/above the limits will be added to a queue. The front data will be sent to the cloud using the LoRaWAN protocol. Once confirmation is received that the data is successfully received, it will be dequeued and the next data (if it exists) will be transmitted. Allow up to 3 attempts before considering that there is a problem with the device/connection to the network and alerting the user. & Data that is within the acceptable limits does not need to be sent. The queue's purpose is to ensure any critical readings get to the cloud platform where the medical professionals can respond accordingly. & UN-04 \newline UN-05 \\
+\hline
+UR-07 & Notification of medical staff for abnormal reading & After sending data through the LoRaWAN protocol to the cloud, create some kind of notification for the medical staff in the form of of an email or "ticketing" system & A popup notification is not sufficient because it might be missed & UN-05 \newline UN-06 \\
+\hline
+UR-08 & Device status information & Constantly monitor device status (BT connection, state) and display this information to the user & Due to the fact that status information must always be visible, and we do not want to occupy the LCD screen with it all the time, the information will be available through coloured LED lights & UN-07 \\
+\hline
+UR-09 & Patient status tracking over time & Regardless of whether an abnormal reading is gathered, at fixed times of the day and for a set number of times, take readings and send them to the cloud even if they are not abnormal. & Patient history could be vital for providing medical staff with insight into the patient's condition, however there is no need to take more than one non-abnormal reading per day & UN-08 \\
+\hline
+\end{longtable}
+% \end{table}
+\end{landscape}

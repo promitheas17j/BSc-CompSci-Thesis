@@ -1,0 +1,30 @@
+\begin{landscape}
+\thispagestyle{empty}
+\begin{table}[H]
+\centering
+\caption{User Needs Table}
+% \begin{tabularx}{\linewidth}{|p{2.5cm}|p{15cm}|p{1.5cm}|}
+\begin{tabularx}{\linewidth}{|p{2.5cm}|X|p{2cm}|}
+\hline 
+\textbf{ID} & \textbf{Description } & \textbf{Source} \\
+\hline
+UN-01 & Accurate capture of data from various medical devices in order to monitor patient status & Arduino \\
+\hline
+UN-02 & Simple pairing of the device to other medical devices through Bluetooth in order to easily setup and guarantee reliable data transfer & Arduino \\
+\hline
+UN-03 & Updating/setting of limits/conditions for different measurement types in order to customise each device to a particular patient's needs & Arduino/\newline Cloud/\newline Medical staff \\
+\hline
+UN-04 & Process data according to preset conditions in order to send only relevant data to the cloud & Arduino \\
+\hline
+UN-05 & Storing of data in the short-term in the case of high network congestion to prevent loss. (Only store after processing if values are abnormal/relevant to be sent to the cloud) & Arduino \\
+\hline
+UN-06 & Alert medical staff of patient status if critical or abnormal reading gathered in order to allow them to check on said patient in person & Cloud \\
+\hline
+UN-07 & Alert users about device status in order to allow them to keep it in a state where it is running normally & Arduino \\
+\hline
+UN-08 & Provide a general picture about the patient's status daily in order to track it over time (daily averages viewed in context of weeks, months, years) & Cloud \\
+\hline
+\end{tabularx}
+\label{tab:user_needs_table}
+\end{table}
+\end{landscape}
