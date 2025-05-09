@@ -4,12 +4,12 @@
 #include "menu.h"
 #include "utils.h"
 #include "states.h"
-#include "Waveshare_LCD1602.h"
-#include <SoftwareSerial.h>
-#include <EEPROM.h>
+// #include <time.h>
+// #include <Wire.h>
 
 Waveshare_LCD1602 lcd(16,2);
 SoftwareSerial HM10_UART(9, 10);
+DS3231 rtc;
 
 // Global variable initialisations
 uint8_t g_prev_button_state = 0, g_select_button_state = 0, g_next_button_state = 0;
@@ -40,10 +40,14 @@ char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
 void setup() {
 	Serial.begin(9600);
+	// rtc.begin();
+	// The following lines can be uncommented to set the date and time
 	EEPROM.begin();
-	// Wait for Serial connection before proceeding with the rest of the code
-	while (!Serial) {
-		;
+	// Wait for Serial connection before proceeding with the rest of the code if debug enabled
+	if (debug_enabled) {
+		while (!Serial) {
+			;
+		}
 	}
 	log_msg("INFO", "Booting...");
 	HM10_UART.begin(9600);
@@ -104,11 +108,15 @@ void setup() {
 	pinMode(LED_YELLOW, OUTPUT);
 	pinMode(LED_RED, OUTPUT);
 	pinMode(BT_STATE, INPUT);
+	pinMode(BUZZER, OUTPUT);
 	digitalWrite(LED_BLUE, LOW);
 	digitalWrite(LED_GREEN, LOW);
 	digitalWrite(LED_YELLOW, LOW);
 	digitalWrite(LED_RED, LOW);
 	cycle_leds();
+	digitalWrite(BUZZER, HIGH);
+	delay(100);
+	digitalWrite(BUZZER, LOW);
 	char msg[64];
 	snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
 	log_msg("DEBUG", msg);
@@ -125,6 +133,43 @@ void setup() {
 }
 
 void loop() {
+	// while (digitalRead(BTN_SELECT) == LOW) {
+		// rtc.setHour(13);     // Set the time to 12:00:00 (24hr format)
+		// rtc.setMinute(46);
+		// rtc.setSecond(0);
+		// rtc.setDate(9);   // Set the date to January 1st, 2014
+	// }
+	bool CenturyBit;
+	Serial.print("20"+String(rtc.getYear()) + "-" + String(rtc.getMonth(CenturyBit)) + "-" + String(rtc.getDate()) + " - ");
+	switch (rtc.getDoW()) {
+		case 1:
+			Serial.print("Mon");
+			break;
+		case 2:
+			Serial.print("Tue");
+			break;
+		case 3:
+			Serial.print("Wed");
+			break;
+		case 4:
+			Serial.print("Thu");
+			break;
+		case 5:
+			Serial.print("Fri");
+			break;
+		case 6:
+			Serial.print("Sat");
+			break;
+		case 7:
+			Serial.print("Sun");
+			break;
+		default:
+			break;
+	}
+	bool h12;
+	bool hPM;
+	Serial.print(" " + String(rtc.getHour(h12, hPM)) + ":" + String(rtc.getMinute()) + ":" + String(rtc.getSecond()) + "\n");
+
 	g_prev_button_state = debounceReadButton(BTN_PREV, &g_prev_button);
 	g_select_button_state = debounceReadButton(BTN_SELECT, &g_select_button);
 	g_next_button_state = debounceReadButton(BTN_NEXT, &g_next_button);

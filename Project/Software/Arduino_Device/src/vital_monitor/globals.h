@@ -3,21 +3,23 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include "utils.h"
+#include "states.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <SoftwareSerial.h>
-#include <EEPROM.h>
 #include "Waveshare_LCD1602.h"
-#include "utils.h"
-#include "states.h"
+#include <EEPROM.h>
+#include <DS3231.h>
 
 #define BTN_PREV 4
 #define BTN_SELECT 7
 #define BTN_NEXT 8
-#define LED_BLUE A5
-#define LED_GREEN A4
-#define LED_YELLOW A3
+#define BUZZER A1
 #define LED_RED A2
+#define LED_YELLOW A3
+#define LED_GREEN A4
+#define LED_BLUE A5
 #define BT_STATE 11
 
 #define G_RECEIVED_DATA_BUFFER_SIZE 11
@@ -39,6 +41,8 @@
 #define G_HR_THRESHOLD_MAX 100
 
 extern Waveshare_LCD1602 lcd;
+extern SoftwareSerial HM10_UART;
+extern DS3231 myRTC;
 
 extern uint8_t g_prev_button_state;
 extern uint8_t g_select_button_state;
@@ -70,7 +74,5 @@ extern struct ButtonDebounce g_next_button;
 extern bool debug_enabled;
 extern bool g_selection_pending;
 extern bool g_multi_reset;
-
-extern SoftwareSerial HM10_UART;
 
 #endif
