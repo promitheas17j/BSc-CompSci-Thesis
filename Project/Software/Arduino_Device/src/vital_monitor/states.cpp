@@ -151,6 +151,7 @@ states state_reading() {
 	uint8_t index = 0;
 	static unsigned long last_high_time = 0;
 	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
+	static uint8_t attempt_count = 0;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
 	if (bt_pin_state == HIGH) {
 		last_high_time = millis();
@@ -162,10 +163,14 @@ states state_reading() {
 		}
 	}
 	while (HM10_UART.available()) {
+		if (attempt_count >= 3) { // too many failed attempts, return to previous state
+			log_msg("WARN", "Too many failed attempts. Cancelling");
+			attempt_count = 0;
+			return g_previous_state;
+		}
 		log_msg("DEBUG", "Reading data");
 		char incoming_byte = HM10_UART.read();
 		char debug_char[2] = {incoming_byte, '\0'};
-		log_msg("DEBUG", debug_char);
 		if (incoming_byte == '\n') {
 			input_buffer[index] = '\0';
 			size_t len = strlen(input_buffer);
@@ -183,6 +188,7 @@ states state_reading() {
 				return PROCESSING;
 			}
 			else {
+				attempt_count++;
 				HM10_UART.print("RETRY");
 				log_msg("INFO", "Invalid data received. Retry request sent.");
 			}
