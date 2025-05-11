@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="27.0.2">
+  <diagram name="Page-1" id="-nn-RIF6AeDvUM04-oAs">
+    <mxGraphModel dx="1131" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=classicThin;startFill=1;endFill=1;startArrow=classicThin;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-3" target="2EHM10TqO2SMvUCAY8AR-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-3" value="Blood Pressure Sensor" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="200" width="105" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classicThin;startFill=1;endFill=1;startArrow=classicThin;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-4" target="2EHM10TqO2SMvUCAY8AR-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-4" value="Temperature Sensor" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="323" width="105" height="77" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=classic;startFill=1;endFill=1;startArrow=classic;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-5" target="2EHM10TqO2SMvUCAY8AR-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-5" value="Heart Rate Sensor" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="440" width="105" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=classicThin;endFill=1;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-7" target="2EHM10TqO2SMvUCAY8AR-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-7" value="Bluetooth LE Module" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="341.5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classicThin;endFill=1;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-8" target="2EHM10TqO2SMvUCAY8AR-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-8" value="LoRa Device (Arduino)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="341.5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-9" value="LoRa Gateway" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="341.5" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-10" value="LoRaWAN&lt;br&gt;Cloud&lt;div&gt;Platform&lt;/div&gt;" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="320" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="2EHM10TqO2SMvUCAY8AR-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.118;entryY=0.527;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classicThin;startFill=1;endArrow=classicThin;endFill=1;" edge="1" parent="1" source="2EHM10TqO2SMvUCAY8AR-9" target="2EHM10TqO2SMvUCAY8AR-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

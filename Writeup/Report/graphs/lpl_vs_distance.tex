@@ -1,0 +1,22 @@
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+	width=\textwidth,
+	height=6cm,
+	grid=both,
+	xlabel={Distance (m)},
+	ylabel={Lpl (dB)},
+	title={Lpl vs Distance},
+	tick label style={font=\small},
+	label style={font=\small},
+	title style={font=\small},
+]
+\addplot[
+	only marks,
+	mark=*,
+	color=green,
+	mark size=1pt
+] table [x=Distance, y=Lpl, col sep=comma] {graphs/lpl_vs_distance_all.csv};
+\end{axis}
+\end{tikzpicture}
+	\caption{Path loss (Lpl) values relative to node distance from the gateway.}

@@ -1,0 +1,19 @@
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+	width=\textwidth,
+	height=6cm,
+	grid=both,
+	xlabel={Distance (m)},
+	ylabel={RSSI (dBm)},
+	title={RSSI vs Distance}
+]
+\addplot[
+	only marks,
+	mark=*,
+	color=blue,
+	mark size=1pt
+] table [x=Distance, y=RSSI, col sep=comma] {graphs/rssi_vs_distance_all.csv};
+\end{axis}
+\end{tikzpicture}
+\caption{RSSI values relative to distance from the gateway.}

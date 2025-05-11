@@ -39,6 +39,61 @@ E.~A. Surwit and T.~Y. Tam, ``Postoperative care,'' Jan 2008. [Online].
   \url{https://www.glowm.com/section-view/heading/Postoperative%20Care/item/36}
 \BIBentrySTDinterwordspacing
 
+\bibitem{Kachel2021-pb}
+E.~Kachel, K.~Constantini, D.~Nachman, S.~Carasso, R.~Littman, A.~Eisenkraft,
+  and Y.~Gepner, ``\BIBforeignlanguage{en}{A pilot study of blood pressure
+  monitoring after cardiac surgery using a wearable, non-invasive sensor},''
+  \emph{\BIBforeignlanguage{en}{Front. Med. (Lausanne)}}, vol.~8, p. 693926,
+  2021.
+
+\bibitem{Demetz2024-pl}
+M.~Demetz, A.~Krigers, R.~Uribe-Pacheco, D.~Pinggera, J.~Klingenschmid,
+  C.~Thom{\'e}, C.~F. Freyschlag, and J.~Kerschbaumer,
+  ``\BIBforeignlanguage{en}{The role of postoperative blood pressure management
+  in early postoperative hemorrhage in awake craniotomy glioma patients},''
+  \emph{\BIBforeignlanguage{en}{Neurosurg. Rev.}}, vol.~47, no.~1, p. 452,
+  2024.
+
+\bibitem{Noto2024-uz}
+A.~Noto, A.~Chalkias, F.~Madotto, L.~Ball, E.~G. Bignami, M.~Cecconi,
+  F.~Guarracino, A.~Messina, A.~Morelli, P.~Princi, F.~Sanfilippo,
+  S.~Scolletta, L.~Tritapepe, A.~Cortegiani, and {SIAARTI Study Group},
+  ``\BIBforeignlanguage{en}{Continuous vs intermittent {Non-Invasive} blood
+  pressure {MONitoring} in preventing postoperative organ failure ({niMON)}:
+  study protocol for an open-label, multicenter randomized trial},''
+  \emph{\BIBforeignlanguage{en}{J Anesth Analg Crit Care}}, vol.~4, no.~1,
+  p.~7, 2024.
+
+\bibitem{Frank1999-rb}
+S.~M. Frank and L.~A. Fleisher, ``\BIBforeignlanguage{en}{Temperature's
+  importance in patient safety reviewed},''
+  \url{https://www.apsf.org/article/temperatures-importance-in-patient-safety-reviewed/},
+  Jun. 1999, accessed: 2025-5-11.
+
+\bibitem{Khanna2024-fz}
+A.~K. Khanna, A.~Banga, J.~Rigdon, B.~N. White, C.~Cuvillier, J.~Ferraz,
+  F.~Olsen, L.~Hackett, V.~Bansal, and R.~Kaw, ``\BIBforeignlanguage{en}{Role
+  of continuous pulse oximetry and capnography monitoring in the prevention of
+  postoperative respiratory failure, postoperative opioid-induced respiratory
+  depression and adverse outcomes on hospital wards: A systematic review and
+  meta-analysis},'' \emph{\BIBforeignlanguage{en}{J. Clin. Anesth.}}, vol.~94,
+  no. 111374, p. 111374, 2024.
+
+\bibitem{Khanna2025-sg}
+A.~K. Khanna, M.~Flick, and B.~Saugel, ``\BIBforeignlanguage{en}{Continuous
+  vital sign monitoring of patients recovering from surgery on general wards: a
+  narrative review},'' \emph{\BIBforeignlanguage{en}{Br. J. Anaesth.}}, vol.
+  134, no.~2, pp. 501--509, 2025.
+
+\bibitem{Haahr-Raunkjaer2022-bo}
+C.~Haahr-Raunkjaer, J.~M{\o}lgaard, M.~Elvekjaer, S.~M. Rasmussen, M.~P.
+  Achiam, L.~N. Jorgensen, M.~I.~V. S{\o}gaard, K.~K. Gr{\o}nbaek, A.-B.
+  Oxb{\o}ll, H.~B.~D. S{\o}rensen, C.~S. Meyhoff, and E.~K. Aasvang,
+  ``\BIBforeignlanguage{en}{Continuous monitoring of vital sign abnormalities;
+  association to clinical complications in 500 postoperative patients},''
+  \emph{\BIBforeignlanguage{en}{Acta Anaesthesiol. Scand.}}, vol.~66, no.~5,
+  pp. 552--562, 2022.
+
 \bibitem{what_are_lora_lorawan}
 ``\BIBforeignlanguage{en}{What are {LoRa} and {LoRaWAN}?}''
   \url{https://www.thethingsnetwork.org/docs/lorawan/what-is-lorawan/},
@@ -61,6 +116,10 @@ R.~Wenner, ``\BIBforeignlanguage{en}{{LoRa} {CHIRP}},'' 17 2017.
   \url{https://www.rfwireless-world.com/Terminology/Advantages-and-Disadvantages-of-NB-IoT.html},
   accessed: 2025-5-8.
 
+\bibitem{ltem_telenor}
+\url{https://iot.telenor.com/technologies/connectivity/lte-m/}, accessed:
+  2025-5-10.
+
 \bibitem{ltem_advantages_disadvantages}
 ``\BIBforeignlanguage{en}{{LTE-M}: Advantages and disadvantages},''
   \url{https://www.rfwireless-world.com/Terminology/Advantages-and-Disadvantages-of-LTE-M.html},
@@ -74,5 +133,16 @@ R.~Wenner, ``\BIBforeignlanguage{en}{{LoRa} {CHIRP}},'' 17 2017.
 \bibitem{lancaster_uk_simulation_software}
 ``No title,'' \url{https://www.lancaster.ac.uk/scc/sites/lora/lorasim.html},
   accessed: 2025-5-8.
+
+\bibitem{duty_cycles}
+``\BIBforeignlanguage{en}{Duty cycle},''
+  \url{https://www.thethingsnetwork.org/docs/lorawan/duty-cycle/}, accessed:
+  2025-5-11.
+
+\bibitem{wifi_beacons}
+``\BIBforeignlanguage{en}{{Wi-Fi} beacons \& beacon interval: Everything you
+  need to know},''
+  \url{https://www.7signal.com/news/blog/controlling-beacons-boosts-wi-fi-performance},
+  accessed: 2025-5-11.
 
 \end{thebibliography}

@@ -3,7 +3,7 @@
 \section{Introduction} % Section 1.1
 It is crucial to monitor patient vital signs in the post-operative period to ensure detection of any complications early on, and increase patient safety. Traditionally, nurses and clinical staff carry out this monitoring at regular intervals, which may leave gaps in observation and increase the risk of missing early warning signs. Advances in the Internet of Things (IoT) space have created new possibilities for real-time, continuous monitoring of patients using wireless sensors and communication protocols.
 
-One of the main difficulties in implementing IoT systems in healthcare is selecting appropriate technologies for communication, that balance power consumption, range, and reliability, at a reasonable cost. Bluetooth, which is a widely used technology in consumer health devices, offers short-range, low-energy connectivity but it doesn't scale well to the scale of a hospital, for the purpose of monitoring hundreds of patients at a time. LoRaWAN on the other hand, is capable of communication at long ranges, using low power to transmit small amounts of data (perfect for sending the kinds of data sensors produce) from multiple devices to a central gateway.
+One of the main difficulties in implementing IoT systems in healthcare is selecting appropriate technologies for communication, that balance power consumption, range, and reliability, at a reasonable cost. Bluetooth, which is a widely used technology in consumer health devices, offers short-range, low-energy connectivity but it doesn't scale well to the sizsize of a hospital, for the purpose of monitoring hundreds of patients at a time. LoRaWAN on the other hand, is capable of communication at long ranges, using low power to transmit small amounts of data (perfect for sending the kinds of data sensors produce) from multiple devices to a central gateway.
 
 This thesis presents the design and implementation of a device intended for the purpose of monitoring patient vital signs in the post-operative context, that integrates consumer medical sensing devices, and incorporates both Bluetooth as well as the LoRaWAN communication protocols. It is designed to collect data from commercially available medical devices and send that data efficiently to the cloud for analysis and alerting purposes.
 
@@ -13,11 +13,11 @@ The main aim of this project is to design and develop an IoT based device to mon
 	\item Investigate the clinical requirements and difficulties in the context of post-operative vital sign monitoring.
 	\begin{itemize}
 		\item Conduct a literature review on the importance of post-operative monitoring.
-		\item Conduct a literature review on the clinical importance of each vital sign.
+		\item Conduct a literature review on the clinical importance of each vital sign in the post-operative context.
 	\end{itemize}
-	\item Evaluate and compare appropriate commercially available bluetooth capable medical devices for possible integration with the system.
+	\item Evaluate and compare appropriate commercially available Bluetooth capable medical devices for possible integration with the system.
 	\begin{itemize}
-		\item Identify commercially avaialble bluetooth capable devices for measuring temperature, blood pressure, and heart rate.
+		\item Identify commercially avaialble Bluetooth capable devices for measuring temperature, blood pressure, and heart rate.
 		\item Assess their Bluetooth connectivity and opennes, and as such determine their likely degree of integration with a custom system such as the one being developed.
 	\end{itemize}
 	\item Analyse and select suitable communication technologies for device integration and data transmission to cloud.
@@ -52,10 +52,10 @@ This thesis is organised into six main chapters, following the natural developme
 	\item \textbf{Chapter 1: Introduction} --- Introduces the background, aims, objectives, and structure of the thesis.
 	\item \textbf{Chapter 2: Background or Project Scope} --- Reviews the clinical significance of monitoring vital signs after surgery, the role of IoT in this task, analyses current communication protocols and available medical sensing devices, and discusses some points of consideration regarding integration of said devices with the system.
 	\item \textbf{Chapter 3: Analysis and Design} --- Describes the 'user needs', requirements analysis, system architecture, detailed design of the system, and gives reasons for design desisions that were made.
-	\item \textbf{Chapter 4: implementation and Testing} --- Presents the implementation of features, implementation of communication with backend cloud via LoRaWAN, and testing procedures.
+	\item \textbf{Chapter 4: Implementation and Testing} --- Presents the implementation of features, implementation of communication with backend cloud via LoRaWAN, and testing procedures.
 	\item \textbf{Chapter 5: Discussion} --- Discusses the resulting system, difficulties encountered, lessons learned, and possible improvements.
 	\item \textbf{Chapter 6: Bibliography} --- Lists all the references cited throughout the thesis.
 \end{itemize}
 
 \section{Summary} % Section 1.4
-This chapter gave an introduction to the reasoning behind developing such an IoT based system for the post-operative scenario, gave an outline for the aims nd objectives of the project, and briefly covered the general structure of the thesis. The next chapter will dive deeper into the background of the project including clinical signigicance of vital sign monitoring, the role of IoT, relevant communication protocols, and compare and evaluate commercially available Bluetooth-capable medical sensing devices fo this project.
+This chapter gave an introduction to the reasoning behind developing such an IoT based system for the post-operative scenario, gave an outline for the aims and objectives of the project, and briefly covered the general structure of the thesis. The next chapter will dive deeper into the background of the project including clinical signigicance of vital sign monitoring, the role of IoT, relevant communication protocols, and compare and evaluate commercially available Bluetooth-capable medical sensing devices for this project.

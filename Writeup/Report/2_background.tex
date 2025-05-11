@@ -1,40 +1,152 @@
 \chapter{Background or Project Scope}
 
 \section{Introduction} % Section 2.1
-The healing process does not end after surgery is complete, but instead it is often a long effort for weeks or months post-operation. Furthermore, it is not just the physical health of the patient which must be considered, but also and perhaps equally important their mental health and quality of life moving forward. In recent decades it has become clearer to medical professionals that extended monitoring following operations greatly impacts the results of surgeries in a positive manner, as stated in \cite{d2014defining}. Of course, there are multiple factors affecting the extent to which complications will arise in a patient after receiving surgery, such as their age, previous health issues, or conditions which may develop in parallel to the primary diagnosis even if they are in fact unrelated. In particular, the elderly are quite vulnerable to more complications, as stated by \cite{kare2024post}, specifically referring to elderly patients who underwent hip fracture surgery. Such complications affect quality of life longterm as well as general ability to function normally, not just physical health, degree of recovery, and survivability \cite{kare2024post}.
+The healing process does not end after surgery is complete, but instead it is often a long effort for weeks or months post-operation. Furthermore, it is not just the physical health of the patient which must be considered, but also and perhaps equally important their mental health and quality of life moving forward. In recent decades it has become clearer to medical professionals that extended monitoring following operations greatly impacts the results of surgeries in a positive manner, as stated in \cite{d2014defining}. Of course, there are multiple factors affecting the extent to which complications will arise in a patient after receiving surgery, such as their age, previous health issues, or conditions which may develop in parallel to the primary diagnosis even if they are in fact unrelated. In particular, the elderly are quite vulnerable to more complications, as stated by the authors in \cite{kare2024post}, specifically referring to elderly patients who underwent hip fracture surgery. Such complications affect quality of life longterm as well as general ability to function normally, not just physical health, degree of recovery, and survivability \cite{kare2024post}.
 
-The role of the surgeon in the postoperative context is to firstly make sure the patient is receiving the necessary support to sustain a healthy balance in their body, and do whatever they can to avoid the development of and complications that may appear as a result of the procedure. Should any complications arise despite the medical staff's best efforts, it is then the surgeon's responsibility to recognise the signs pointing to the development of said complications and take appropriate actions to quickly and effectively manage them, allowing the patient to recover to their preoperative state eventually \cite{Surwit_Tam_2008}
+The role of the surgeon in the postoperative context is to firstly make sure the patient is receiving the necessary support to sustain a healthy balance in their body, and do whatever they can to avoid the development of any complications that may appear as a result of the procedure. Should any complications arise despite the medical staff's best efforts, it is then the surgeon's responsibility to recognise the signs pointing to the development of said complications and take appropriate actions to quickly and effectively manage them, allowing the patient to recover to their preoperative state eventually \cite{Surwit_Tam_2008}
 
 \section{Clinical significance of monitoring each vital sign post-surgery} % Section 2.2
-Vital signs give a rich picture of patient condition post surgery, providing medical staff with the information required to adequately care for the patient. Different measurements have varying significance depending on the stage of recovery the patient finds themselves in, however they should be continuously measured to provide history and an indication of trends to clearly show the progress of the patient's condition. Immediately after surgery measurements must be taken often as that is the most critical stage of the recovery process. In the beginning, vitals such as respiratory rate and blood pressure are vastly more important due to their indication of how the patient is recovering from anesthesia, but once they sufficiently recover from it pulse rate is a better indicator of the volume of blood in the circulatory system of a patient \cite{Surwit_Tam_2008}
+% Vital signs give a rich picture of patient condition post surgery, providing medical staff with the information required to adequately care for the patient. Different measurements have varying significance depending on the stage of recovery the patient finds themselves in, however they should be continuously measured to provide history and an indication of trends to clearly show the progress of the patient's condition. Immediately after surgery measurements must be taken often as that is the most critical stage of the recovery process. In the beginning, vitals such as respiratory rate and blood pressure are vastly more important due to their indication of how the patient is recovering from anesthesia, but once they sufficiently recover from it pulse rate is a better indicator of the volume of blood in the circulatory system of a patient \cite{Surwit_Tam_2008}.
 
+Postoperative vital sign monitoring is essential for both patient safety and the early identification of problems. Specific information on the patient's physiological state and course of recovery is provided by each measure.
+
+\textbf{Blood Pressure}
+
+To detect hypotension or hypertension, which can both result in major problems, postoperative blood pressure monitoring is crucial \cite{Kachel2021-pb}. By enabling early diagnosis and control of blood pressure variations, continuous monitoring lowers the risk of postoperative haemorrhage and other unfavourable outcomes \cite{Demetz2024-pl}. Continuous monitoring, according to studies, can identify hypotensive events that intermittent measures could overlook, allowing for prompt responses \cite{Noto2024-uz}.
+
+\textbf{Temperature}
+
+After surgery, maintaining normothermia is essential to avoiding problems including surgical site infections and extended hospital stays. Hypothermia can raise the risk of infection and hinder the healing of wounds. Thus, it is advised to regularly check the patient's temperature during the postoperative phase in order to guarantee the best possible results \cite{Frank1999-rb}.
+
+\textbf{Oxygen Saturation}
+
+Monitoring oxygen saturation is essential for identifying hypoxaemia, which, if left untreated, can result in organ dysfunction. Early management in cases of respiratory compromise is made possible by pulse oximetry, which offers a non-invasive way to continuously measure oxygen levels. When compared to sporadic inspections, continuous monitoring has been demonstrated to improve the detection of oxygen desaturation \cite{Khanna2024-fz}.
+
+\textbf{Heart Rate}
+
+In the postoperative phase, heart rate monitoring is crucial for spotting physiological alterations that could indicate patient decline. The British Journal of Anaesthesia states that heart rate changes, like bradycardia or tachycardia, can occur hours or even days before serious occurrences like cardiac arrest, particularly in the 48 hours after surgery. This emphasises the necessity of regular or ongoing monitoring. As is typical in many wards, manual spot checks conducted every 4–8 hours are not enough to accurately identify these occurrences. Continuous monitoring, on the other hand, has been demonstrated to detect heart rate anomalies more frequently and with greater severity than would otherwise be detected, enabling medical professionals to take early action and possibly avert problems or death \cite{Khanna2025-sg}.
+
+\textbf{Respiratory Rate}
+
+Haahr-Raunkjaer et al. found that patients who experienced serious adverse events (SAEs) were more likely to have respiratory rates exceeding 24 breaths per minute for more than five minutes, even though they did not report statistically significant differences in abnormal respiratory rate between patient groups with and without SAEs. This pattern supports the use of continuous respiratory monitoring for prompt detection and intervention and implies that respiratory rate is a useful early clinical indicator of post-operative decline in patient condition \cite{Haahr-Raunkjaer2022-bo}.
 
 \section{Role of IoT in vital sign monitoring} % Section 2.3
+
 \section{Communication protocols in IoT-based monitoring} % Section 2.4
 This section explores the communication protocols relevant to IoT-based monitoring of post-operative patients, focusing on Bluetooth and LoRaWAN. Reliable and efficient data transmission is crucial in this context, where vital signs such as heart rate, temperature, and blood pressure need to be collected with minimal power consumption and transmitted securely over short or long distances.
 
-LoRa is a wireless modulation technique derived from chirp spread spectrum technology. It enables long-distance, low-power communication by encoding information on radio waves using chirp pulses. This makes it robust against interference and highly suitable for IoT applications that transmit small data packets at low bit rates \cite{what_are_lora_lorawan}. Compared to technologies like WiFi, Bluetooth, or ZigBee, LoRa supports data transmission over significantly longer distances, particularly in sub-gigahertz bands, making it well suited for both indoor hospital and outdoor monitoring environments \cite{lora_documentation}.
+LoRa is a wireless modulation technique derived from chirp spread spectrum technology (CSS). It enables long-distance, low-power communication by encoding information on radio waves using chirp pulses. This makes it robust against interference and highly suitable for IoT applications that transmit small data packets at low bit rates \cite{what_are_lora_lorawan}. Compared to technologies like WiFi, Bluetooth, or ZigBee, LoRa supports data transmission over significantly longer distances, particularly in sub-gigahertz bands, making it well suited for both indoor hospital and outdoor monitoring environments \cite{lora_documentation}.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.5\textwidth]{images/chirp_spread_spectrum_labeled.png}
+\includegraphics[width=0.5\textwidth]{images/chirp_spread_spectrum_labeled}
 \caption{Example of a chirp spread spectrum transmission, highlighting the up and down sweeps which represent binary 1 and 0. \cite{Wenner2017-hd}}
 \label{fig:chirp_spread_spectrum_labeled}
 \end{figure}
 
+Figure \ref{fig:chirp_spread_spectrum_labeled} provides a visual representation of the chirp spread spectrum technology. This technique encodes data in the frequency variation of the signals over time. A "chirp" refers to a timeframe of the signal where the frequency is increasing or decreasing within a certain bandwidth. This technique makes the signal significantly more resistant to interference compared to simply having two distinct frequencies which are pre-defined to represent a binary 0 or 1, and simply switching between them when transmitting the signal, an example of which can be seen in figure \ref{fig:frequency_shift_keying_labeled}. The up and down sweeps in figure \ref{fig:chirp_spread_spectrum_labeled} visually reflect the bitstream and how it is encoded into radio frequencies.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/frequency_shift_keying_labeled.png}
+\caption{Example of having two distinct frequencies representing binary 0 and 1, and "jumping" between them instead of sweeping. \cite{Wenner2017-hd}}
+\label{fig:frequency_shift_keying_labeled}
+\end{figure}
+
+Each character transmitted with LoRa lasts a duration determined by the spreading factor, defining how long each chirp lasts. As spreading factor increases, chirps last longer and have improved sensitivity at the expense of having a lower data transmission rate.
+
 LoRaWAN builds upon the LoRa physical layer by adding a media access control (MAC) protocol. It defines how devices connect, how data is encrypted, and how the network is managed. LoRaWAN is designed for ultra-low-power operations, allowing devices to last several years on small batteries, and offers deep indoor penetration, which is particularly valuable in hospital settings where walls and medical equipment can attenuate signals \cite{lora_documentation}.
 
-To assess the suitability of LoRaWAN, it is important to compare it to other LPWAN technologies, including SigFox, NB-IoT, and LTE-M. Below is a table summarising their main advantages and disadvantages.
+To assess the suitability of LoRaWAN, it is important to compare it to other LPWAN technologies, including SigFox, NB-IoT, and LTE-M.
+
+SigFox is a proprietary ultra-narrowband communication technology designed for transmitting small data payloads over long distances, while consuming small amounts of power. It operates on unlicensed Industrial, Scientific, and Medical (ISM) bands, and works best when the application requries one-way, infrequent transmissions. These attributes make it great for low-throughput applications, such as smart city metering, and environmental monitoring. Due to some issues with non-fixed environments such as frequency inaccuracies and interference, SigFox works best when employed in fixed locations \cite{sigfox_advantages_disadvantages}.
+
+NB-IoT on the other hand operates in the licensed spectrum. Developed by 3GPP, it offers powerful indoor penetration, is reliable, and allows for connecting a large number of devices. It is mainly suited for applications needing regular (unlike SigFox), low data rate communication, like utility metering and building automation \cite{nbiot_advantages_disadvantages}.
+
+Once again developed by 3GPP, LTE-M supports higher data rates than NB-IoT and allows for voice communication using Voice over Long-Term Evolution (VoLTE). It ensures seamless handover between cell towers, which makes its use cases more dynamic and mobile, such as asset tracking, pet tracking, and point-of-sale devices \cite{ltem_telenor}.
+
+Below is a table summarising their main advantages and disadvantages.
+
 \input{tables/adv_disadv_lpwan_table}
 
-Bluetooth is also widely used in medical IoT devices. While it offers short-range connectivity and is well-suited for personal health devices like heart rate monitors and themometers, its power consumption and range limit its usefulness for hospital-wide or remote patient monitoring. Bluetooth Low Energy (BLE) improves power efficiency and is increasingly integrated into wearable medical devices.
-
-section{Commercially available medical devices} % Section 2.5
+Bluetooth is also widely used in medical IoT devices. While it offers short-range connectivity and is well-suited for personal health devices like heart rate monitors and themometers, its power consumption and range limit its usefulness for hospital-wide or remote patient monitoring. Bluetooth Low Energy (BLE) improves power efficiency and is increasingly integrated into wearable medical devices. As such, it will be used in this project to connect the main system with the medical sensors which take actual readings.
 
 \subsubsection{Testing}
-While the focus of this project was not to benchmark the LoRaWAN protocol itself, preliminary simulations were conducted to validate its suitability for post-operative monitoring applications. A single base station scenario was simulatedusing open-source software provided by Lancaster University \cite{lancaster_uk_simulation_software}. The simulation was adapted to run on Python 3, and tests were conducted with 100 and 200 node configurations.
+While the focus of this project was not to benchmark the LoRaWAN protocol itself, preliminary simulations were conducted to validate its suitability for post-operative monitoring applications. A single base station scenario was simulated using open-source software provided by Lancaster University \cite{lancaster_uk_simulation_software}. The simulation was adapted to run on Python 3, and tests were conducted with 100 to 1000 node configurations, increasing by 100 each experiment. The parameters for the simulations where fixed as such: \texttt{AVGSEND = 100ms}, \texttt{SIMTIME = 2000ms}, and \texttt{COLLISION = 1} to enable full collision detection. The parameters used correspond to the simulated nodes transmitting small packets roughly every 100 milliseconds over a total simulation time of two seconds. Furthermore, \texttt{EXPERIMENT = 0} was used, which configures all nodes to transmit with the slowest LoRa modulation settings. The key objective was to confirm that LoRaWAN could handle multiple nodes transmitting small amounts of data at low power over long distances.
 
-The key objective was to confirm that LoRaWAN could handle multiple nodes transmitting small amounts of data at low power over long distances. Results showed that as the number of nodes doubled, the number of collisions also increased, which is consistent with LoRaWAN's access behaviour. Despite the increase in collisions, transmission efficiency per node remained stable, and energy consumption scaled predictably with the node count. These outcomes support the choice of LoRaWAN as a communication backbone in the system, balancing scalability and energy efficiency in a medical monitoring context.
+\vspace{1em} \noindent The first set of results explore how node density affects transmission quality:
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/collisions_vs_nodes}
+	\caption{Collisions vs Number of Nodes}
+	\label{fig:collisions_vs_nodes}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/efficiency_vs_nodes}
+	\caption{transmission Efficiency per Node}
+	\label{fig:efficiency_vs_nodes}
+\end{subfigure}
+\caption{Impact of node count on number of collisions and transmission efficiency.}
+\end{figure}
+
+As per Figure \ref{fig:collisions_vs_nodes} the number of collisions increases with the number of nodes linearly, something that is consistent with LoRaWAN's unslotted ALOHA-based access scheme. Regardless, transmission efficiency (Figure \ref{fig:efficiency_vs_nodes}) remained relatively stable, even if it did drop slightly around the 500 node point. This demonstrates LoRaWAN's robustness even under increased load.
+
+\vspace{1em} \noindent The next two plots look at power efficiency against the number of nodes, and the physical spatial distribution of the simulated nodes.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/energy_vs_nodes}
+	\caption{Energy Consumption vs Number of Nodes}
+	\label{fig:energy_vs_nodes}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/spatial_distribution}
+	\caption{Spatial Distribution of Nodes}
+	\label{fig:spatial_distribution}
+\end{subfigure}
+\caption{Energy scalability and simulation topology.}
+\end{figure}
+
+Figure \ref{fig:energy_vs_nodes} shows that energy consumption of each node scaled linearly once more with the number of nodes. This is to be expected as all nodes use the same transmit settings and a fixed sending interval. Provided duty cycles are properly managed, these results support LoRaWAN's use in battery-powered applications. A duty cycle is the time a device is permitted to transmit on a given frequency band, within a set time period \cite{duty_cycles}. The spatial distribution (Figure \ref{fig:spatial_distribution}) simply confirms that the simulation used a random deployment of the nodes across the simulated physical area, approximating a real-world environment such as a hospital ward.
+
+\vspace{1em} \noindent Path loss and signal strength trends were also considered to better understand signal behaviour.
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/rssi_vs_distance}
+	\caption{RSSI vs Distance}
+	\label{fig:rssi_vs_distance}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\textwidth}
+	\centering
+	\input{graphs/lpl_vs_distance}
+	\caption{Path Loss (Lpl) vs Distance}
+	\label{fig:lpl_vs_distance}
+\end{subfigure}
+\caption{Signal strength and path loss trends relative to node distance from the gateway}
+\end{figure}
+
+Both path loss and Received Signal Strength Index (RSSI) degrade as the distance increases, which is to be expected based on theoretical radio propagation models. RSSI is a measurement of the power level of a received radio signal and is typically expressed in dBm. As the values get more negative, it indicates a weaker signal.
+
+Results showed that as the number of nodes doubled, the number of collisions also increased, which is consistent with LoRaWAN's access behaviour. In this context, a \textit{collision} refers to the event where multiple decvices transmit at the same time, on the same frequency, and with the same spreading factor, at overlapping times, leading to signal interference at the gateway. When collisions occur, the gateway will likely have trouble demodulating the incoming transmitted packets, causing data loss.
+
+Despite the increase in collisions, transmission efficiency per node remained stable, and energy consumption scaled predictably with the node count --- highlighting LoRaWAN's suitability for applications requiring scalability, wide coverage, and energy efficiency, such as this project. Compared to Wi-Fi, LoRaWAN uses significantly less power and has a vastly longer communication range. Wi-Fi needs to have constant connectivity, and frequently send beacons out informing end devices of available access points and services \cite{wifi_beacons}. These two facts mean Wi-Fi consumes substantially more power than LoRaWAN making it unsuitable for battery operated devices intended for long-term use (in the order of years). Furthermore, Wi-Fi was designed for high-throughput applications in a limited range in indoor environments, unlike LoRaWAN which was designed for sparse, low data rate transmission covering large areas. As for GSM-based technologies like NB-IoT and LTE-M, while they do offer broader coverage and existing infrastructure backed and maintained by mobile providers, they come with significantly higher costs, greater power needs, and licensing requirements (meaning legally only mobile network operators can operate them, or a partnership with a mobile operator is requried), making them not as suitable for this application as LoRaWAN is. The comparison in Table \ref{tab:lpwan_adv_disadv} illustrates the advantages of LoRaWAN in terms of its efficient power consumption, cost, and flexibility in deployment and operation.
+
+These outcomes support the choice of LoRaWAN as a communication backbone in the system, balancing scalability and energy efficiency in a medical monitoring context.
+
+\section{Commercially available medical devices} % Section 2.5
 
 \section{Integration with custom IoT systems} % Section 2.6
+
 \section{Summary} % Section 2.7
 Summarise what was said in this chapter and link with the next chapter.

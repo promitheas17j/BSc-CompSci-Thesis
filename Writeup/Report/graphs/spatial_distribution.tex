@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+\begin{axis}[
+	width=\textwidth,
+	height=6cm,
+	grid=both,
+	xlabel={X Coordinate},
+	ylabel={Y Coordinate},
+	title={Spatial Distribution of Nodes},
+	axis equal
+]
+\addplot[
+	only marks,
+	mark=*,
+	color=red,
+	mark size=1pt
+] table [x=X, y=Y, col sep=comma] {graphs/spatial_distribution_all.csv};
+\end{axis}
+\end{tikzpicture}

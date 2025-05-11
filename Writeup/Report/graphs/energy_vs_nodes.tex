@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+\begin{axis}[
+	width=\textwidth,
+	height=6cm,
+	grid=both,
+	xlabel={Number of Nodes},
+	ylabel={Energy Consumption},
+	title={Energy Consumption vs Number of Nodes},
+	tick label style={font=\small},
+	label style={font=\small},
+	title style={font=\small}
+]
+\addplot[
+	color=purple,
+	mark=*,
+	thick
+] table [x=Nodes, y=Energy, col sep=comma] {graphs/energy_vs_nodes_all.csv};
+\end{axis}
+\end{tikzpicture}

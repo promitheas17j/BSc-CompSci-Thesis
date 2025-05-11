@@ -4,9 +4,11 @@
 This chapter will present the analysis and design porition of the project. Identified are the system users and their needs, which are then translated into technical requirements, and finally the system's functional and architectural design is described. Several diagrams are included to aid with visualising the behaviour, workflow, and structure of the system.
 
 \section{User Needs and Requirements} % Section 3.2
-When developing any technology it is imperative to have a solid foundation upon which to build on and refer to throughout the development process. It should help provide a clear understanding of the problem, the needs expectations of the people who will be using it, and give some insight into how the original problem will be solved in the implementation stage. In the case of this project, the users include nurses and doctors, and the patients who will be using the device. There are several different users each with different required levels of control and functionalities, therefore it is crucial to translate their needs into measurable and clearly defined requirements that will steer the design and eventually implementation of the system.
+When developing any technology it is imperative to have a solid foundation upon which to build on and refer to throughout the development process. It should help provide a clear understanding of the problem, the needs and expectations of the people who will be using it, and give some insight into how the original problem will be solved in the implementation stage. In the case of this project, the users include nurses and doctors, and the patients who will be using the device. There are several different users each with different required levels of control and functionalities, therefore it is crucial to translate their needs into measurable and clearly defined requirements that will steer the design and eventually implementation of the system.
 
-The following pages present two key tables accomplishing that task: the \textbf{User Needs table} which outlines the what is required of the system by the users to solve their problem, and the \textbf{User Requirements table} which turns those needs into specific, quantifiable, and actionable requirements for the system to fulfil.
+The following pages present two key tables accomplishing that task: the \textbf{User Needs table} (Table \ref{tab:user_needs_table}), and the \textbf{User Requirements table} (Table \ref{tab:user_requirements_table}). The User Needs table outlines what the system should accomplish in simple terms, similar to how an average non-technical person might describe what they need to solve their problem. Each row consists of a unique \textbf{ID} for that particular need, a brief \textbf{Description} of what is needed, and a \textbf{Source} which represents what part of the system this need might be addressed in. The User Requirements table expands upon the User Needs table by translating each need into one or more clear and actionable system requirements. These requirements can be measured as satisfied or not in the final system. Each requirement has a unique \textbf{Req. ID}, a \textbf{User Requirement Name} giving a very short overview of what that requirement is supposed to do, and a \textbf{Description} of the requirement with more specific technical details such as how it might be implemented, what specific numeric constraints are present for it, or what exactly is required to satisfy it from a technical perspective. Following these are the \textbf{Justification/Comment} and the \textbf{Reference} columns. The Justification/Comment column expands a bit on the description and states \textit{why} some of the technical details are as they are, or why the requirement was necessary in the first place. The Reference column links the User Requirements Table to the User Needs table by stating what user need (or what multiple needs) a particular requirement is intended to satisfy.
+
+These tables together give a high-level perspective of what the system must achieve, with some justification as to why certain decisions where taken instead of others.
 
 \input{tables/user_needs_table}
 \clearpage
@@ -25,9 +27,20 @@ Activity flowchart: Visualise workflow
 \section{System Architecture and Design} % Section 3.4
 \textbf{Note:} Diagrams need some tweaking before I can include them in here.
 
-High-Level Architecture diagram: Overview of the system from the medical devices to the cloud with the BT module and arduino in the middle
+% High-Level Architecture diagram: Overview of the system from the medical devices to the cloud with the BT module and arduino in the middle
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/high_level_architecture}
+\caption{A high level view of the system architecture}
+\label{fig:high_level_architecture_diagram}
+\end{figure}
 
-Block diagram: Overview of circuit
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/block_diagram}
+\caption{Block diagram showing relationships between high-level components of the system}
+\label{fig:block_diagram}
+\end{figure}
 
 \begin{figure}[H]
 \centering
