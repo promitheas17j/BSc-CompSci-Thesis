@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net">
+  <diagram name="Use Case Diagram">&lt;mxGraphModel dx=&quot;1424&quot; dy=&quot;794&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;827&quot; pageHeight=&quot;1169&quot;&gt;
+  &lt;root&gt;
+    &lt;mxCell id=&quot;0&quot;/&gt;
+    &lt;mxCell id=&quot;1&quot; parent=&quot;0&quot;/&gt;
+    
+    &lt;!-- Actors --&gt;
+    &lt;mxCell id=&quot;2&quot; value=&quot;Patient&quot; style=&quot;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+      &lt;mxGeometry x=&quot;80&quot; y=&quot;100&quot; width=&quot;30&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    &lt;mxCell id=&quot;3&quot; value=&quot;Medical Staff&quot; style=&quot;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+      &lt;mxGeometry x=&quot;500&quot; y=&quot;100&quot; width=&quot;30&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    
+    &lt;!-- Use cases --&gt;
+    &lt;mxCell id=&quot;4&quot; value=&quot;Transmit Vital Signs&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+      &lt;mxGeometry x=&quot;240&quot; y=&quot;100&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    &lt;mxCell id=&quot;5&quot; value=&quot;Monitor Patients&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+      &lt;mxGeometry x=&quot;240&quot; y=&quot;200&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    &lt;mxCell id=&quot;6&quot; value=&quot;Configure Alerts&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+      &lt;mxGeometry x=&quot;240&quot; y=&quot;300&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+
+    &lt;!-- Edges --&gt;
+    &lt;mxCell id=&quot;7&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;2&quot; target=&quot;4&quot;&gt;
+      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    &lt;mxCell id=&quot;8&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;3&quot; target=&quot;5&quot;&gt;
+      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+    &lt;mxCell id=&quot;9&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;3&quot; target=&quot;6&quot;&gt;
+      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
+    &lt;/mxCell&gt;
+  &lt;/root&gt;
+&lt;/mxGraphModel&gt;</diagram>
+</mxfile>

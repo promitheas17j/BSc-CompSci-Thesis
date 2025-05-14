@@ -18,8 +18,6 @@ These tables together give a high-level perspective of what the system must achi
 \section{System Behaviour and Workflow} % Section 3.3
 \textbf{Note:} Diagrams need some tweaking before I can include them in here.
 
-State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING, PROCESSING, TRANSMITTING)
-
 Use case diagram: Showing interactions between users (nurses, doctors, patients) and the system
 
 Activity flowchart: Visualise workflow
@@ -27,24 +25,76 @@ Activity flowchart: Visualise workflow
 \section{System Architecture and Design} % Section 3.4
 \textbf{Note:} Diagrams need some tweaking before I can include them in here.
 
+High-Level Architecture Diagram
 % High-Level Architecture diagram: Overview of the system from the medical devices to the cloud with the BT module and arduino in the middle
+
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{images/high_level_architecture}
+\includegraphics[scale=0.5]{diagrams/high_level_architecture}
 \caption{A high level view of the system architecture}
 \label{fig:high_level_architecture_diagram}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.6]{images/block_diagram}
+\includegraphics[scale=0.8]{diagrams/block_diagram}
 \caption{Block diagram showing relationships between high-level components of the system}
 \label{fig:block_diagram}
 \end{figure}
 
+State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING, PROCESSING, TRANSMITTING)
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{diagrams/states_disconnected}
+	\caption{State diagram for the DISCONNECTED state}
+	\label{fig:states_disconnected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_connected}
+	\caption{State diagram for the CONNECTED state}
+	\label{fig:states_connected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_setup}
+	\caption{State diagram for the SETUP state}
+	\label{fig:states_setup}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_setup_substates}
+	\caption{State diagram for the SETUP sub-states}
+	\label{fig:states_setup_substates}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_reading}
+	\caption{State diagram for the READING state}
+	\label{fig:states_reading}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_processing}
+	\caption{State diagram for the PROCESSING state}
+	\label{fig:states_processing}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.8]{diagrams/states_transmitting}
+	\caption{State diagram for the TRANSMITTING state}
+	\label{fig:states_transmitting}
+\end{figure}
+
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.6]{images/schematic_rev2}
+\includegraphics[scale=0.6]{diagrams/schematic_rev2}
 \caption{Detailed circuit shcemtatic of all all components in the device}
 \label{fig:circuit_diagram}
 \end{figure}

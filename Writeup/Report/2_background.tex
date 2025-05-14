@@ -12,25 +12,36 @@ Postoperative vital sign monitoring is essential for both patient safety and the
 
 \textbf{Blood Pressure}
 
-To detect hypotension or hypertension, which can both result in major problems, postoperative blood pressure monitoring is crucial \cite{Kachel2021-pb}. By enabling early diagnosis and control of blood pressure variations, continuous monitoring lowers the risk of postoperative haemorrhage and other unfavourable outcomes \cite{Demetz2024-pl}. Continuous monitoring, according to studies, can identify hypotensive events that intermittent measures could overlook, allowing for prompt responses \cite{Noto2024-uz}.
+To detect hypotension or hypertension, which can both result in major problems, postoperative blood pressure monitoring is crucial \cite{Kachel2021_pb}. By enabling early diagnosis and control of blood pressure variations, continuous monitoring lowers the risk of postoperative haemorrhage and other unfavourable outcomes \cite{Demetz2024_pl}. Continuous monitoring, according to studies, can identify hypotensive events that intermittent measures could overlook, allowing for prompt responses \cite{Noto2024_uz}.
 
 \textbf{Temperature}
 
-After surgery, maintaining normothermia is essential to avoiding problems including surgical site infections and extended hospital stays. Hypothermia can raise the risk of infection and hinder the healing of wounds. Thus, it is advised to regularly check the patient's temperature during the postoperative phase in order to guarantee the best possible results \cite{Frank1999-rb}.
+After surgery, maintaining normothermia is essential to avoiding problems including surgical site infections and extended hospital stays. Hypothermia can raise the risk of infection and hinder the healing of wounds. Thus, it is advised to regularly check the patient's temperature during the postoperative phase in order to guarantee the best possible results \cite{Frank1999_rb}.
 
 \textbf{Oxygen Saturation}
 
-Monitoring oxygen saturation is essential for identifying hypoxaemia, which, if left untreated, can result in organ dysfunction. Early management in cases of respiratory compromise is made possible by pulse oximetry, which offers a non-invasive way to continuously measure oxygen levels. When compared to sporadic inspections, continuous monitoring has been demonstrated to improve the detection of oxygen desaturation \cite{Khanna2024-fz}.
+Monitoring oxygen saturation is essential for identifying hypoxaemia, which, if left untreated, can result in organ dysfunction. Early management in cases of respiratory compromise is made possible by pulse oximetry, which offers a non-invasive way to continuously measure oxygen levels. When compared to sporadic inspections, continuous monitoring has been demonstrated to improve the detection of oxygen desaturation \cite{Khanna2024_fz}.
 
 \textbf{Heart Rate}
 
-In the postoperative phase, heart rate monitoring is crucial for spotting physiological alterations that could indicate patient decline. The British Journal of Anaesthesia states that heart rate changes, like bradycardia or tachycardia, can occur hours or even days before serious occurrences like cardiac arrest, particularly in the 48 hours after surgery. This emphasises the necessity of regular or ongoing monitoring. As is typical in many wards, manual spot checks conducted every 4–8 hours are not enough to accurately identify these occurrences. Continuous monitoring, on the other hand, has been demonstrated to detect heart rate anomalies more frequently and with greater severity than would otherwise be detected, enabling medical professionals to take early action and possibly avert problems or death \cite{Khanna2025-sg}.
+In the postoperative phase, heart rate monitoring is crucial for spotting physiological alterations that could indicate patient decline. The British Journal of Anaesthesia states that heart rate changes, like bradycardia or tachycardia, can occur hours or even days before serious occurrences like cardiac arrest, particularly in the 48 hours after surgery. This emphasises the necessity of regular or ongoing monitoring. As is typical in many wards, manual spot checks conducted every 4–8 hours are not enough to accurately identify these occurrences. Continuous monitoring, on the other hand, has been demonstrated to detect heart rate anomalies more frequently and with greater severity than would otherwise be detected, enabling medical professionals to take early action and possibly avert problems or death \cite{Khanna2025_sg}.
 
 \textbf{Respiratory Rate}
 
-Haahr-Raunkjaer et al. found that patients who experienced serious adverse events (SAEs) were more likely to have respiratory rates exceeding 24 breaths per minute for more than five minutes, even though they did not report statistically significant differences in abnormal respiratory rate between patient groups with and without SAEs. This pattern supports the use of continuous respiratory monitoring for prompt detection and intervention and implies that respiratory rate is a useful early clinical indicator of post-operative decline in patient condition \cite{Haahr-Raunkjaer2022-bo}.
+Haahr-Raunkjaer et al. found that patients who experienced serious adverse events (SAEs) were more likely to have respiratory rates exceeding 24 breaths per minute for more than five minutes, even though they did not report statistically significant differences in abnormal respiratory rate between patient groups with and without SAEs. This pattern supports the use of continuous respiratory monitoring for prompt detection and intervention and implies that respiratory rate is a useful early clinical indicator of post-operative decline in patient condition \cite{Haahr_Raunkjaer2022_bo}.
+
+It is crucial to remember that the type of operation done and the patient's unique risk factors can affect each vital sign's clinical significance. In order to solve this, the suggested system offers vital sign threshold customisation, allowing medical professionals to adjust monitoring settings to the unique requirements of every patient and surgical situation.
 
 \section{Role of IoT in vital sign monitoring} % Section 2.3
+By enabling continuous, real-time tracking of physiological parameters, the Internet of Things' (IoT) incorporation into vital sign monitoring has significantly improved postoperative patient care. Vital signs like heart rate, blood pressure, respiration rate, temperature, and oxygen saturation are measured by IoT-based systems using wearable sensors. By wirelessly sending data to cloud-based platforms, these sensors enable medical professionals to keep an eye on patients from a distance and act quickly to stop any decline \cite{Olusegun_2025_RT_patient}.
+
+As an example, an IoT-driven system for continuous post-surgery monitoring of patients with cardiac disease was established in a study by Harez et al. In order to enable prompt medical interventions, the system used sensors to gather real-time vital sign data, which was subsequently examined to identify any issues \cite{Harez_2024pxm}.
+
+An Internet of Things (IoT)-based vital signs monitoring system that combines several sensors to detect different health indicators was also presented by research by \cite{Sundaravadivel_IoT_vital_signs}. The architecture of the system facilitates effective data collection, transfer, and analysis, all of which enhance patient outcomes.
+
+IoT-based wearable technology has the potential to provide individualised care and remote monitoring, but issues with data security, patient compliance, and compatibility with current medical systems limit its use in clinical settings. These technologies run the danger of increasing complexity without ensuring better results if they are not carefully implemented and clinically validated \cite{Hamed_Wearable_Healthcare}.
+
+In summary, real-time, remote observation and early intervention capabilities provided by IoT integration into vital sign monitoring show promise for improving postoperative care. Research indicates that it can enhance results by facilitating ongoing monitoring of physiological indicators. Data confidentiality, patient adherence, and system interoperability are some of the issues that still need to be resolved for practical deployment in order to guarantee dependable therapeutic impact and avoid needless complexity.
 
 \section{Communication protocols in IoT-based monitoring} % Section 2.4
 This section explores the communication protocols relevant to IoT-based monitoring of post-operative patients, focusing on Bluetooth and LoRaWAN. Reliable and efficient data transmission is crucial in this context, where vital signs such as heart rate, temperature, and blood pressure need to be collected with minimal power consumption and transmitted securely over short or long distances.
@@ -40,7 +51,7 @@ LoRa is a wireless modulation technique derived from chirp spread spectrum techn
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/chirp_spread_spectrum_labeled}
-\caption{Example of a chirp spread spectrum transmission, highlighting the up and down sweeps which represent binary 1 and 0. \cite{Wenner2017-hd}}
+\caption{Example of a chirp spread spectrum transmission, highlighting the up and down sweeps which represent binary 1 and 0. \cite{Wenner2017_hd}}
 \label{fig:chirp_spread_spectrum_labeled}
 \end{figure}
 
@@ -49,7 +60,7 @@ Figure \ref{fig:chirp_spread_spectrum_labeled} provides a visual representation 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/frequency_shift_keying_labeled.png}
-\caption{Example of having two distinct frequencies representing binary 0 and 1, and "jumping" between them instead of sweeping. \cite{Wenner2017-hd}}
+\caption{Example of having two distinct frequencies representing binary 0 and 1, and "jumping" between them instead of sweeping. \cite{Wenner2017_hd}}
 \label{fig:frequency_shift_keying_labeled}
 \end{figure}
 
@@ -145,8 +156,55 @@ Despite the increase in collisions, transmission efficiency per node remained st
 These outcomes support the choice of LoRaWAN as a communication backbone in the system, balancing scalability and energy efficiency in a medical monitoring context.
 
 \section{Commercially available medical devices} % Section 2.5
+Because Bluetooth technology combined with technologies allowing integration with the cloud allow for continuous, real-time monitoring of vital signs including heart rate, blood pressure, respiration rate, temperature, and oxygen saturation, they have completely changed postoperative treatment. Such devices enable smooth data transfer to medical professionals, enabling prompt interventions and individualised patient treatment. Numerous Bluetooth-enabled medical devices are available on the market, with differences in performance, compatibility, and data access transparency. Since it dictates how easily these devices may be integrated with other healthcare systems and apps such as the one discussed in this thesis, the level of Bluetooth openness is especially important. I will examine a number of commercially available devices that demonstrate these characteristics in the sections that follow, emphasising their features and clinical application considerations.
+
+Numerous commercially available medical devices can be used in clinical settings and are made for the continuous monitoring of vital signs. Selected devices are summarised in the table below, with an emphasis on those that have been certified for clinical use by the US Food and Drug Administration (FDA) or that bear the CE mark in accordance with the EU Medical Device Regulation. It is important to keep in mind that FDA approval entails a more stringent examination procedure and is frequently thought of as a higher quality of clinical validation, even if the CE mark certifies regulatory conformity.
+
+The table features the certification granted to the device, the measured vital signs, and its Bluetooth openness level. Each device listed is capable of measuring one or more of the following vital signs:
+
+\begin{itemize}
+			\item \textbf{HR:} Heart Rate
+			\item \textbf{BP:} Blood Pressure (may be traditional or cuffless)
+			\item \textbf{RR:} Respiratory Rate
+			\item \textbf{SpO\textsubscript{\textbf{2}}:} Blood Oxygen Saturation
+			\item \textbf{Temp:} Body Temperature
+			\item \textbf{ECG:} Electrocardiogram
+\end{itemize}
+
+The term "Bluetooth openness" indicates how simple it is to access and incorporate data into customised solutions. Interoperability may be a constraint for customised IoT solutions because the majority of clinically certified devices function within proprietary ecosystems.
+
+\input{tables/medical_bt_devices}
+
+Even though a lot of devices fulfil the requirements for medical certification, as the table shows, they frequently lack open Bluetooth interfaces. When incorporating them into custom IoT systems, this poses a problem, which will be discussed in the next section along with suggestions for dealing with it.
 
 \section{Integration with custom IoT systems} % Section 2.6
+Because of the restricted or proprietary nature of their Bluetooth communication protocols, it is still very difficult to integrate commercially available vital signs monitors into custom Internet of Things (IoT) systems. As mentioned in the preceding section, the majority of devices offer little to no support for open data access, despite the fact that many of them are medically certified and give accurate physiological readings. Some, at most, provide semi-open APIs that are restricted to partner software or vendor-specific apps. This makes it more difficult to integrate seamlessly with specially designed systems that seek to independently gather, process, or send data. The impacts of these restrictions are examined in this section, along with possible interoperability tactics for medical IoT applications.
+
+\subsubsection{Challenges and Implications}
+Even though there are medically recognised vital sign measurement devices available, Bluetooth accessibility issues make it difficult to integrate them into custom IoT systems. The majority of medical equipment intended for professional usage rely on closed data ecosystems or proprietary Bluetooth protocols. The functionality is frequently confined to vendor-approved apps or limited APIs, preventing complete integration with customised microcontroller-based systems, even in situations where some Bluetooth access is offered.
+
+This lack of openness presents a number of practical and technical difficulties. First, there are significant limitations on compatibility. Raw vital sign data cannot be directly accessed by custom systems that depend on local gateways or lightweight edge devices (like Arduino or ESP32) unless the device supports standard Bluetooth Generic Attribute Profile (GATT) profiles or offers a published Application Programming Interface (API). Consequently, the two main advantages of edge-based IoT architectures—real-time processing and on-device decision-making—become impracticable. Second, vendor lock-in develops into an extremely serious issue. System designers are left with no control over data flow, privacy policies, and long-term data preservation when device data is only available via the cloud platforms or mobile apps of the manufacturer, which almost certainly makes it more difficult to comply with data protection laws like GDPR or HIPAA in clinical or research settings where data sovereignty, repeatability, and traceability are crucial.
+
+Furthermore, development time and integration complexity also rise. Reverse engineering, unapproved Software Development Kits (SDKs), or intricate workarounds are frequently required in order to retrieve useful data from these devices. These endeavours are laborious, prone to mistakes, and possibly fragile, as they can fail with firmware changes or violate license agreements.
+
+These difficulties show how the requirements for adaptable, responsive IoT-based monitoring solutions differ from those of authorised commercial devices. To overcome these constraints while maintaining system dependability and regulatory compliance, potential workarounds and integration techniques are examined in the immediately following paragraphs.
+
+\subsubsection{Possible Solutions}
+Developers of custom IoT systems must think of alternate ways to enable integration while preserving clinical dependability and compliance, given the limitations imposed by proprietary Bluetooth implementations in medically approved vital sign monitors. While there isn't a single solution that works for all, there are a few workarounds that could enable significant interoperability despite the existing constraints.
+
+\begin{enumerate}
+	\item \textbf{Use of intermediate devices with vendor APIs}
+	\item[] Data can be accessed by official desktop software or mobile applications in certain closed systems. In these situations, middleware bridges that communicate with the vendor software through open SDKs or REST APIs can be created, such as companion Raspberry Pi services or smartphone apps. These intermediary devices can then use standardised protocols to send the necessary information to customised IoT devices. This maintains data accuracy and honours the device's intended usage paradigm, even if it adds another layer of complexity and can cause latency to increase.
+	\item \textbf{Preferring semi-open devices to entirely closed devices}
+	\item[] Vendors occasionally offer limited Bluetooth access via documented GATT profiles or custom services. Although they are not completely open, devices like the Wellue Checkme Pro provide restricted data access that can be adequate for everyday uses. When feasible, system designers should give priority to these semi-open devices and use reverse-engineered documentation or community-developed libraries to retrieve readings with the least amount of intrusion to prevent any legal problems regarding licensing agreements.
+	\item \textbf{Passive signal interception (may violate licensing agreements)}
+	\item[] Certain specialised tools can be used to determine the transmission structure of the Bluetooth signals sent from closed sensor devices, and reverse-engineer the communication protocol in devices without access to an API or access point. Although this method can provide complete access to sensor data, it is not recommended for production systems or environments that need to adhere to legal or clinical requirements since it runs the risk of breaking user agreements and regulatory restrictions.
+	\item \textbf{Develop sensor systems in parallel}
+	\item[] By constructing parallel sensor modules with clinically proven open hardware or certified discrete sensors (e.g., MAX30101 for SpO$_2$ and pulse, MLX90614 for temperature), it is also possible to entirely eliminate reliance on closed devices. This provides complete firmware-level control over sensing, communication, and data handling, but it is more taxing in terms of development resources. Full-stack customisation is made possible by the direct integration of such customised sensors with system infrastructure when paired with LoRa, BLE, or Wi-Fi transmission modules.
+	\item \textbf{Collaboration with vendors and enterprise partnerships}
+	\item [] Organisations can contact vendors for OEM agreements or developer access when commercial devices are preferred.  On request, certain manufacturers might provide enterprise SDKs or documentation, particularly for system integration pilot programs, academic research, or clinical trials.  Even though it could take more time, this approach guarantees long-term support and compliance.
+	\item[] The expense, complexity, and legality of each of these workarounds are trade-offs.  The best strategy frequently calls for a hybrid system, in which open or semi-open alternatives are utilised for system development or simulation, while medically certified but closed devices are utilised for clinical validation.  In the end, market forces and regulatory pressure may push manufacturers towards greater openness in upcoming device generations as the need for patient-specific, interoperable healthcare systems increases.
+\end{enumerate}
 
 \section{Summary} % Section 2.7
-Summarise what was said in this chapter and link with the next chapter.
+There are technological and legal issues with integrating medically approved vital sign monitoring devices into unique IoT systems.  Even if a lot of commercial devices provide precise and trustworthy measurements, smooth integration is hampered by their closed or semi-open Bluetooth implementations, which restrict direct access to raw data streams.  These restrictions may affect custom healthcare platforms' adaptability, reactivity, and independence.  However, there are a number of practical alternatives, such as using semi-open devices, developing parallel sensing modules, using middleware programs, or forming direct relationships with manufacturers.  For IoT healthcare solutions to be scalable, interoperable, and patient-tailored, these integration hurdles must be removed.

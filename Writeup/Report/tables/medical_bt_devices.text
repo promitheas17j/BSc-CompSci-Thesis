@@ -1,0 +1,70 @@
+\begin{table}[H]
+\centering
+\caption{LPWAN technologies - Advantages \& Disadvantages \cite{sigfox_advantages_disadvantages, nbiot_advantages_disadvantages, ltem_advantages_disadvantages, lorawan_advantages_disadvantages}}
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Technology} & \textbf{Advantages} & \textbf{Disadvantages} \\
+\midrule
+LoRaWAN &
+\begin{itemize}
+	\item Long range
+	\item Low power consumption
+	\item Adaptive data rates
+	\item Deep indoor penetration
+	\item Low cost
+\end{itemize}
+&
+\begin{itemize}
+	\item Limited by duty cycle
+	\item Unsuitable for real-time or low latency applications
+\end{itemize}
+\\
+SigFox &
+\begin{itemize}
+	\item Lightweight protocol
+	\item Minimal overhead
+	\item Long battery life
+	\item Wide coverage
+	\item Underground support
+\end{itemize}
+&
+\begin{itemize}
+	\item One-way communication
+	\item Limited data rates
+	\item One operator per country
+\end{itemize}
+\\
+NB-IoT &
+\begin{itemize}
+	\item High scalability
+	\item Robust QoS
+	\item Extended range
+	\item Structure penetration
+	\item Backed by operators
+\end{itemize}
+&
+\begin{itemize}
+	\item Licensed spectrum costs
+	\item Lower data rates than LTE-M
+	\item No roaming support
+\end{itemize}
+\\
+LTE-M &
+\begin{itemize}
+	\item High data rates
+	\item Excellent coverage
+	\item LTE network integration
+	\item Efficient power use
+\end{itemize}
+&
+\begin{itemize}
+	\item Higher costs
+	\item Firmware updates consume power
+	\item Not for high-volume data
+\end{itemize}
+\\
+\bottomrule
+\end{tabularx}
+\label{tab:lpwan_adv_disadv}
+\end{table}
+
