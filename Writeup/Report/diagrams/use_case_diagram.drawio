@@ -1,39 +1,70 @@
-<?xml version="1.0" ?>
-<mxfile host="app.diagrams.net">
-  <diagram name="Use Case Diagram">&lt;mxGraphModel dx=&quot;1424&quot; dy=&quot;794&quot; grid=&quot;1&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;827&quot; pageHeight=&quot;1169&quot;&gt;
-  &lt;root&gt;
-    &lt;mxCell id=&quot;0&quot;/&gt;
-    &lt;mxCell id=&quot;1&quot; parent=&quot;0&quot;/&gt;
-    
-    &lt;!-- Actors --&gt;
-    &lt;mxCell id=&quot;2&quot; value=&quot;Patient&quot; style=&quot;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
-      &lt;mxGeometry x=&quot;80&quot; y=&quot;100&quot; width=&quot;30&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    &lt;mxCell id=&quot;3&quot; value=&quot;Medical Staff&quot; style=&quot;shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
-      &lt;mxGeometry x=&quot;500&quot; y=&quot;100&quot; width=&quot;30&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    
-    &lt;!-- Use cases --&gt;
-    &lt;mxCell id=&quot;4&quot; value=&quot;Transmit Vital Signs&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
-      &lt;mxGeometry x=&quot;240&quot; y=&quot;100&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    &lt;mxCell id=&quot;5&quot; value=&quot;Monitor Patients&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
-      &lt;mxGeometry x=&quot;240&quot; y=&quot;200&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    &lt;mxCell id=&quot;6&quot; value=&quot;Configure Alerts&quot; style=&quot;ellipse;whiteSpace=wrap;html=1;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
-      &lt;mxGeometry x=&quot;240&quot; y=&quot;300&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-
-    &lt;!-- Edges --&gt;
-    &lt;mxCell id=&quot;7&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;2&quot; target=&quot;4&quot;&gt;
-      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    &lt;mxCell id=&quot;8&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;3&quot; target=&quot;5&quot;&gt;
-      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-    &lt;mxCell id=&quot;9&quot; style=&quot;endArrow=none;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;3&quot; target=&quot;6&quot;&gt;
-      &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot;/&gt;
-    &lt;/mxCell&gt;
-  &lt;/root&gt;
-&lt;/mxGraphModel&gt;</diagram>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="27.0.5">
+  <diagram name="Page-1" id="PmOtgQnjxEkPDvwjBH-y">
+    <mxGraphModel dx="1596" dy="856" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-8" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-1" target="3_vnTeBhrZ6FZYod8qUJ-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-11" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-1" target="3_vnTeBhrZ6FZYod8qUJ-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-1" target="3_vnTeBhrZ6FZYod8qUJ-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-17" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-1" target="3_vnTeBhrZ6FZYod8qUJ-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-21" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;startArrow=classic;startFill=1;endArrow=none;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-1" target="3_vnTeBhrZ6FZYod8qUJ-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-1" value="Medical Staff&lt;br&gt;(Doctors/Nurses)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" vertex="1" parent="1">
+          <mxGeometry x="157" y="445" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-7" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-2" target="3_vnTeBhrZ6FZYod8qUJ-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-9" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=1;entryDx=0;entryDy=0;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;endArrow=none;startFill=1;startArrow=classic;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-2" target="3_vnTeBhrZ6FZYod8qUJ-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-14" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-2" target="3_vnTeBhrZ6FZYod8qUJ-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-19" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" edge="1" parent="1" source="3_vnTeBhrZ6FZYod8qUJ-2" target="3_vnTeBhrZ6FZYod8qUJ-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-2" value="Patients" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;labelBackgroundColor=none;fillColor=#F2CC8F;strokeColor=#E07A5F;fontColor=#393C56;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="431" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-3" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=none;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="257" y="154" width="936" height="642" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-5" value="Set Vital Sign Thresholds" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="665" y="228" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-6" value="Receive alert to take reading" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="853" y="510.5" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-10" value="Send&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(57, 60, 86), rgb(182, 184, 207));&quot;&gt;&amp;nbsp;alert to take reading&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="376" y="222" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-12" value="Take reading from medical sensor device" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="665" y="361" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-16" value="View readings on cloud platform" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="490" y="510.5" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-18" value="Connect medical sensor devices through BT LE" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="844" y="669" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-20" value="Receive notification if patient status abnormal" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#E07A5F;fontColor=#393C56;fillColor=#F2CC8F;" vertex="1" parent="1">
+          <mxGeometry x="490" y="669" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3_vnTeBhrZ6FZYod8qUJ-22" value="Vital Sign Monitoring System" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#393C56;strokeWidth=1;fontSize=24;" vertex="1" parent="1">
+          <mxGeometry x="553.75" y="110" width="342.5" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
