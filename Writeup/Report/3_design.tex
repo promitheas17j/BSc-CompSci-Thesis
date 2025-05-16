@@ -15,10 +15,33 @@ These tables together give a high-level perspective of what the system must achi
 \input{tables/user_requirements_table}
 \clearpage
 
-\section{System Behaviour and Workflow} % Section 3.3
-\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+\section{Use Cases and System Interactions} % Section 3.3
+The Vital Sign Monitoring System allows for on-demand monitoring of key physiological parameters in postoperative patients, enabling prompt medical intervention and remote supervision. Medical personnel like doctors and nurses, as well as patients are the intended users of the system, and they engage with the it in several ways.
 
-Use case diagram: Showing interactions between users (nurses, doctors, patients) and the system
+\subsection{Medical Staff Use Cases}
+\begin{itemize}
+	\item \textbf{Set Vital Sign Thresholds Remotely}
+	\item[] Each patient's vital signs have upper and lower limitations that can be set by medical personnel remotely. By using these thresholds, out-of-bounds readings are automatically flagged and sent to the cloud platform.
+	\item \textbf{Send Alert to Take Reading}
+	\item[] The system can be manually prompted by a physician or nurse to ask the patient for a new measurement.
+	\item \textbf{View Readings on Cloud Platform}
+	\item[] Medical staff can view current and past readings remotely, via a web dashboard.
+	\item \textbf{Receive Notification if Patient Status Abnormal}
+	\item[] The system notifies the clinician when a vital sign is below or above the predetermined threshold.
+	\item \textbf{Take Reading from Medical Sensor Device}
+	\item[] Medical staff can initiate a reading automatically from the cloud platform. If there is no medical sensor connected with Bluetooth at that time, it will switch to prompting the user to connect one and take the reading themselves.
+\end{itemize}
+
+\subsection{Patient Use Cases}
+\begin{itemize}
+	\item \textbf{Receive Alert to Take Reading}
+	\item[] When a measurement is required, the patient is prompted (both visually through the LCD screen and the LEDs, and audibly through the buzzer) that a reading is requested and what vital sign they should measure.
+	\item \textbf{Control Medical Sensor Device Bluetooth LE Connection Status}
+	\item[] Can connect or disconnect vital sign sensors to the device through Bluetooth LE.
+	\item \textbf{Take Reading from Medical Sensor Device}
+	\item[] Patients can manually take readings at times of their choosing, and take readings when directed to remotely by medical staff.
+\end{itemize}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/use_case_diagram}
@@ -26,12 +49,20 @@ Use case diagram: Showing interactions between users (nurses, doctors, patients)
 	\label{fig:use_case_diagram}
 \end{figure}
 
-Activity flowchart: Visualise workflow
+Following these exchanges, the system behaviour depicted in Figure \ref{fig:use_case_diagram} shows how the two user categories and the underlying monitoring functions are related. Every user role has a different workflow, as the diagram illustrates. Notably, the system will ask the patient to connect a compatible device and take the reading manually if medical staff requests a reading but there isn't a Bluetooth-connected medical sensor available at the moment. However, the use case diagram does not depict this internal fallback behaviour because these diagrams are meant to depict the actions that each actor can take that are visible to the outside world, not the internal logic or decision flows of the system. Nonetheless, this system ensures that clinical workflows are robust even when there are disconnections and that monitoring capability is maintained.
+
+In conclusion, the system outlines the responsibilities of both patients and medical staff clearly, and takes into account situations where a reading is requested but there is no device connected to take it. Patients can also take readings throughout the day if they so desire, but when there is a remote request from a clinician it can not be ignored.
+
+The system architecture and behavioural design, including state diagrams and the circuit diagram, are shown in the next section.
 
 \section{System Architecture and Design} % Section 3.4
+The architecture and design of the system are described in this section. For long-distance, low-power data transmission and centralised monitoring, the system includes a microcontroller-based LoRa communication unit. To gather data from the vital sign sensors, a Bluetooth Low Energy module is used, and for the communication between the device and the cloud a LoRaWAN gateway is set up to transmit to TheThingsNetwork. The goal of the design is to make it capable of communicating with BLE devices as simply as possible (something that due to the current closed nature of commerically available medical BT devices is not as simple as would be ideal), while utilising LoRaWAN's low-power features to allow for scalable, remote vital sign collecting, which is perfect for post-operative settings or locations with inadequate infrastructure.
 
-High-Level Architecture Diagram
-% High-Level Architecture diagram: Overview of the system from the medical devices to the cloud with the BT module and arduino in the middle
+Three main phases make up the system design: data collection (using the Bluetooth module to collect readings from medical sensors), processing of said data and finally transmission using an Arduino-based LoRa node. To tie everything together, cloud integration (using a LoRaWAN gateway and backend) will consist of a simple platform to view data and send commands to the device from a regular browser.
+
+A high-level overview of the system's design is shown in Figure \ref{fig:high_level_architecture_diagram}. Blood pressure sensors, temperature sensors, and heart rate sensors are examples of medical Bluetooth capable devices that connect to a central unit (an Arduino-based microcontroller with a LoRa module) via Bluetooth LE. This central unit acts as a command centre and filter at the same time, where it filters out read data and only sends that which exceeds the set thresholds and is therefore considered critical data for a particular patient. It ignores data within bounds in all but a few cases --- those being when medical staff specifically request a reading, or the reading is one of those that are to be taken at set times every day.
+
+This clearly compartmentalised architecture allows for separation of responsibilities: sensor management and handling of data is done locally, while the data is stored and analysed on the cloud platform. The cloud platform is also responsible for sending commands to the device when required by the medical staff.
 
 \begin{figure}[H]
 \centering
@@ -40,6 +71,10 @@ High-Level Architecture Diagram
 \label{fig:high_level_architecture_diagram}
 \end{figure}
 
+On the right side of Figure \ref{fig:high_level_architecture_diagram} is the LoRa Gateway which is responsible for bridging the device and the cloud platform.
+
+The internal architecture of the embedded system is depicted in Figure \ref{fig:block_diagram}, which also highlights the hardware components' interactions on the Arduino-based microcontroller. The particular modules utilised in the finished implementation are shown in this diagram along with their functions in data collection, user interaction, processing, and communication.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{diagrams/block_diagram}
@@ -47,13 +82,42 @@ High-Level Architecture Diagram
 \label{fig:block_diagram}
 \end{figure}
 
-State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING, PROCESSING, TRANSMITTING)
+The core of the system is the Arduino microcontroller, which controls all data flow and peripheral interactions.
+
+\begin{itemize}
+	\item[] \textbf{Components for Sensing and Input}
+	\item Module for Sensor Communication (HM-10 BLE): Communication with external medical devices, such as temperature, heart rate, and blood pressure sensors, is managed by this Bluetooth Low Energy module. This module is used by the Arduino to read data from the paired sensors.
+	\item Date-Time Module: Accurate timestamps for sensor readings and intitiation of data reading at pre-programmed times of the day is provided by a real-time clock module (DS3231 RTC). This is crucial for monitoring vital sign trends over time. This data is read by the Arduino through I2C.
+	\item User Interface Input (Buttons): The patient can initiate actions, including entering reading mode and waiting for a reading or exploring menus on the display, by pressing buttons. This provides simple interaction without the need for additional devices.
+	\item[] \textbf{Output and Feedback} 
+	\item LCD Display: Shows timestamps, sensor data, and UI prompts in real time. This display uses very little GPIO thanks to the I2C protocol.
+	\item Local alarms are provided by the buzzer and the LEDs. System states, such as connected or disconnected, reading, processing, or errors can be represented by LEDs, and in the event of unusual readings or the need for user action, their attention can be grabbed by the use of the buzzer.
+	\item[] \textbf{Transmission and Communication}
+	\item LoRaWAN Module: This module manages wireless data transfer over great distances and is integrated into the Arduino board. After being taken and formatted, a reading is sent to the gateway via LoRa and uploaded to the cloud.
+\end{itemize}
+
+The system's behaviour can be varied based on the context and connected sensor thanks to its modular design using a Finite State Machine. Additionally, separated troubleshooting, streamlined development, and simpler future extensions (such incorporating SpO$_2$ sensors or supporting more sophisticated interfaces) are made possible by the separation of the communication, interface, and alarm modules. Next we will discuss the FSM that allows for this modularisation.
+
+\subsubsection{State Machine Diagrams}
+As soon as the system is turned on, it goes into the DISCONNECTED state. Awaiting user or environmental input, this state acts as the initial idle condition. In this state, two main conditions are assessed:
+
+\begin{itemize}
+	\item Without additional user interaction, the system switches straight to the CONNECTED state whenever a Bluetooth connection is discovered. When a compatible medical sensor is already activated and within range, this guarantees a smooth interaction.
+	\item As an alternative, the system enters the SETUP state when the user chooses the "Setup" option from the interface, enabling the setting of vital sign thresholds before any sensors are connected.
+\end{itemize}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/states_disconnected}
 	\caption{State diagram for the DISCONNECTED state}
 	\label{fig:states_disconnected}
 \end{figure}
+
+Whether waiting for an automatic connection or permitting pre-configuration prior to active use, the decision structure guarantees flexibility and user-friendliness in the beginning stages of powering on (not requiring the user to explicitly enter the CONNECTED state if a device is already connected). The system can go on to measurement and data handling capability after configuration is finished or a device connects.
+
+This flow can be seen visually represented as a state diagram in Figure \ref{fig:states_disconnected} above.
+
+After a successful Bluetooth Low Energy (BLE) connection has been made with a medical sensor device, the CONNECTED state serves as the system's primary operating mode. In this condition, the user can take measurements or set up system parameters and has complete access to the system's essential features.
 
 \begin{figure}[H]
 	\centering
@@ -62,12 +126,37 @@ State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING
 	\label{fig:states_connected}
 \end{figure}
 
+The system offers three options from this state:
+
+\begin{itemize}
+	\item Setup: If the user selects the Setup option, the system enters the SETUP state, enabling the setup of vital sign thresholds.
+	\item Read: Choosing the Read option puts the device in the READING mode and starts the process of gathering vital sign information from the linked medical sensor.
+	\item Disconnect: The system returns to the DISCONNECTED state if the Disconnect option is chosen or if a Bluetooth disconnection is automatically detected. This guarantees that the availability of a linked sensor is always appropriately reflected by the system.
+\end{itemize}
+
+By ensuring that the system responds to user input as well as environmental changes (such a loss of connectivity), the state diagram preserves the system's resilience and user friendliness. Thus, the CONNECTED state acts as the centre for processes related to both configuration and data collection.
+
+The interface for configuring the system's vital sign thresholds is accessible during the SETUP state. Depending on whether a Bluetooth-enabled sensor is currently coupled with the system, one can enter this state from either the DISCONNECTED or CONNECTED states.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/states_setup}
 	\caption{State diagram for the SETUP state}
 	\label{fig:states_setup}
 \end{figure}
+
+As is visible from Figure \ref{fig:states_setup}, after entering the SETUP state, the user is given four options:
+
+\begin{itemize}
+	\item Setup BP (blood Pressure): This leads to the SETUP\_BP state, where the user can set the minimum and maximum systolic and diastolic thresholds accordingly.
+	\item Setup Temp (Temperature): Allows the user to set the minimum and maximum temperature values by leading to the SETUP\_TEMP state.
+	\item Setup HR (Heart Rate): This leads to the SETUP\_HR state where the user can set the minimum and maximum values for heart rate.
+	item Depending on where the SETUP state was called from, selecting the "Back" option will return the user to the CONNECTED or DISCONNECTED accordingly.
+\end{itemize}
+
+By serving as a routing hub, this state makes it possible to set clinical thresholds for each patient or surgery type. Each configuration option leads to a specific sub-state that handles validation and data entry logic; no threshold adjustments are made within this state itself.
+
+The diagram below (Figure \ref{fig:states_setup_substates}) goes into detail for each of the setup sub-states.
 
 \begin{figure}[H]
 	\centering
@@ -76,12 +165,33 @@ State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING
 	\label{fig:states_setup_substates}
 \end{figure}
 
+SETUP\_BP, SETUP\_TEMP, and SETUP\_HR are specifically responsible for setting the lowest and highest acceptable values for a given vital sign. The user is prompted to enter the values one after the other. To make sure the minimum is less than or equal to the maximum, each pair is separately checked. The system will re-prompt for both values if any validation is unsuccessful.
+
+\begin{itemize}
+	\item All of these states are essentially identical in structure and operation. They ask the user to enter a minimum and maximum value, check that the maximum is not less than the minimum, and if it is not return the user to the SETUP state.
+\end{itemize}
+
+These sub-states guarantee that threshold values used for measurement and analysis are reasonable, and enforce that thresholds are correctly set.
+
+The READING state (Figure \ref{fig:states_reading}) is in charge of receiving vital sign information from a connected Bluetooth medical sensor. The system will wait for incoming data from the sensor device until something is received.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/states_reading}
 	\caption{State diagram for the READING state}
 	\label{fig:states_reading}
 \end{figure}
+
+Following the receipt of data, it must confirm that it's valid:
+
+\begin{itemize}
+	\item The system moves on to the PROCESSING state for more analysis if valid data is received.
+	\item The system counts the number of read attempts if the data received is deemed invalid. Up to three attempts to read valid data are allowed.
+	\item The system rejects the data and waits for a new reading if the number of attempts is less than or equal to three.
+	\item The user is presented with an error message and the system returns to the CONNECTED state if the third attempt is unsuccessful as well.
+\end{itemize}
+
+The vital sign reading obtained in the previous READING state must be assessed by the PROCESSING state (Figure \ref{fig:states_processing}). The system determines if the newly received data is within the established acceptable bounds after it has been received. These thresholds, which are unique to each type of vital sign (e.g., blood pressure, heart rate, temperature), are established by the medical team or patient during system setup.
 
 \begin{figure}[H]
 	\centering
@@ -90,6 +200,16 @@ State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING
 	\label{fig:states_processing}
 \end{figure}
 
+The system returns to the CONNECTED state, where additional user input or new readings may be analysed, if the data falls within acceptable bounds and it decides that no immediate action is necessary. This is done to not flood the network with unnecessary traffic.
+
+The data may, however, point to a potentially hazardous or abnormal patient condition if it drops below or goes above the established threshold range. The system then switches to the TRANSMITTING state, where it tries to transmit the abnormal reading to the cloud platform so that medical professionals can monitor it remotely.
+
+This design ensures that alerts are raised only for clinically relevant events, reducing false alarms while maintaining responsiveness to potentially critical conditions, and reduces load on the network by only sending relevant data to the cloud.
+
+Abnormal vital sign readings must be sent via LoRaWAN to the cloud platform while in the TRANSMITTING state (Figure \ref{fig:states_transmitting}). This only happens when a reading is outside the configured acceptable range, which indicates a possible health concern. This is determined by the PROCESSING state.
+
+When the system reaches this state, the LoRa module on the Arduino starts the data transfer, after which it awaits confirmation from the cloud platform that the data was successfully received.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/states_transmitting}
@@ -97,26 +217,55 @@ State diagram: Describing system states (DISCONNECTED, CONNECTED, SETUP, READING
 	\label{fig:states_transmitting}
 \end{figure}
 
+Data transmission is deemed successful if confirmation is obtained in the form of an acknowledgement from the cloud platform, and the system goes back to the CONNECTED state, prepared to accept more inputs.
+
+The system will attempt to deliver the data up to three times in the case of a failed transmission. The system notifies the user of the failure with an error message and returns to the CONNECTED state if, after three unsuccessful attempts, the data is still unable to reach the cloud platform. In addition to keeping the system from becoming permanently trapped in a failed state, this three-retries process helps guarantee reliability in wireless data transmission, particularly in settings where LoRaWAN connectivity may be erratic.
+
+\subsubsection{Circuit Schematic}
+The hardware circuit schematic for the system is displayed in Figure \ref{fig:circuit_diagram}. The system heart is the Arduino Leonardo microcontroller, which manages interfacing with peripheral components such the HM-10 Bluetooth Low Energy (BLE) module and the DS3231 real-time clock connected via I$^2$C. While the BLE module enables wireless connectivity to external sensor devices, the RTC maintains precise timekeeping for timestamping collected data, among other tasks.
+The three-button interface allows for very basic user interaction in the form of menu navigation and threshold value entry. Four status LEDs—green, yellow, red, and blue—show the device's condition and Bluetooth connectivity. Additionally, a buzzer provides audible alerts for abnormal readings or transmission failures, and a 16x2 LCD display (as with the RTC, also connected via I$^2$C) is used to display menus. To guarantee a clear digital signal, a pull-down resistor is attached to each button, and 220 ohm resistors are used to limit the current flowing through all of the LEDs. This schematic represents a small, power-efficient design.
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{diagrams/schematic_rev2}
+\includegraphics[width=\textwidth]{diagrams/schematic_rev3}
 \caption{Detailed circuit shcemtatic of all all components in the device}
 \label{fig:circuit_diagram}
 \end{figure}
 
 \section{User Interface Design} % Section 3.5
-\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+The device's user interface was made to be simple and easy to use, accommodating embedded technology limitations while guaranteeing medical staff and patients alike could easily interact with it. Push buttons, an LCD screen, a buzzer, and a group of LEDs make up the interface's four primary elements. Each one has a distinct function in communicating system status while occasionally their feedback cues may overlap to tell the user the same thing in different ways (e.g. Error displayed on the LCD while simultaneously a buzzer tone sounds corresponding to that error).
 
-Navigation Flow diagram: Show how a user might navigate around the device menus
+\subsubsection{Input Mechanism: Push Buttons}
+Three push buttons are used by the system to facilitate option selection and menu navigation. These buttons are used to confirm selections and navigate through the available options (such as "Setup", "Read", or "Disconnect"). Only valid menu options are displayed at any given point thanks to the context-dependent functionality based on the current system state (as described in the state machine). Debouncing is handled in software to prevent unpredictable inputs.
 
-Will discuss about usability and simplicity
+\subsubsection{Visual Feedback: LCD Display}
+A single 16x2 LCD module gives visual feedback to the user. This display, which shows menus, configuration options, and error alerts, acts as the primary means of communication between the user and the system. For instance, it shows any errors that may occur, or displays messages indicating to the patient that a request has come in from the cloud platform by a clinician. It is ideal for portable medical equipment due to its low power consumption, compact footprint, and microcontroller compatibility.
+
+\subsubsection{Visual Feedback: Status Indicator LEDs}
+Four LEDs are incorporated inside this device to give instantaneous, nonverbal feedback about connectivity and system status. Without looking at the LCD interface, users can rapidly determine operational conditions at a glance thanks to their clear and extremely simple nature. A different system state (not referring to states in the context of the state machine but rather operational conditions), such as regular operation, warnings, critical alerts, or connectivity status, is linked to each LED. By providing a quick overview of vital sign evaluations and device performance, this improves usability in clinical settings.
+
+\subsubsection{Auditory Feedback: Buzzer}
+Feedback is also provided by the buzzer on the device, for instance for abnormal measurements or any possible errors that may occur. For example, the buzzer emits certain tone patterns to notify either medical staff or the patient (if they have been released from hospital and are using the device for continuous at-home monitoring) if three consecutive read attempts are unsuccessful or if a vital sign reading deviates from permitted limits and must be transmitted. In situations where visual cues could be overlooked or are otherwise unavailable (e.g. if the patient is blind), the duality of having output both visually and audibly is vital.
+
+The user interface design attempts to strike a balance between practicality and simplicity. It increases the system's dependability in a medical setting by reducing the need for user training and guaranteeing that important information is communicated quickly, while also providing the necessary functionality to control the system efficiently.
 
 \section{Project Planning} % Section 3.6
-\textbf{Note:} Diagrams need some tweaking before I can include them in here.
+To make sure that development, testing, and documentation progressed in a timely and systematic manner, the project execution was divided into distinct phases with some phases overlapping if it made sense to do so. The Gantt chart below shows the timeframe, which spans the months of October 2025 through May 2025. The pace and priority of the system's development and academic submission process are reflected in this timeline.
 
-Gantt chart here
+\input{diagrams/gantt_chart}
 
-Will discuss how project timeline led to certain design decisions being made
+\begin{itemize}
+	\item Gathering Requirements (October 2024): This initial phase concentrated on determining the system's objectives and functional requirements in light of postoperative care and Internet of Things-based medical monitoring.
+	\item Review of Literature (October–November 2024): Research was done to comprehend the clinical and technical backdrop of vital sign monitoring systems, pertinent communication protocols, and medical device integration at the same time as requirements gathering.
+	\item Hardware Design (December 2024–April 2025): This stage included choosing and integrating sensors, microcontrollers, and communication modules as well as designing and developing the device's electronics and circuit-level architecture.
+	\item Software Development (February-May 2025): This stage, which overlapped with hardware design, concentrated on developing the Arduino-based system's firmware, putting state logic into practice, and providing preliminary support for receiving and transmitting sensor data.
+	\item Thesis Writing (March–May 2025): As development stabilised, the thesis's composition and writing got underway. This made it possible to provide actual implementation information, system schematics, and assessment findings.
+	\item Testing and Debugging (April–May 2025): This step involved testing system module integration, validating state transitions, and improving threshold configuration and error-handling procedures all at the same time as documentation.
+	\item Thesis Final Evaluation and Polishing (May 2025): With the help of my supervisors, revisions were made to the thesis, and mistakes corrected.
+	\item First complete version finalised (May 2025): First completely working version done and ready for full testing.
+	\item Presentation (May 2025): Visual aids and practice sessions for the project's final presentation.
+\end{itemize}
 
 \section{Summary} % Section 3.7
-This chapter expanded on the design of the system, starting from the user needs analysis, behaviour of the system, system architecture, and design of the interface. The provided diagrams show the organisation of the system, laying the foundation for the implementation which will be discussed in detail in the next chapter.
+This section described the full foundational design of the system being developed, starting with an assessment of the user and technical requirements. These served as a guide for overall development and were drawn from the practical demands of postoperative patient care.
+
+The interactions between patients, medical personnel, and the system were made clear by the use case diagram. This section also highlighted the ways in which data is gathered, sent, and examined. The architecture of the system, including high-level data flow and hardware integration, was discussed introducing the main technological elements such as the LoRaWAN communication backbone and the microcontroller-based circuit architecture. Following that, the user interface design was discuseed in detail, analysing the function and reasoning behind the LEDs, the LCD screen, the buttons, and the buzzer. The project's development cycle was finally depicted by a Gantt chart, which demonstrated how the many design and implementation phases were arranged and overlapped to effectively fulfil deadlines. When combined, these components create a coherent and well-designed system that meets the specified technological and practical objectives while retaining extensibility and adaptability for future modifications.

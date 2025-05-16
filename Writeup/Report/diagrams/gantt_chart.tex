@@ -1,0 +1,37 @@
+% \newgeometry{margin=1in}
+\clearpage
+\begin{landscape}
+\vspace*{-1cm}
+\begin{ganttchart}[
+	hgrid,
+	vgrid,
+	time slot format=isodate-yearmonth,
+	time slot unit=month,
+	x unit=2.2cm,
+	y unit chart=0.9cm,
+	milestone label anchor/.append style={below=-1.6ex},
+	milestone label font=\footnotesize\bfseries,
+	bar label font=\normalsize\bfseries,
+	bar/.append style={fill=blue!30},
+	milestone/.append style={fill=red!70}
+]{2024-10}{2025-05}
+
+\gantttitlecalendar{year, month=shortname} \\
+
+\ganttbar{Requirements Gathering}{2024-10}{2024-10} \\
+\ganttbar{Literature Review}{2024-10}{2024-11} \\
+\ganttbar{Hardware Design}{2024-12}{2025-04} \\
+\ganttbar{Software Development}{2025-02}{2025-05} \\
+\ganttbar{Thesis Writing}{2025-03}{2025-05} \\
+\ganttbar{Testing and Debugging}{2025-04}{2025-05} \\
+\ganttbar{Final Review \& Polish}{2025-05}{2025-05} \\
+\ganttbar[bar/.append style={fill=green!70}]{Prototype Complete}{2025-05}{2025-05} \\
+\ganttbar[bar/.append style={fill=blue!70}]{First Full Test}{2025-05}{2025-05} \\
+\ganttbar[bar/.append style={fill=orange!60}]{Presentation}{2025-05}{2025-05} \\
+
+\ganttnewline
+
+\end{ganttchart}
+\end{landscape}
+\clearpage
+% \restoregeometry

@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{report}
 \usepackage{ADG}
+% \usepackage[margin=1in]{geometry}
 \usepackage{cite}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -22,6 +23,7 @@
 \usepackage{subcaption}
 \usepackage{csvsimple}
 \usepackage{textcomp}
+\usepackage{pgfgantt}
 
 \definecolor{lightgray}{gray}{0.95}
 
@@ -65,6 +67,8 @@
 \include{5_discussion}
 
 \include{refs}
+\addcontentsline{toc}{chapter}{References}
+\renewcommand{\bibname}{References}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
