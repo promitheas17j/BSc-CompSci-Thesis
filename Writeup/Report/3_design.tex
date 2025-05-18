@@ -87,10 +87,10 @@ The core of the system is the Arduino microcontroller, which controls all data f
 \begin{itemize}
 	\item[] \textbf{Components for Sensing and Input}
 	\item Module for Sensor Communication (HM-10 BLE): Communication with external medical devices, such as temperature, heart rate, and blood pressure sensors, is managed by this Bluetooth Low Energy module. This module is used by the Arduino to read data from the paired sensors.
-	\item Date-Time Module: Accurate timestamps for sensor readings and intitiation of data reading at pre-programmed times of the day is provided by a real-time clock module (DS3231 RTC). This is crucial for monitoring vital sign trends over time. This data is read by the Arduino through I2C.
+	\item Date-Time Module: Accurate timestamps for sensor readings and intitiation of data reading at pre-programmed times of the day is provided by a real-time clock module (DS3231 RTC). This is crucial for monitoring vital sign trends over time. This data is read by the Arduino through I$^2$C.
 	\item User Interface Input (Buttons): The patient can initiate actions, including entering reading mode and waiting for a reading or exploring menus on the display, by pressing buttons. This provides simple interaction without the need for additional devices.
 	\item[] \textbf{Output and Feedback} 
-	\item LCD Display: Shows timestamps, sensor data, and UI prompts in real time. This display uses very little GPIO thanks to the I2C protocol.
+	\item LCD Display: Shows timestamps, sensor data, and UI prompts in real time. This display uses very little GPIO thanks to the I$^2$C protocol.
 	\item Local alarms are provided by the buzzer and the LEDs. System states, such as connected or disconnected, reading, processing, or errors can be represented by LEDs, and in the event of unusual readings or the need for user action, their attention can be grabbed by the use of the buzzer.
 	\item[] \textbf{Transmission and Communication}
 	\item LoRaWAN Module: This module manages wireless data transfer over great distances and is integrated into the Arduino board. After being taken and formatted, a reading is sent to the gateway via LoRa and uploaded to the cloud.
@@ -151,7 +151,7 @@ As is visible from Figure \ref{fig:states_setup}, after entering the SETUP state
 	\item Setup BP (blood Pressure): This leads to the SETUP\_BP state, where the user can set the minimum and maximum systolic and diastolic thresholds accordingly.
 	\item Setup Temp (Temperature): Allows the user to set the minimum and maximum temperature values by leading to the SETUP\_TEMP state.
 	\item Setup HR (Heart Rate): This leads to the SETUP\_HR state where the user can set the minimum and maximum values for heart rate.
-	item Depending on where the SETUP state was called from, selecting the "Back" option will return the user to the CONNECTED or DISCONNECTED accordingly.
+	\item Depending on where the SETUP state was called from, selecting the "Back" option will return the user to the CONNECTED or DISCONNECTED accordingly.
 \end{itemize}
 
 By serving as a routing hub, this state makes it possible to set clinical thresholds for each patient or surgery type. Each configuration option leads to a specific sub-state that handles validation and data entry logic; no threshold adjustments are made within this state itself.
