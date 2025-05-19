@@ -1,13 +1,111 @@
 \chapter{Discussion}
 
 \section{Introduction}
-Introduce what this chapter is going to present.
-\section{Discussion}
+This chapter offers a critical evaluation of the system's results in light of its complete implementation and testing, taking into account the original goals and design specifications. It considers the overall performance of the system, talks about the difficulties that were faced during development, and assesses the usefulness of important parts including the user interface, sensor integration, finite state machine, and cloud communication.
 
-\section{Difficulties phased}
+Along with identifying feasible prospects for future development or growth, the chapter also examines the technical know-how and expertise acquired throughout the project. The foundation for thinking about how such a prototype could be improved upon or implemented in a real-world healthcare context is laid here, which deepens understanding of the system's advantages, disadvantages, and clinical relevance.
 
-\section{Knowledge acquired}
+\section{System Evaluation}
+The implemented system was assessed in relation to the primary goals that were outlined at the beginning of the project. These included precise vital sign monitoring, simple device operation and configuration, reliable communication, and compliance with post-operative care clinical requirements. Overall, the system showed a high degree of agreement with these objectives, with notable achievements in the areas of usability, modularity, and fault handling.
 
-\section{Future work}
+An effective framework for controlling device behaviour turned out to be the finite state machine (FSM) architecture. The device remained responsive across a variety of operating settings thanks to its event-driven logic, well-defined states, and predictable transitions. The chance of unexpected behaviour was reduced by this approach, particularly in edge scenarios like persistently incorrect inputs or communication breakdowns. Debugging and testing are made more effective by the clean mapping of each state to user-visible menus and system behaviour.
+
+Considering the hardware limitations, the user interface was designed to be efficient and user-friendly. With the use of a character LCD, pushbuttons, LED indicators and a buzzer, users were able to confirm actions, traverse menus, and get alerts with little cognitive effort. Colour-coded LEDs were used as secondary indicators to improve visibility and allow for quick state evaluation without requiring active display interaction.
+
+During testing, Bluetooth connectivity with the external mobile application was stable and consistent. The system handled both well-formed and faulty inputs with grace, correctly parsing and evaluating incoming data. Comprehensive validation of data processing logic and state transitions was made possible by the MIT App Inventor application's capacity to mimic a variety of clinical Bluetooth sensors that might be used in a real-world environment.
+
+The cloud communication module functioned as intended. Transitions to the TRANSMITTING state were successfully initiated by abnormal readings, and retry mechanisms operated as planned in the absence of acknowledgements. This demonstrated that, while preserving system stability, the system may escalate clinically critical events to cloud services.
+
+The modular design of the software and hardware makes it easy to expand in the future and improves usability and maintainability. The logic of each vital sign is contained, the threshold configuration is maintained across reboots, and more sensor types can be added with little modification to the FSM core. All things considered, the prototype achieved its main design objectives and provides a solid basis for further development and implementation in actual clinical settings.
+
+\section{Difficulties Faced}
+Throughout the project, a number of difficulties arose, which was indicative of the system's interdisciplinary nature and the variety of technological fields it needed. The development process and final result were greatly influenced by these challenges, even if many of them were ultimately resolved through iterative experimentation, outside direction, and self-directed learning.
+
+Implementing the HM-10 module's Bluetooth disconnecting capability was one particularly difficult task. At the time of writing, there is still no solution for programmatically ending the connection from the Arduino side, even if connecting and receiving data from the associated mobile device worked well. Typically, AT commands are used to tell the HM-10 to disconnect, but this is not possible when Bluetooth is engaged since the module interprets all serial input as data instead of configuration instructions. Using the BRK pin, which is meant to cut the connection when held LOW for a long enough period of time, was an alternate strategy. However, even with precise timing, this did not work in practice. An Arduino library for the HM-10 might provide a software interface for disconnection, according to advice from another professor of my university, but no such library could be located or verified for usage in this situation. As system development proceeds beyond the initial report, this will continue to be a focus of interest.
+
+Another, non-technical yet significant challenge came up during the literature review. It took a lot of work for the author as a computer science student working on a medically relevant system to comprehend clinical terminology and decipher the significance of medical studies. Numerous research included clinical procedures, statistical significance, or minor physiological trends that were not covered by the authors' academic training. More time was spent reading background information, going over glossaries and summaries, and, if at all possible, choosing articles that provided a clear explanation of their findings in relation to patient outcomes in order to address this.
+
+Configuring the LoRa gateway for connection with the cloud backend was another significant challenge. The gateway was set up to connect to the internet using a mobile hotspot so that development and testing could take place in in multiple locations and not be tied to a single Wi-Fi network in order to allow development to take place both at home and at the university. Although the hotspot worked as intended, there were issues with the initial setup, particularly with connecting the gateway to the hotspot Wi-Fi network. These problems were probably caused by either a lack of clear documentation or a misunderstanding on the author's part, which caused uncertainty regarding certain setup procedures. With the support of the thesis supervisor, who clarified the proper configuration process and assisted in interpreting the necessary setup settings, the issue was ultimately fixed. The significance of comprehending both the device-specific instructions and the larger network context in which IoT devices function was brought home by this experience.
+
+Lastly, because of the author's minimal electrical engineering experience, there was a considerable learning curve in confirming the electronics schematic was correct and safe for the components included. At first, it was difficult to make sure that the parts were connected correctly, that the power supply ratings were suitable, and that the modules were safely interfaced with one another. A particular example that comes to mind is the use of the decoupling capacitor connected to the Vcc of the DS3231 RTC module (C1 in Figure \ref{fig:circuit_diagram}. It was intitially unclear what a decoupling capacitor is and why it was so important. With the help of the thesis supervisor, who clarified key ideas and examined the schematic, this difficulty was done away with, and the finished design was made to be safe and practical.
+
+Even though they could be irritating at times, these obstacles aided in learning new skills and gaining a greater understanding of the complexities involved in creating embedded systems in the real world, particularly those that connect the engineering and medical fields.
+
+\section{Knowledge Acquired}
+This project's interdisciplinary nature offered an opportunity to learn a great deal of technical and domain-specific skills, most of which went beyond what is normally included in a computer science program. Working at the intersection of wireless communication, clinical monitoring, and embedded systems necessitated acquiring new abilities through research, problem-solving, and practical experimentation.
+
+The real-world use of embedded systems was one of the main areas of expansion. Building the prototype allowed for a thorough exploration of the concepts of hardware interface, power management, microcontroller programming, and real-time event handling. To guarantee that the physical system operated dependably, ideas like pull-up resistors, debounce handling, voltage regulation, and serial communication protocols became essential.
+
+Furthermore, using a finite state machine to develop the system's control logic provided experience with structured software design for reactive systems. Understanding event-driven programming was strengthened by controlling transitions based on asynchronous inputs, preserving state integrity, and guaranteeing robustness in edge circumstances. Additionally, the FSM technique reaffirmed the importance of modularity and unambiguous system abstraction, both of which were crucial for testing and debugging.
+
+Additionally, the project required knowledge of the LoRaWAN protocols. It became essential to understand how this protocol functions in limited settings, how to manage device pairing and separation using the Bluetooth protocol, and how to get around module-specific restrictions in addition to just sending and receiving data. Even while complete Bluetooth disconnection management is still lacking, the process of trying to put it into practice taught me a lot about the inner workings of modules such as the HM-10.
+
+New ideas about network provisioning, MAC address registration, and the format of payload data transferred to cloud platforms were introduced by setting up the LoRa gateway and connecting it to The Things Network (TTN) from the standpoint of systems integration. The learning experience highlighted the significance of verifying device setup and analysing network response statistics during configuration, despite the fact that the documentation for these processes was occasionally unclear to me due to my non-existent previous exposure to such concepts.
+
+The project required the development of at least some medical research literacy in addition to technological skills. It took a lot of work for me as a computer science student to read clinical literature and comprehend the physiological and clinical significance of vital indicators like blood pressure, heart rate, and temperature. A deeper understanding of the environment in which this technology is meant to be utilised was gained by learning how to evaluate medical articles, discern between background theory and clinically significant findings, and properly credit reliable sources.
+
+A broader skill set in embedded development, wireless communication, system design, and multidisciplinary research resulted from these experiences taken together. Additionally, they emphasised the value of adaptability, perseverance, and acquiring knowledge seemingly unrelated to ones field of work or study.
+
+\section{Future Work}
+Although the system in place accomplishes its primary goals, there are still a number of areas where it may be made more functional, reliable, and clinically appropriate. These upcoming advancements include possibilities for further optimisation as well as hardware and software components.
+
+\subsection{Completing Bluetooth Disconnection Handling}
+The HM-10 Bluetooth module's inability to be disconnected programmatically is a major drawback of the existing setup. Despite the robustness of data reception, the module's inability to receive AT commands while a connection is live has prevented the device side from ending a connection when the user chooses "Disconnect." Future research will focus on either finding or creating a dependable software interface, like a firmware workaround or Arduino library, or possibly swapping out the module with one that provides more control over connection states.
+
+\subsection{Optimizing Memory and Firmware Efficiency}
+Although the most suitable and compact data formats were used throughout development, more may be done to maximise SRAM utilisation and firmware storage efficiency. This includes:
+
+\begin{itemize}
+	\item examining variable lifetimes and scopes to get rid of extra RAM usage.
+	\item combining redundant interface routines or logic into smaller, shared functions.
+	\item When appropriate, compress lookup tables or static resources.
+	\item turning on compiler optimisations and looking for bottlenecks in memory mappings.
+\end{itemize}
+
+In future iterations if more features are added, like additional sensors or more intricate user interface routines, these improvements would help guarantee that the system stays reliable and responsive.
+
+\subsection{Expanding Sensor Support}
+Only a few vital signs---blood pressure, heart rate, and temperature---are available with the current implementation. This could be expanded in later iterations to include:
+
+\begin{itemize}
+	\item Using fingertip pulse oximeters to monitor SpO$_2$.
+	\item ECG recording, for the detection of basic cardiac events.
+	\item Respiration rate detection, either by algorithms or wearable respiration belts.
+\end{itemize}
+
+This would increase the therapeutic usefulness of the device, especially in high-risk or post-operative situations where several physiological indicators need to be tracked at once.
+
+\subsection{Improving Power Efficiency and Portability}
+Although USB is used to power the current prototype, potential future revisions could include:
+
+\begin{itemize}
+	\item Rechargeable Li-Ion or LiPo cells are used in battery integration, or better yet standard AA or AAA batteries commonly found in most households or supermarkets.
+	\item Utilising the microcontroller and Bluetooth module's deep sleep modes to allow for power optimisation.
+	\item Energy-aware scheduling that lowers transmission frequency according to patient activity or condition, particularly when employing LoRaWAN.
+\end{itemize}
+
+This would enable the device to function independently for extended periods of time, which would make it appropriate for home-based or clinical monitoring.
+
+\subsection{Clinical Testing and Feedback}
+Future research should include small-scale trials including patients and medical personnel to confirm the system's efficacy in an actual healthcare setting. This would offer input on:
+
+\begin{itemize}
+	\item The menu system and whether warnings are easy to understand.
+	\item Clarity of the audio and visual cues.
+	\item Incorporating workflow into current healthcare practices.
+\end{itemize}
+
+These assessments would guarantee that the system satisfies the requirements of its target users and aid in improving the interface.
 
 \section{Conclusions}
+The goal of this thesis was to develop, put into use, and assess a portable Internet of Things system for vital sign monitoring in the context of postoperative care. The clinical requirement for low-power, continuous monitoring in settings where conventional wired or hospital-based systems are either unavailable or unfeasible served as the driving force. The project's goal was to create a versatile and adaptable prototype that could analyse vital signs in real time, gather user input, and escalate alerts via the cloud.
+
+The system was successfully constructed using a finite state machine structure and an Arduino-compatible microcontroller, enabling strong internal logic and a user-friendly interface. The device enables healthcare personnel to set vital sign thresholds, start manual or automated readings, and get real-time patient condition feedback through modular state transitions and an intuitive user interface made up of an LCD, LEDs, a buzzer, and tactile buttons.
+
+Additionally, the solution built the framework for cloud-based alerts via LoRaWAN and showed dependable connection with Bluetooth-enabled devices. The groundwork for scalable integration is in place, even though certain features---like handling Bluetooth disconnections---remain as future enhancements.
+
+The system's capacity to manage both valid and invalid input data, appropriately transition between various operational modes, and replicate a variety of real-world scenarios was validated through testing using a specially designed mobile application. Additionally, this testing aided in identifying possible areas for improvement, including expanded sensor support, memory optimisation, and wider clinical integration.
+
+In completing this study, important technical skills in wireless communication, state machine implementation, embedded system design, and interdisciplinary research were developed. The project also emphasises the viability and significance of student-led innovation in bridging the gap between pragmatic, patient-centered healthcare technology and theoretical system design.
+
+Especially when it comes to remote or resource-constrained postoperative care, this prototype is a significant step towards more widely available, adaptable, and scalable vital sign monitoring systems. The system may develop into a deployable medical solution that enhances patient outcomes and improves clinical workflows with additional improvement, validation, and field testing.
