@@ -12,6 +12,7 @@
 #include <EEPROM.h>
 #include <DS3231.h>
 
+#define BRK_PIN 5
 #define BTN_PREV 4
 #define BTN_SELECT 7
 #define BTN_NEXT 8

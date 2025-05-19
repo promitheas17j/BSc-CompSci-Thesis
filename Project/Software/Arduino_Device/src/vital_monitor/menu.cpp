@@ -79,11 +79,9 @@ states handle_menu(states current_state) {
 			}
 			else if (strcmp(options[result], "Disconnect") == 0) {
 				g_selection_pending = false;
-				digitalWrite(5, LOW);
-				delay(100);
-				digitalWrite(5, HIGH);
-				delay(100);
-				digitalWrite(5, LOW);
+				digitalWrite(BRK_PIN, HIGH);
+				delay(2000);
+				// digitalWrite(BRK_PIN, HIGH);
 				log_msg("DEBUG", "Sent pulse to pin 5 (connected to BRK)");
 				return DISCONNECTED;
 			}

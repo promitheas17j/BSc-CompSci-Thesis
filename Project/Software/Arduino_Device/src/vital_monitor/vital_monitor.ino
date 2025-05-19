@@ -100,6 +100,7 @@ void setup() {
 		g_hr_threshold_max = G_HR_THRESHOLD_MAX ;
 	}
 
+	pinMode(BRK_PIN, OUTPUT);
 	pinMode(BTN_PREV, INPUT);
 	pinMode(BTN_SELECT, INPUT);
 	pinMode(BTN_NEXT, INPUT);
