@@ -4,12 +4,15 @@
 #include "menu.h"
 #include "utils.h"
 #include "states.h"
-// #include <time.h>
-// #include <Wire.h>
+#include <TheThingsNetwork.h>
 
 Waveshare_LCD1602 lcd(16,2);
 SoftwareSerial HM10_UART(9, 10);
 DS3231 rtc;
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
+
+const char *appEui = "0004A30B001BF78C";
+const char *appKey = "493BE84C0FE8713FCD58F382A522A63F";
 
 // Global variable initialisations
 uint8_t g_prev_button_state = 0, g_select_button_state = 0, g_next_button_state = 0;
@@ -40,16 +43,17 @@ char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
 void setup() {
 	Serial.begin(9600);
+	Serial1.begin(57600);
 	// rtc.begin();
 	// The following lines can be uncommented to set the date and time
 	EEPROM.begin();
 	// Wait for Serial connection before proceeding with the rest of the code if debug enabled
-	if (debug_enabled) {
-		while (!Serial) {
-			;
-		}
-	}
-	log_msg("INFO", "Booting...");
+	// if (debug_enabled) {
+	// 	while (!Serial) {
+	// 		;
+	// 	}
+	// }
+	log_msg("INFO", F("Booting..."));
 	HM10_UART.begin(9600);
 	lcd.init();
 	lcd.clear();
@@ -121,16 +125,22 @@ void setup() {
 	char msg[64];
 	snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
 	log_msg("DEBUG", msg);
-	log_msg("DEBUG", "\n\n");
-	log_msg("INFO", "BP SYST MIN = ", (unsigned)g_bp_systolic_threshold_min);
-	log_msg("INFO", "BP SYST MAX = ", (unsigned)g_bp_systolic_threshold_max);
-	log_msg("INFO", "BP DIAS MIN = ", (unsigned)g_bp_diastolic_threshold_min);
-	log_msg("INFO", "BP DIAS MAX = ", (unsigned)g_bp_diastolic_threshold_max);
-	log_msg("INFO", "TEMP MIN = ", (unsigned)g_temp_threshold_min);
-	log_msg("INFO", "TEMP MAX = ", (unsigned)g_temp_threshold_max);
-	log_msg("INFO", "HR MIN = ", (unsigned)g_hr_threshold_min);
-	log_msg("INFO", "HR MAX = ", (unsigned)g_hr_threshold_max);
-	log_msg("INFO", "Booted");
+	log_msg("DEBUG", F("\n\n"));
+	log_msg("INFO", F("BP SYST MIN = "), (unsigned)g_bp_systolic_threshold_min);
+	log_msg("INFO", F("BP SYST MAX = "), (unsigned)g_bp_systolic_threshold_max);
+	log_msg("INFO", F("BP DIAS MIN = "), (unsigned)g_bp_diastolic_threshold_min);
+	log_msg("INFO", F("BP DIAS MAX = "), (unsigned)g_bp_diastolic_threshold_max);
+	log_msg("INFO", F("TEMP MIN = "), (unsigned)g_temp_threshold_min);
+	log_msg("INFO", F("TEMP MAX = "), (unsigned)g_temp_threshold_max);
+	log_msg("INFO", F("HR MIN = "), (unsigned)g_hr_threshold_min);
+	log_msg("INFO", F("HR MAX = "), (unsigned)g_hr_threshold_max);
+	log_msg("INFO", F("Booted"));
+
+	log_msg("INFO", F("Setting up TTN..."));
+	ttn.onMessage(message);
+	// ttn.showStatus(); // Print modem version and status
+	ttn.join(appEui, appKey);
+	log_msg("INFO", F("Joined TTN successfully"));
 }
 
 void loop() {

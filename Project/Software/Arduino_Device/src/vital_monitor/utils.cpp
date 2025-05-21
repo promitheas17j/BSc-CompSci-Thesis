@@ -23,6 +23,32 @@ uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 	return btn->stable_state;
 }
 
+void log_msg(const char *msg_level, const __FlashStringHelper *msg) {
+	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+		return;
+	}
+	Serial.print("[");
+	Serial.print(msg_level);
+	Serial.print("]: ");
+	Serial.println(msg);
+}
+
+void log_msg(const char *msg_level, const __FlashStringHelper *msg, const bool optional_val) {
+  Serial.print("[");
+  Serial.print(msg_level);
+  Serial.print("] ");
+  Serial.print(msg);
+  Serial.println(optional_val ? "true" : "false");
+}
+
+void log_msg(const char *msg_level, const __FlashStringHelper *msg, unsigned optional_val) {
+  Serial.print("[");
+  Serial.print(msg_level);
+  Serial.print("] ");
+  Serial.print(msg);
+  Serial.println(optional_val);
+}
+
 void log_msg(const char *msg_level, const char *msg) {
 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
 		return;
@@ -33,25 +59,25 @@ void log_msg(const char *msg_level, const char *msg) {
 	Serial.print("\n");
 }
 
-void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
-	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-		return;
-	}
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
-	Serial.print(buffer);
-	Serial.print("\n");
-}
+// void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
+// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+// 		return;
+// 	}
+// 	char buffer[64];
+// 	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
+// 	Serial.print(buffer);
+// 	Serial.print("\n");
+// }
 
-void log_msg(const char *msg_level, const char *msg, unsigned optional_val) {
-	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-		return;
-	}
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "[%s]: %s %u", msg_level, msg, optional_val);
-	Serial.print(buffer);
-	Serial.print("\n");
-}
+// void log_msg(const char *msg_level, const char *msg, unsigned optional_val) {
+// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+// 		return;
+// 	}
+// 	char buffer[64];
+// 	snprintf(buffer, sizeof(buffer), "[%s]: %s %u", msg_level, msg, optional_val);
+// 	Serial.print(buffer);
+// 	Serial.print("\n");
+// }
 
 void cycle_leds() {
 	uint8_t cycle_time = 100;
@@ -121,7 +147,7 @@ bool validate_message(const char *msg) {
 			// loop ends at '\0' if no slash seen by then or digit_count is less than 2 then its not a properly formatted BP string
 			return false;
 		}
-		log_msg("DEBUG", "Received data is from a BP device.");
+		log_msg("DEBUG", F("Received data is from a BP device."));
 		return true;
 		// const char* data = msg + 3;
 		// int systolic, diastolic, consumed = 0;
@@ -149,7 +175,7 @@ bool validate_message(const char *msg) {
 		if (!isdigit((unsigned char)p[3])) {
 			return false;
 		}
-		log_msg("DEBUG", "Received data is from a TEMP device.");
+		log_msg("DEBUG", F("Received data is from a TEMP device."));
 		return true;
 		// const char* data = msg + 5;
 		// char* endptr;
@@ -176,7 +202,7 @@ bool validate_message(const char *msg) {
 		if (digit_count < 2) {
 			return false;
 		}
-		log_msg("DEBUG", "Received data is from a HR device.");
+		log_msg("DEBUG", F("Received data is from a HR device."));
 		return true;
 		// const char* data = msg + 3;
 		// char* endptr;
@@ -416,7 +442,7 @@ states multi_threshold_setup_u8(
 	// SELECT rising edge
 	if (g_select_button_state && !last_select) {
 		if ((step & 1) && (*values[step] < *values[step - 1])) {
-			log_msg("WARN", "Max must be >= Min. Re-enter");
+			log_msg("WARN", F("Max must be >= Min. Re-enter"));
 			lcd.clear();
 			lcd.setCursor(0, 0);
 			lcd.send_string("Err:Max  <  Min");
@@ -505,7 +531,7 @@ states multi_threshold_setup_u16(
 	// SELECT rising edge
 	if (g_select_button_state && !last_select) {
 		if ((step & 1) && (*values[step] < *values[step - 1])) {
-			log_msg("WARN", "Max must be >= Min. Re-enter");
+			log_msg("WARN", F("Max must be >= Min. Re-enter"));
 			lcd.clear();
 			lcd.setCursor(0, 0);
 			lcd.send_string("Err:Max  <  Min");
@@ -540,4 +566,8 @@ states multi_threshold_setup_u16(
 	last_select = g_select_button_state;
 	// stay in this sub-state until done
 	return current_state;
+}
+
+void message(const uint8_t *payload, size_t length, port_t port) {
+	log_msg("INFO", F("Downlink message received"));
 }

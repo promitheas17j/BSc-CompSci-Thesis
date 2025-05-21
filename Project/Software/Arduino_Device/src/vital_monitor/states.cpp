@@ -141,7 +141,7 @@ states state_setup_hr() {
 }
 
 states state_connected() {
-	log_msg("INFO", "Bluetooth device connected.");
+	log_msg("INFO", F("Bluetooth device connected."));
 	// digitalWrite(LED_BLUE, HIGH);
 	return CONNECTED;
 }
@@ -158,31 +158,31 @@ states state_reading() {
 	}
 	else {
 		if ((millis() - last_high_time) > disconnect_threshold) {
-			log_msg("WARN", "Bluetooth disconnected during READING");
+			log_msg("WARN", F("Bluetooth disconnected during READING"));
 			return DISCONNECTED;
 		}
 	}
 	while (HM10_UART.available()) {
 		if (attempt_count >= 3) { // too many failed attempts, return to previous state
-			log_msg("WARN", "Too many failed attempts. Cancelling");
+			log_msg("WARN", F("Too many failed attempts. Cancelling"));
 			attempt_count = 0;
 			return g_previous_state;
 		}
-		log_msg("DEBUG", "Reading data");
+		log_msg("DEBUG", F("Reading data"));
 		char incoming_byte = HM10_UART.read();
-		char debug_char[2] = {incoming_byte, '\0'};
+		// char debug_char[2] = {incoming_byte, '\0'};
 		if (incoming_byte == '\n') {
 			input_buffer[index] = '\0';
 			size_t len = strlen(input_buffer);
 			if (len > 0 && input_buffer[len - 1] == '\r') {
 				input_buffer[len - 1] = '\0';
-				log_msg("DEBUG", "Stripped trailing \\r from input_buffer");
+				log_msg("DEBUG", F("Stripped trailing \\r from input_buffer"));
 			}
-			log_msg("DEBUG", "Received string: ");
+			log_msg("DEBUG", F("Received string: "));
 			log_msg("DEBUG", input_buffer);
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
-				log_msg("INFO", "Valid data received. ACK sent.");
+				log_msg("INFO", F("Valid data received. ACK sent."));
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				return PROCESSING;
@@ -190,7 +190,7 @@ states state_reading() {
 			else {
 				attempt_count++;
 				HM10_UART.print("RETRY");
-				log_msg("INFO", "Invalid data received. Retry request sent.");
+				log_msg("INFO", F("Invalid data received. Retry request sent."));
 			}
 			index = 0;
 		}
@@ -199,7 +199,7 @@ states state_reading() {
 		}
 		else { // Buffer overflow
 			index = 0;
-			log_msg("WARN", "Input buffer overflow. Resetting.");
+			log_msg("WARN", F("Input buffer overflow. Resetting."));
 		}
 	}
 	return READING;
@@ -211,25 +211,25 @@ states state_processing() {
 	log_msg("DEBUG", msg);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
-		if (sscanf(g_received_data_buffer + 3, "%d/%d", &sys, &dia) == 2) {
+		if (sscanf(g_received_data_buffer + 3, "%hhu/%hhu", &sys, &dia) == 2) {
 			bool ok = (sys >= g_bp_systolic_threshold_min &&
 					sys <= g_bp_systolic_threshold_max &&
 					dia >= g_bp_diastolic_threshold_min &&
 					dia <= g_bp_systolic_threshold_max
 				);
-			snprintf(msg, sizeof(msg), "BP %d/%d %s", sys, dia, ok ? "OK" : "ALERT");
+			snprintf(msg, sizeof(msg), "BP %hhu/%hhu %s", sys, dia, ok ? "OK" : "ALERT");
 			log_msg("INFO", msg);
 			if (!ok) {
 				return TRANSMITTING;
 			}
 		}
 		else {
-			log_msg("WARN", "BP parse error.");
+			log_msg("WARN", F("BP parse error."));
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
 		uint8_t whole, decimal, n;
-		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu%n", &whole, &decimal, &n) == 2) && (g_received_data_buffer[5 + n] == '\0')) {
+		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu%hhu", &whole, &decimal, &n) == 2) && (g_received_data_buffer[5 + n] == '\0')) {
 			uint16_t temperature = whole * 10 + decimal;
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
 			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
@@ -239,11 +239,11 @@ states state_processing() {
 			}
 		}
 		else {
-			log_msg("WARN", "TEMP parse error.");
+			log_msg("WARN", F("TEMP parse error."));
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		char *p = g_received_data_buffer + 3;
+		// char *p = g_received_data_buffer + 3;
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		snprintf(msg, sizeof(msg), "HR %u %s", hr, ok ? "OK" : "ALERT");
@@ -253,13 +253,13 @@ states state_processing() {
 		}
 	}
 	else {
-		log_msg("WARN", "Unknown data type");
+		log_msg("WARN", F("Unknown data type"));
 	}
 	return CONNECTED;
 }
 
 states state_transmitting() {
-	log_msg("INFO", "Ready to send data to cloud using LoRaWAN");
+	log_msg("INFO", F("Ready to send data to cloud using LoRaWAN"));
 	// TODO: Actually send data from global buffer g_received_data_buffer to cloud
 	return CONNECTED;
 }
@@ -291,7 +291,7 @@ void change_state(states new_state) {
 		while (HM10_UART.available()) {
 			HM10_UART.read();
 		}
-		log_msg("DEBUG", "Flushed UART buffer before entering READING state");
+		log_msg("DEBUG", F("Flushed UART buffer before entering READING state"));
 	}
 	update_led_based_on_state();
 }
@@ -319,7 +319,7 @@ states check_bt_connection(states current_state) {
 	if (bt_pin_state == HIGH) {
 		if (!is_connected && (millis() - last_high_time > stable_threshold)) {
 			is_connected = true;
-			log_msg("DEBUG", "BT connection detected.");
+			log_msg("DEBUG", F("BT connection detected."));
 			return CONNECTED;
 		}
 	}
@@ -327,7 +327,7 @@ states check_bt_connection(states current_state) {
 		last_high_time = millis();
 		if (is_connected) {
 			is_connected = false;
-			log_msg("DEBUG", "BT disconnection detected.");
+			log_msg("DEBUG", F("BT disconnection detected."));
 			return DISCONNECTED;
 		}
 	}

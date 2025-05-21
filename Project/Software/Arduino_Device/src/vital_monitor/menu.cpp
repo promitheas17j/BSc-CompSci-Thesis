@@ -45,24 +45,24 @@ states handle_menu(states current_state) {
 		}
 		else if (current_state == SETUP) {
 			if (strcmp(options[result], "Setup BP") == 0) {
-				log_msg("DEBUG", "Blood pressure setup selected.");
+				log_msg("DEBUG", F("Blood pressure setup selected."));
 				g_selection_pending = false;
 				return SETUP_BP;
 			}
 			else if (strcmp(options[result], "Setup Temp") == 0) {
-				log_msg("DEBUG", "Temperature setup selected.");
+				log_msg("DEBUG", F("Temperature setup selected."));
 				g_selection_pending = false;
 				return SETUP_TEMP;
 
 			}
 			else if (strcmp(options[result], "Setup HR") == 0) {
-				log_msg("DEBUG", "Heart rate setup selected.");
+				log_msg("DEBUG", F("Heart rate setup selected."));
 				g_selection_pending = false;
 				return SETUP_HR;
 
 			}
 			else if (strcmp(options[result], "Back") == 0) {
-				log_msg("DEBUG", "Going back.");
+				log_msg("DEBUG", F("Going back."));
 				g_selection_pending = false;
 				log_msg("DEBUG", state_to_string(g_setup_caller_state));
 				return g_setup_caller_state;
@@ -82,7 +82,7 @@ states handle_menu(states current_state) {
 				digitalWrite(BRK_PIN, HIGH);
 				delay(2000);
 				// digitalWrite(BRK_PIN, HIGH);
-				log_msg("DEBUG", "Sent pulse to pin 5 (connected to BRK)");
+				log_msg("DEBUG", F("Sent pulse to pin 5 (connected to BRK)"));
 				return DISCONNECTED;
 			}
 		}
@@ -103,17 +103,17 @@ uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	static uint8_t last_prev_btn_state = 0, last_next_btn_state = 0, last_select_btn_state = 0;
 	// PREV button rising edge
 	if (g_prev_button_state && !last_prev_btn_state) {
-		log_msg("DEBUG", "PREV PRESSED");
+		log_msg("DEBUG", F("PREV PRESSED"));
 		g_current_option_index = (g_current_option_index == 0) ? num_options - 1 : g_current_option_index - 1;
 	}
 	// NEXT button rising edge
 	if (g_next_button_state && !last_next_btn_state) {
-		log_msg("DEBUG", "NEXT PRESSED");
+		log_msg("DEBUG", F("NEXT PRESSED"));
 		g_current_option_index = (g_current_option_index + 1) % num_options;
 	}
 	// SELECT button rising edge
 	if (g_select_button_state && !last_select_btn_state) {
-		log_msg("DEBUG", "SELECT PRESSED");
+		log_msg("DEBUG", F("SELECT PRESSED"));
 		return g_current_option_index;
 	}
 	// Update last button states

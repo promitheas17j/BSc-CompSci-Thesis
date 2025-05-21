@@ -11,6 +11,7 @@
 #include "Waveshare_LCD1602.h"
 #include <EEPROM.h>
 #include <DS3231.h>
+#include <TheThingsNetwork.h>
 
 #define BRK_PIN 5
 #define BTN_PREV 4
@@ -41,9 +42,14 @@
 #define G_HR_THRESHOLD_MIN 60
 #define G_HR_THRESHOLD_MAX 100
 
+#define debugSerial Serial
+#define loraSerial Serial1
+#define freqPlan TTN_FP_EU868
+
 extern Waveshare_LCD1602 lcd;
 extern SoftwareSerial HM10_UART;
 extern DS3231 myRTC;
+extern TheThingsNetwork ttn;
 
 extern uint8_t g_prev_button_state;
 extern uint8_t g_select_button_state;

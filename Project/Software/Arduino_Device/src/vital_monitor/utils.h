@@ -5,6 +5,8 @@
 
 #include "states.h"
 #include <stdint.h>
+#include <WString.h>
+#include <TheThingsNetwork.h>
 
 struct ButtonDebounce {
 	uint8_t stable_state;
@@ -13,9 +15,12 @@ struct ButtonDebounce {
 };
 
 uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn);
+void log_msg(const char *msg_level, const __FlashStringHelper *msg);
+void log_msg(const char *msg_level, const __FlashStringHelper *msg, const bool optional_val);
+void log_msg(const char *msg_level, const __FlashStringHelper *msg, unsigned optional_val);
 void log_msg(const char *msg_level, const char *msg);
-void log_msg(const char *msg_level, const char *msg, const bool optional_val);
-void log_msg(const char *msg_level, const char *msg, unsigned optional_val);
+// void log_msg(const char *msg_level, const char *msg, const bool optional_val);
+// void log_msg(const char *msg_level, const char *msg, unsigned optional_val);
 void cycle_leds();
 const char* state_to_string(states s);
 bool validate_message(const char *msg);
@@ -100,5 +105,7 @@ states multi_threshold_setup_u16(
 	states			current_state,
 	states			previous_state
 );
+
+void message(const uint8_t *payload, size_t length, port_t port);
 
 #endif
