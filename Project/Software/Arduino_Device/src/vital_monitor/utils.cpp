@@ -60,23 +60,23 @@ void log_msg(const char *msg_level, const char *msg) {
 }
 
 // void log_msg(const char *msg_level, const char *msg, const bool optional_val) {
-// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-// 		return;
-// 	}
-// 	char buffer[64];
-// 	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
-// 	Serial.print(buffer);
-// 	Serial.print("\n");
+//	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+//		return;
+//	}
+//	char buffer[64];
+//	snprintf(buffer, sizeof(buffer), "[%s]: %s %s", msg_level, msg, optional_val? "true" : "false");
+//	Serial.print(buffer);
+//	Serial.print("\n");
 // }
 
 // void log_msg(const char *msg_level, const char *msg, unsigned optional_val) {
-// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-// 		return;
-// 	}
-// 	char buffer[64];
-// 	snprintf(buffer, sizeof(buffer), "[%s]: %s %u", msg_level, msg, optional_val);
-// 	Serial.print(buffer);
-// 	Serial.print("\n");
+//	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+//		return;
+//	}
+//	char buffer[64];
+//	snprintf(buffer, sizeof(buffer), "[%s]: %s %u", msg_level, msg, optional_val);
+//	Serial.print(buffer);
+//	Serial.print("\n");
 // }
 
 void cycle_leds() {
@@ -152,9 +152,9 @@ bool validate_message(const char *msg) {
 		// const char* data = msg + 3;
 		// int systolic, diastolic, consumed = 0;
 		// if (sscanf(data, "%d/%d%n", &systolic, &diastolic, &consumed) == 2) {
-		// 	if (data[consumed] == '\0') {
-		// 		return true;
-		// 	}
+		//	if (data[consumed] == '\0') {
+		//		return true;
+		//	}
 		// }
 	}
 	else if (strncmp(msg, "TEMP:", 5) == 0) {
@@ -181,7 +181,7 @@ bool validate_message(const char *msg) {
 		// char* endptr;
 		// strtod(data, &endptr);
 		// if (endptr != data && *endptr == '\0') {
-		// 	return true;
+		//	return true;
 		// }
 	}
 	else if (strncmp(msg, "HR:", 3) == 0) {
@@ -208,7 +208,7 @@ bool validate_message(const char *msg) {
 		// char* endptr;
 		// strtol(data, &endptr, 10);
 		// if (endptr != data && *endptr == '\0') {
-		// 	return true;
+		//	return true;
 		// }
 	}
 	return false;
@@ -568,6 +568,24 @@ states multi_threshold_setup_u16(
 	return current_state;
 }
 
-void message(const uint8_t *payload, size_t length, port_t port) {
+void lora_message(const uint8_t *payload, size_t length, port_t port) {
 	log_msg("INFO", F("Downlink message received"));
+}
+
+void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
+	if (len > MAX_MSG_SIZE) {
+		len = MAX_MSG_SIZE;
+	}
+
+	if (tx_retry_count < MAX_QUEUE_ITEMS) {
+		memcpy(tx_retry_queue[tx_retry_tail], data, len);
+		tx_retry_lengths[tx_retry_tail] = len;
+
+		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
+		tx_retry_count++;
+
+		log_msg("INFO", F("Added message to retry queue"));
+	} else {
+		log_msg("WARN", F("Retry queue full, message dropped"));
+	}
 }

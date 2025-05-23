@@ -41,6 +41,12 @@ bool debug_enabled = true;
 
 char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
+uint8_t tx_retry_queue[MAX_QUEUE_ITEMS][MAX_MSG_SIZE];
+uint8_t tx_retry_lengths[MAX_QUEUE_ITEMS];
+uint8_t tx_retry_head = 0;
+uint8_t tx_retry_tail = 0;
+uint8_t tx_retry_count = 0;
+
 void setup() {
 	Serial.begin(9600);
 	Serial1.begin(57600);
@@ -136,8 +142,8 @@ void setup() {
 	log_msg("INFO", F("HR MAX = "), (unsigned)g_hr_threshold_max);
 	log_msg("INFO", F("Booted"));
 
-	log_msg("INFO", F("Setting up TTN..."));
-	ttn.onMessage(message);
+	log_msg("INFO", F("Setting up LoRa network..."));
+	ttn.onMessage(lora_message);
 	// ttn.showStatus(); // Print modem version and status
 	ttn.join(appEui, appKey);
 	log_msg("INFO", F("Joined TTN successfully"));

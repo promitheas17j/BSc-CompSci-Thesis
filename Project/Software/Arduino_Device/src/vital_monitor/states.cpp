@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "menu.h"
 #include "utils.h"
+#include <string.h>
 #include <stdio.h>
 #include <Arduino.h>
 #include <EEPROM.h>
@@ -227,9 +228,14 @@ states state_processing() {
 			log_msg("WARN", F("BP parse error."));
 		}
 	}
+	// FIX: TEMP always is unknown data type
 	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
 		uint8_t whole, decimal, n;
+<<<<<<< HEAD
 		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu", &whole, &decimal) == 2)) { // && (g_received_data_buffer[5 + n] == '\0')) {
+=======
+		if ((sscanf(g_received_data_buffer + 5, "%hhu%hhu.%hhu", &whole, &decimal, &n) == 2) && (g_received_data_buffer[5 + n] == '\0')) {
+>>>>>>> 7e96a231bb48141aadbb787da72ed0244871e0d5
 			uint16_t temperature = whole * 10 + decimal;
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
 			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
@@ -259,10 +265,66 @@ states state_processing() {
 }
 
 states state_transmitting() {
+	// FIX: Not testing for ACK. Will set up dashboard and try again
 	log_msg("INFO", F("Ready to send data to cloud using LoRaWAN"));
-	// TODO: Actually send data from global buffer g_received_data_buffer to cloud
+	bool success = false;
+	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
+		log_msg("INFO", F("Sending data..."));
+		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
+		uint32_t start = millis();
+		while (millis() - start < 10000) {
+			if (send_success == true) {
+				success = true;
+				break;
+			}
+		}
+		if (success) {
+			log_msg("INFO", F("Data sent successfully"));
+			break;
+		} else {
+			log_msg("WARN", F("Transmission timed out. Retrying..."));
+		}
+	}
+	if (!success) {
+		log_msg("ERROR", F("Failed to send after 3 attempts"));
+		add_to_tx_retry_queue((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer));
+		lcd.clear();
+		lcd.setCursor(0, 0);
+		lcd.send_string("Send failed");
+		delay(5000);
+	}
 	return CONNECTED;
 }
+
+// states state_transmitting() {
+// 	log_msg("INFO", F("Ready to send data to cloud using LoRaWAN"));
+// 	uint8_t attempt_count = 0;
+// 	bool send_success = false;
+// 	while (attempt_count < max_attempts && ! send_success) {
+// 		log_msg("INFO", F("Attempting transmission..."));
+// 		if (ttn.sendBytes(g_received_data_buffer, strlen((const char*)g_received_data_buffer, 1))) {
+// 			log_msg("INFO", F("Data sent successfully"));
+// 			// wait for downlink ACK here
+// 			send_success = true;
+// 		}
+// 		else {
+// 			log_msg("WARN", F("Sending failed"));
+// 			attempt_count++;
+// 			delay(10000); // wait 10s before next attempt
+// 		}
+// 	}
+// 	if (!send_success) {
+// 		log_msg("ERROR", F("All Tx attempts failed. Queueing data"));
+// 		add_to_tx_retry_queue(g_received_data_buffer, strlen(((const char*)g_received_data_buffer)));
+// 		lcd.clear();
+// 		lcd.setCursor(0,0);
+// 		lcd.print(F("Error:"));
+// 		lcd.setCursor(0, 1);
+// 		lcd.print("Tx Send Fail");
+// 		delay(5000);
+// 	}
+// 	return CONNECTED;
+// }
 
 void change_state(states new_state) {
 	if (new_state == SETUP

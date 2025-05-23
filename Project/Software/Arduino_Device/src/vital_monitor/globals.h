@@ -41,10 +41,18 @@
 #define G_TEMP_THRESHOLD_MAX 370
 #define G_HR_THRESHOLD_MIN 60
 #define G_HR_THRESHOLD_MAX 100
+#define MAX_QUEUE_ITEMS 10
+#define MAX_MSG_SIZE 12
 
 #define debugSerial Serial
 #define loraSerial Serial1
 #define freqPlan TTN_FP_EU868
+
+extern uint8_t tx_retry_queue[MAX_QUEUE_ITEMS][MAX_MSG_SIZE];
+extern uint8_t tx_retry_lengths[MAX_QUEUE_ITEMS];
+extern uint8_t tx_retry_head;
+extern uint8_t tx_retry_tail;
+extern uint8_t tx_retry_count;
 
 extern Waveshare_LCD1602 lcd;
 extern SoftwareSerial HM10_UART;
