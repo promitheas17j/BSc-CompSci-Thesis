@@ -143,7 +143,7 @@ void setup() {
 	log_msg("INFO", F("Booted"));
 
 	log_msg("INFO", F("Setting up LoRa network..."));
-	ttn.onMessage(lora_message);
+	ttn.onMessage(onDownlinkMessage);
 	// ttn.showStatus(); // Print modem version and status
 	ttn.join(appEui, appKey);
 	log_msg("INFO", F("Joined TTN successfully"));

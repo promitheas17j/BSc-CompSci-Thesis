@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <TheThingsNetwork.h>
 
 uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 	const unsigned long debounceDelay = 20;
@@ -568,9 +569,93 @@ states multi_threshold_setup_u16(
 	return current_state;
 }
 
-void lora_message(const uint8_t *payload, size_t length, port_t port) {
-	log_msg("INFO", F("Downlink message received"));
+// Callback to handle downlink messages
+void onDownlinkMessage(const ttn_response_t& res) {
+	if (res.port != 1 || res.length < 2) {
+		return;
+	}
+	uint8_t cmd = res.payload[0];
+	uint8_t field = res.payload[1];
+	switch (cmd) {
+		case 0x20: // Set threshold
+			if (field >= 0x01 && field <= 0x08) {
+				// Handle 1-byte values
+				if (res.length == 3) {
+					uint8_t value = res.payload[2];
+					switch (field) {
+						case 0x01:
+							hr_min = value;
+							break;
+						case 0x02:
+							hr_max = value;
+							break;
+						case 0x05:
+							bp_sys_min = value;
+							break;
+						case 0x06:
+							bp_sys_max = value;
+							break;
+						case 0x07:
+							bp_dia_min = value;
+							break;
+						case 0x08:
+							bp_dia_max = value;
+							break;
+						default:
+							break;
+					}
+				}
+				// Handle 2-byte temperature
+				else if (res.length == 4 && (field == 0x03 || field == 0x04)) {
+					uint16_t value = (res.payload[2] << 8) | res.payload[3];
+					if (field == 0x03) {
+						temp_min = value;
+					}
+					else if (field == 0x04) {
+						temp_max = value;
+					}
+				}
+			}
+			break;
+		case 0x30: // Request reading
+			switch (field) {
+				case 0x01: read_bp = true; break;
+				case 0x02: read_temp = true; break;
+				case 0x03: read_hr = true; break;
+			}
+			break;
+		default:
+			break;
+	}
 }
+// void onDownlinkMessage(const ttn_response_t &response) {
+	// typeof(response) dummy;
+	// Serial.println("Received downlink message");
+	// if (response.port == 1 && response.payload.length() > 0) {
+	//	uint8_t command = response.payload[0];	// Read the first byte as command
+	//	switch (command) {
+	//		case 0x00:
+	//			Serial.println("Command: Request Reading");
+	//			// requestReading();  // Call your function
+	//			break;
+	//		// Future cases: handle other commands like threshold setting
+	//		// case 0x02:
+	//			// e.g., set threshold logic
+	//			// break;
+	//		default:
+	//			Serial.print("Unknown command received: 0x");
+	//			Serial.println(command, HEX);
+	//			break;
+	//	}
+	// }
+	// else {
+	//	Serial.println("Downlink message ignored (wrong port or empty payload).");
+	// }
+}
+
+// void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
+//	log_msg("INFO", F("Downlink message received"));
+// }
 
 void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 	if (len > MAX_MSG_SIZE) {
