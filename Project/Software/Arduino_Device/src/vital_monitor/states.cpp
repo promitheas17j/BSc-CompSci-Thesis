@@ -229,7 +229,7 @@ states state_processing() {
 	}
 	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
 		uint8_t whole, decimal, n;
-		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu%hhu", &whole, &decimal, &n) == 2) && (g_received_data_buffer[5 + n] == '\0')) {
+		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu", &whole, &decimal) == 2)) { // && (g_received_data_buffer[5 + n] == '\0')) {
 			uint16_t temperature = whole * 10 + decimal;
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
 			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
