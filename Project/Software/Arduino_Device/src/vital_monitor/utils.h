@@ -106,6 +106,8 @@ states multi_threshold_setup_u16(
 	states			previous_state
 );
 
-void message(const uint8_t *payload, size_t length, port_t port);
+void lora_message(const uint8_t *payload, size_t length, port_t port);
+
+void add_to_tx_retry_queue(const uint8_t *data, uint8_t len);
 
 #endif
