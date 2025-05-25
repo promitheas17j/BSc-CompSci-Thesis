@@ -103,6 +103,7 @@ public:
     void clear();                          // Clear the display
     void data(uint8_t value);              // Send data to the LCD
     void send_string(const char *str);     // Display a string on the LCD
+    void send_string(const __FlashStringHelper *fstr); // My overload
     void noCursor();                       // Hide the cursor
     void cursor();                         // Show the cursor
     void scrollDisplayLeft();              // Scroll the display content to the left

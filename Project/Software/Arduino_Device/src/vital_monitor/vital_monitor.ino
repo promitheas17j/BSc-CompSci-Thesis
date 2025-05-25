@@ -10,7 +10,6 @@ Waveshare_LCD1602 lcd(16,2);
 SoftwareSerial HM10_UART(9, 10);
 DS3231 rtc;
 TheThingsNetwork ttn(Serial1, Serial, TTN_FP_EU868);
-// TheThingsNetwork ttn(Serial1, Serial, TTN_FP_EU868);
 
 const char *appEui = "0004A30B001BF78C";
 const char *appKey = "493BE84C0FE8713FCD58F382A522A63F";
@@ -54,7 +53,6 @@ void setup() {
 	Serial.begin(9600);
 	Serial1.begin(57600);
 	EEPROM.begin();
-	log_msg("INFO", F("Booting..."));
 	HM10_UART.begin(9600);
 	lcd.init();
 	lcd.clear();
@@ -123,25 +121,20 @@ void setup() {
 	digitalWrite(BUZZER, HIGH);
 	delay(100);
 	digitalWrite(BUZZER, LOW);
-	char msg[64];
-	snprintf(msg, sizeof(msg), "STATE pin: %d", digitalRead(BT_STATE));
-	log_msg("DEBUG", msg);
-	log_msg("DEBUG", F("\n\n"));
-	log_msg("INFO", F("BP SYST MIN = "), (unsigned)g_bp_systolic_threshold_min);
-	log_msg("INFO", F("BP SYST MAX = "), (unsigned)g_bp_systolic_threshold_max);
-	log_msg("INFO", F("BP DIAS MIN = "), (unsigned)g_bp_diastolic_threshold_min);
-	log_msg("INFO", F("BP DIAS MAX = "), (unsigned)g_bp_diastolic_threshold_max);
-	log_msg("INFO", F("TEMP MIN = "), (unsigned)g_temp_threshold_min);
-	log_msg("INFO", F("TEMP MAX = "), (unsigned)g_temp_threshold_max);
-	log_msg("INFO", F("HR MIN = "), (unsigned)g_hr_threshold_min);
-	log_msg("INFO", F("HR MAX = "), (unsigned)g_hr_threshold_max);
-	log_msg("INFO", F("Booted"));
+	// log_msg("INFO", F("BP SYST MIN = "), (unsigned)g_bp_systolic_threshold_min);
+	// log_msg("INFO", F("BP SYST MAX = "), (unsigned)g_bp_systolic_threshold_max);
+	// log_msg("INFO", F("BP DIAS MIN = "), (unsigned)g_bp_diastolic_threshold_min);
+	// log_msg("INFO", F("BP DIAS MAX = "), (unsigned)g_bp_diastolic_threshold_max);
+	// log_msg("INFO", F("TEMP MIN = "), (unsigned)g_temp_threshold_min);
+	// log_msg("INFO", F("TEMP MAX = "), (unsigned)g_temp_threshold_max);
+	// log_msg("INFO", F("HR MIN = "), (unsigned)g_hr_threshold_min);
+	// log_msg("INFO", F("HR MAX = "), (unsigned)g_hr_threshold_max);
+	// log_msg("INFO", F("Booted"));
 
-	log_msg("INFO", F("Setting up LoRa network..."));
 	ttn.onMessage(onDownlinkMessage);
 	ttn.join(appEui, appKey);
-	log_msg("INFO", F("Joined TTN successfully"));
 	g_last_uplink_minute = 0;
+	ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
 }
 
 void loop() {

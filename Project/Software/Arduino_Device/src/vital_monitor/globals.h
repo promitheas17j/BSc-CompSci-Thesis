@@ -3,7 +3,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include "utils.h"
+// #include "utils.h"
 #include "states.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -43,6 +43,9 @@
 #define G_HR_THRESHOLD_MAX 100
 #define MAX_QUEUE_ITEMS 10
 #define MAX_MSG_SIZE 12
+
+#define STR_MENU_NAV F("<    SELECT    >")
+#define STR_THRESHOLD_NAV F("< -  SELECT  + >")
 
 extern uint8_t tx_retry_queue[MAX_QUEUE_ITEMS][MAX_MSG_SIZE];
 extern uint8_t tx_retry_lengths[MAX_QUEUE_ITEMS];

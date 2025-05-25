@@ -1,7 +1,7 @@
 // states.cpp
 
-#include "states.h"
 #include "globals.h"
+#include "states.h"
 #include "menu.h"
 #include "utils.h"
 #include <string.h>
@@ -62,7 +62,7 @@ states state_setup_bp() {
 		G_BP_DIAS_MIN_ADDR,
 		G_BP_DIAS_MAX_ADDR
 	};
-	return multi_threshold_setup_u8(
+	return multi_threshold_setup<uint8_t>(
 		bp_prompts, bp_values, bp_lo, bp_hi, bp_addr,
 		sizeof(bp_prompts) / sizeof(bp_prompts[0]),
 		SETUP_BP,      // this state’s enum
@@ -93,12 +93,12 @@ states state_setup_temp() {
 		G_TEMP_MIN_ADDR,
 		G_TEMP_MAX_ADDR
 	};
-	return multi_threshold_setup_u16(
+	return multi_threshold_setup<uint16_t>(
 		temp_prompts,
 		temp_values,
 		temp_lo,
 		temp_hi,
-		temp_addr,
+		reinterpret_cast<const uint8_t*>(temp_addr),
 		sizeof(temp_prompts) / sizeof(temp_prompts[0]),
 		SETUP_TEMP,
 		g_previous_state
@@ -127,7 +127,7 @@ states state_setup_hr() {
 		G_HR_MIN_ADDR,
 		G_HR_MAX_ADDR
 	};
-	return multi_threshold_setup_u8(
+	return multi_threshold_setup<uint8_t>(
 		hr_prompts,
 		hr_values,
 		hr_lo,
@@ -169,7 +169,6 @@ states state_reading() {
 			attempt_count = 0;
 			return g_previous_state;
 		}
-		log_msg("DEBUG", F("Reading data"));
 		char incoming_byte = HM10_UART.read();
 		// char debug_char[2] = {incoming_byte, '\0'};
 		if (incoming_byte == '\n') {
@@ -177,10 +176,7 @@ states state_reading() {
 			size_t len = strlen(input_buffer);
 			if (len > 0 && input_buffer[len - 1] == '\r') {
 				input_buffer[len - 1] = '\0';
-				log_msg("DEBUG", F("Stripped trailing \\r from input_buffer"));
 			}
-			log_msg("DEBUG", F("Received string: "));
-			log_msg("DEBUG", input_buffer);
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
 				log_msg("INFO", F("Valid data received. ACK sent."));
@@ -207,9 +203,6 @@ states state_reading() {
 }
 
 states state_processing() {
-	char msg[64];
-	snprintf(msg, sizeof(msg), "Data buffer contains:\n\t %s", g_received_data_buffer);
-	log_msg("DEBUG", msg);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
 		if (sscanf(g_received_data_buffer + 3, "%hhu/%hhu", &sys, &dia) == 2) {
@@ -217,9 +210,7 @@ states state_processing() {
 					sys <= g_bp_systolic_threshold_max &&
 					dia >= g_bp_diastolic_threshold_min &&
 					dia <= g_bp_systolic_threshold_max
-				);
-			snprintf(msg, sizeof(msg), "BP %hhu/%hhu %s", sys, dia, ok ? "OK" : "ALERT");
-			log_msg("INFO", msg);
+			);
 			if (!ok) {
 				return TRANSMITTING;
 			}
@@ -233,8 +224,6 @@ states state_processing() {
 		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu", &whole, &decimal) == 2)) { // && (g_received_data_buffer[5 + n] == '\0')) {
 			uint16_t temperature = whole * 10 + decimal;
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
-			snprintf(msg, sizeof(msg), "TEMP %u.%u %s", whole, decimal, ok ? "OK" : "ALERT");
-			log_msg("INFO", msg);
 			if (!ok) {
 				return TRANSMITTING;
 			}
@@ -247,8 +236,6 @@ states state_processing() {
 		// char *p = g_received_data_buffer + 3;
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
-		snprintf(msg, sizeof(msg), "HR %u %s", hr, ok ? "OK" : "ALERT");
-		log_msg("INFO", msg);
 		if (!ok) {
 			return TRANSMITTING;
 		}
@@ -261,10 +248,8 @@ states state_processing() {
 
 states state_transmitting() {
 	// FIX: Not testing for ACK. Will set up dashboard and try again
-	log_msg("INFO", F("Ready to send data to cloud using LoRaWAN"));
 	bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
-		log_msg("INFO", F("Sending data..."));
 		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
 		uint32_t start = millis();
 		while (millis() - start < 10000) {
@@ -348,7 +333,6 @@ void change_state(states new_state) {
 		while (HM10_UART.available()) {
 			HM10_UART.read();
 		}
-		log_msg("DEBUG", F("Flushed UART buffer before entering READING state"));
 	}
 	update_led_based_on_state();
 }
@@ -376,7 +360,6 @@ states check_bt_connection(states current_state) {
 	if (bt_pin_state == HIGH) {
 		if (!is_connected && (millis() - last_high_time > stable_threshold)) {
 			is_connected = true;
-			log_msg("DEBUG", F("BT connection detected."));
 			return CONNECTED;
 		}
 	}
@@ -384,7 +367,6 @@ states check_bt_connection(states current_state) {
 		last_high_time = millis();
 		if (is_connected) {
 			is_connected = false;
-			log_msg("DEBUG", F("BT disconnection detected."));
 			return DISCONNECTED;
 		}
 	}
