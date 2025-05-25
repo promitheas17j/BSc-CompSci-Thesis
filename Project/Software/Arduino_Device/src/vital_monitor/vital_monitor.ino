@@ -1,4 +1,6 @@
 // vital_monitor.ino
+// TODO: Implement taking readings at set times of the day
+// TODO: Implement non-LCD ui elements (LEDs, Buzzer) for each event
 
 #include "globals.h"
 #include "menu.h"

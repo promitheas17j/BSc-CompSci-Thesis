@@ -125,7 +125,7 @@ bool validate_message(const char *msg) {
 			}
 		}
 		if (!seen_slash || digit_count < 2) {
-			// loop ends at '\0' if no slash seen by then or digit_count is less than 2 then its not a properly formatted BP string
+			// loopayload ends at '\0' if no slash seen by then or digit_count is less than 2 then its not a properly formatted BP string
 			return false;
 		}
 		return true;
@@ -530,101 +530,157 @@ void update_led_based_on_state() {
 
 // Callback to handle downlink messages
 void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
-	if (port != 1 || length < 2) {
-		return;
-	}
-	uint8_t cmd = payload[0];
+	if (port != 1 || length < 2) return;
+	uint8_t cmd   = payload[0];
 	uint8_t field = payload[1];
-	switch (cmd) {
-		case 0x20: // Set threshold
-			log_msg("DEBUG", F("0x20 - Set threshold cmd"));
-			if (field >= 0x01 && field <= 0x08) {
-				// Handle 1-byte values
-				if (length == 3) {
-					uint8_t value = payload[2];
-					switch (field) {
-						case 0x01:
-							log_msg("DEBUG", F("0x01 - HR Min"));
-							// Set min hr to value
-							EEPROM.write(G_HR_MIN_ADDR, value);
-							g_hr_threshold_min = value;
-							break;
-						case 0x02:
-							log_msg("DEBUG", F("0x02 - HR Max"));
-							// Set max hr to value
-							EEPROM.write(G_HR_MAX_ADDR, value);
-							g_hr_threshold_max = value;
-							break;
-						case 0x05:
-							log_msg("DEBUG", F("0x05 - Sys Min"));
-							// set min sys to value
-							EEPROM.write(G_BP_SYS_MIN_ADDR, value);
-							g_bp_systolic_threshold_min = value;
-							break;
-						case 0x06:
-							log_msg("DEBUG", F("0x06 - Sys Max"));
-							// set max sys to value
-							EEPROM.write(G_BP_SYS_MAX_ADDR, value);
-							g_bp_systolic_threshold_max = value;
-							break;
-						case 0x07:
-							log_msg("DEBUG", F("0x07 - Dia Min"));
-							// set min dia to value
-							EEPROM.write(G_BP_DIAS_MIN_ADDR, value);
-							g_bp_diastolic_threshold_min = value;
-							break;
-						case 0x08:
-							log_msg("DEBUG", F("0x08 - Dia Max"));
-							// set max dia to value
-							EEPROM.write(G_BP_DIAS_MAX_ADDR, value);
-							g_bp_diastolic_threshold_max = value;
-							break;
-						default:
-							break;
-					}
+	if (cmd == 0x20) {  // Set Thresholds
+		log_msg("DEBUG", F("CMD 0x20: Set thresholds"));
+		switch (field) {
+			case 0x01: // HR Min/Max (1 byte each)
+				if (length >= 4) {
+					g_hr_threshold_min = payload[2];
+					g_hr_threshold_max = payload[3];
+					EEPROM.write(G_HR_MIN_ADDR, g_hr_threshold_min);
+					EEPROM.write(G_HR_MAX_ADDR, g_hr_threshold_max);
+					log_msg("DEBUG", F("HR thresholds updated"));
 				}
-				// Handle 2-byte temperature
-				else if (length == 4 && (field == 0x03 || field == 0x04)) {
-					uint16_t value = (payload[2] << 8) | payload[3];
-					if (field == 0x03) {
-						log_msg("DEBUG", F("0x03 - Temp Min"));
-						// set min temp to value
-						EEPROM.write(G_TEMP_MIN_ADDR, value);
-						g_temp_threshold_min = value;
-					}
-					else if (field == 0x04) {
-						log_msg("DEBUG", F("0x04 - Temp Max"));
-						// set max temp to value
-						EEPROM.write(G_TEMP_MAX_ADDR, value);
-						g_temp_threshold_max = value;
-					}
+				break;
+			case 0x02: // TEMP Min/Max (2 bytes each)
+				if (length >= 6) {
+					g_temp_threshold_min = (payload[2] << 8) | payload[3];
+					g_temp_threshold_max = (payload[4] << 8) | payload[5];
+					EEPROM.write(G_TEMP_MIN_ADDR, (uint8_t)g_temp_threshold_min);
+					EEPROM.write(G_TEMP_MIN_ADDR + 1, (uint8_t)(g_temp_threshold_min >> 8));
+					EEPROM.write(G_TEMP_MAX_ADDR, (uint8_t)g_temp_threshold_max);
+					EEPROM.write(G_TEMP_MAX_ADDR + 1, (uint8_t)(g_temp_threshold_max >> 8));
+					log_msg("DEBUG", F("TEMP thresholds updated"));
 				}
-			}
-			break;
-		case 0x30: // Request reading
-			log_msg("DEBUG", F("0x30 - Request reading cmd"));
-			switch (field) {
-				case 0x01:
-					log_msg("DEBUG", F("0x01 - Request BP"));
-					// read_bp = true;
-					alert_request_read_bp();
-					break;
-				case 0x02:
-					log_msg("DEBUG", F("0x02 - Request TEMP"));
-					// read_temp = true;
-					alert_request_read_temp();
-					break;
-				case 0x03:
-					log_msg("DEBUG", F("0x03 - Request HR"));
-					// read_hr = true;
-					alert_request_read_hr();
-					break;
-			}
-			break;
-		default:
-			break;
+				break;
+			case 0x03: // BP SYS/DIA Min/Max (1 byte each)
+				if (length >= 6) {
+					g_bp_systolic_threshold_min  = payload[2];
+					g_bp_systolic_threshold_max  = payload[3];
+					g_bp_diastolic_threshold_min = payload[4];
+					g_bp_diastolic_threshold_max = payload[5];
+					EEPROM.write(G_BP_SYS_MIN_ADDR, g_bp_systolic_threshold_min);
+					EEPROM.write(G_BP_SYS_MAX_ADDR, g_bp_systolic_threshold_max);
+					EEPROM.write(G_BP_DIAS_MIN_ADDR, g_bp_diastolic_threshold_min);
+					EEPROM.write(G_BP_DIAS_MAX_ADDR, g_bp_diastolic_threshold_max);
+					log_msg("DEBUG", F("BP thresholds updated"));
+				}
+				break;
+			default:
+				log_msg("WARN", F("Unknown threshold field"));
+				break;
+		}
+	}
+	else if (cmd == 0x30) {  // Request Reading
+		log_msg("DEBUG", F("CMD 0x30: Request reading"));
+		switch (field) {
+			case 0x01: alert_request_read_bp(); break;
+			case 0x02: alert_request_read_temp(); break;
+			case 0x03: alert_request_read_hr(); break;
+			default: log_msg("WARN", F("Unknown reading field")); break;
+		}
 	}
 }
+
+// void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
+// 	if (port != 1 || length < 2) {
+// 		return;
+// 	}
+// 	uint8_t cmd = payload[0];
+// 	uint8_t field = payload[1];
+// 	switch (cmd) {
+// 		case 0x20: // Set threshold
+// 			log_msg("DEBUG", F("0x20 - Set threshold cmd"));
+// 			if (field >= 0x01 && field <= 0x08) {
+// 				// Handle 1-byte values
+// 				if (length == 3) {
+// 					uint8_t value = payload[2];
+// 					switch (field) {
+// 						case 0x01:
+// 							log_msg("DEBUG", F("0x01 - HR Min"));
+// 							// Set min hr to value
+// 							EEPROM.write(G_HR_MIN_ADDR, value);
+// 							g_hr_threshold_min = value;
+// 							break;
+// 						case 0x02:
+// 							log_msg("DEBUG", F("0x02 - HR Max"));
+// 							// Set max hr to value
+// 							EEPROM.write(G_HR_MAX_ADDR, value);
+// 							g_hr_threshold_max = value;
+// 							break;
+// 						case 0x05:
+// 							log_msg("DEBUG", F("0x05 - Sys Min"));
+// 							// set min sys to value
+// 							EEPROM.write(G_BP_SYS_MIN_ADDR, value);
+// 							g_bp_systolic_threshold_min = value;
+// 							break;
+// 						case 0x06:
+// 							log_msg("DEBUG", F("0x06 - Sys Max"));
+// 							// set max sys to value
+// 							EEPROM.write(G_BP_SYS_MAX_ADDR, value);
+// 							g_bp_systolic_threshold_max = value;
+// 							break;
+// 						case 0x07:
+// 							log_msg("DEBUG", F("0x07 - Dia Min"));
+// 							// set min dia to value
+// 							EEPROM.write(G_BP_DIAS_MIN_ADDR, value);
+// 							g_bp_diastolic_threshold_min = value;
+// 							break;
+// 						case 0x08:
+// 							log_msg("DEBUG", F("0x08 - Dia Max"));
+// 							// set max dia to value
+// 							EEPROM.write(G_BP_DIAS_MAX_ADDR, value);
+// 							g_bp_diastolic_threshold_max = value;
+// 							break;
+// 						default:
+// 							break;
+// 					}
+// 				}
+// 				// Handle 2-byte temperature
+// 				else if (length == 4 && (field == 0x03 || field == 0x04)) {
+// 					uint16_t value = (payload[2] << 8) | payload[3];
+// 					if (field == 0x03) {
+// 						log_msg("DEBUG", F("0x03 - Temp Min"));
+// 						// set min temp to value
+// 						EEPROM.write(G_TEMP_MIN_ADDR, value);
+// 						g_temp_threshold_min = value;
+// 					}
+// 					else if (field == 0x04) {
+// 						log_msg("DEBUG", F("0x04 - Temp Max"));
+// 						// set max temp to value
+// 						EEPROM.write(G_TEMP_MAX_ADDR, value);
+// 						g_temp_threshold_max = value;
+// 					}
+// 				}
+// 			}
+// 			break;
+// 		case 0x30: // Request reading
+// 			log_msg("DEBUG", F("0x30 - Request reading cmd"));
+// 			switch (field) {
+// 				case 0x01:
+// 					log_msg("DEBUG", F("0x01 - Request BP"));
+// 					// read_bp = true;
+// 					alert_request_read_bp();
+// 					break;
+// 				case 0x02:
+// 					log_msg("DEBUG", F("0x02 - Request TEMP"));
+// 					// read_temp = true;
+// 					alert_request_read_temp();
+// 					break;
+// 				case 0x03:
+// 					log_msg("DEBUG", F("0x03 - Request HR"));
+// 					// read_hr = true;
+// 					alert_request_read_hr();
+// 					break;
+// 			}
+// 			break;
+// 		default:
+// 			break;
+// 	}
+// }
 
 void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 	if (len > MAX_MSG_SIZE) {
