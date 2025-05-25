@@ -154,12 +154,23 @@ states state_reading() {
 	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
 	static uint8_t attempt_count = 0;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
+	static bool first_entry = true;
+	if (first_entry) {
+		log_msg("INFO", F("First entry into READING"));
+		while (HM10_UART.available()) {
+			HM10_UART.read();
+		}
+		index = 0;
+		memset(input_buffer, 0, sizeof(input_buffer));
+		first_entry = false;
+	}
 	if (bt_pin_state == HIGH) {
 		last_high_time = millis();
 	}
 	else {
 		if ((millis() - last_high_time) > disconnect_threshold) {
 			log_msg("WARN", F("Bluetooth disconnected during READING"));
+			first_entry = false;
 			return DISCONNECTED;
 		}
 	}
@@ -167,9 +178,13 @@ states state_reading() {
 		if (attempt_count >= 3) { // too many failed attempts, return to previous state
 			log_msg("WARN", F("Too many failed attempts. Cancelling"));
 			attempt_count = 0;
+			first_entry = false;
 			return g_previous_state;
 		}
 		char incoming_byte = HM10_UART.read();
+		Serial.print(incoming_byte);
+		Serial.print("\n");
+		log_msg("DEBUG-1", input_buffer);
 		// char debug_char[2] = {incoming_byte, '\0'};
 		if (incoming_byte == '\n') {
 			input_buffer[index] = '\0';
@@ -177,11 +192,30 @@ states state_reading() {
 			if (len > 0 && input_buffer[len - 1] == '\r') {
 				input_buffer[len - 1] = '\0';
 			}
+			// DEBUGGING
+			log_msg("DEBUG-2", input_buffer);
+			char dbg[32];
+			snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
+			log_msg("DEBUG", dbg);
+			for (size_t i = 0; i < strlen(input_buffer); ++i) {
+				char cinfo[16];
+				sprintf(cinfo, "[%u]=%02X (%c)", i, input_buffer[i], input_buffer[i]);
+				log_msg("BYTE", cinfo);
+			}
+			if (len > 0 && input_buffer[len - 1] == '\r') {
+				input_buffer[len - 1] = '\0';
+			}
+			// Strip surrounding quotes if present
+			if (input_buffer[0] == '"' && input_buffer[strlen(input_buffer) - 1] == '"') {
+				memmove(input_buffer, input_buffer + 1, strlen(input_buffer)); // shift left
+				input_buffer[strlen(input_buffer) - 1] = '\0'; // remove trailing "
+			}
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
 				log_msg("INFO", F("Valid data received. ACK sent."));
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
+				first_entry = true;
 				return PROCESSING;
 			}
 			else {

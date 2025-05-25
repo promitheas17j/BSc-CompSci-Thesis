@@ -167,7 +167,9 @@ void loop() {
 	// bool hPM;
 	// Serial.print(" " + String(rtc.getHour(h12, hPM)) + ":" + String(rtc.getMinute()) + ":" + String(rtc.getSecond()) + "\n");
 
-	send_empty_uplink();
+	if (g_current_state != READING && g_current_state != PROCESSING && g_current_state != TRANSMITTING) {
+		send_empty_uplink();
+	}
 
 	g_prev_button_state = debounceReadButton(BTN_PREV, &g_prev_button);
 	g_select_button_state = debounceReadButton(BTN_SELECT, &g_select_button);
