@@ -570,92 +570,102 @@ states multi_threshold_setup_u16(
 }
 
 // Callback to handle downlink messages
-void onDownlinkMessage(const ttn_response_t& res) {
-	if (res.port != 1 || res.length < 2) {
+void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
+	if (port != 1 || length < 2) {
 		return;
 	}
-	uint8_t cmd = res.payload[0];
-	uint8_t field = res.payload[1];
+	uint8_t cmd = payload[0];
+	uint8_t field = payload[1];
 	switch (cmd) {
 		case 0x20: // Set threshold
+			log_msg("DEBUG", F("0x20 - Set threshold cmd"));
 			if (field >= 0x01 && field <= 0x08) {
 				// Handle 1-byte values
-				if (res.length == 3) {
-					uint8_t value = res.payload[2];
+				if (length == 3) {
+					uint8_t value = payload[2];
 					switch (field) {
 						case 0x01:
-							hr_min = value;
+							log_msg("DEBUG", F("0x01 - HR Min"));
+							// Set min hr to value
+							EEPROM.write(G_HR_MIN_ADDR, value);
+							g_hr_threshold_min = value;
 							break;
 						case 0x02:
-							hr_max = value;
+							log_msg("DEBUG", F("0x02 - HR Max"));
+							// Set max hr to value
+							EEPROM.write(G_HR_MAX_ADDR, value);
+							g_hr_threshold_max = value;
 							break;
 						case 0x05:
-							bp_sys_min = value;
+							log_msg("DEBUG", F("0x05 - Sys Min"));
+							// set min sys to value
+							EEPROM.write(G_BP_SYS_MIN_ADDR, value);
+							g_bp_systolic_threshold_min = value;
 							break;
 						case 0x06:
-							bp_sys_max = value;
+							log_msg("DEBUG", F("0x06 - Sys Max"));
+							// set max sys to value
+							EEPROM.write(G_BP_SYS_MAX_ADDR, value);
+							g_bp_systolic_threshold_max = value;
 							break;
 						case 0x07:
-							bp_dia_min = value;
+							log_msg("DEBUG", F("0x07 - Dia Min"));
+							// set min dia to value
+							EEPROM.write(G_BP_DIAS_MIN_ADDR, value);
+							g_bp_diastolic_threshold_min = value;
 							break;
 						case 0x08:
-							bp_dia_max = value;
+							log_msg("DEBUG", F("0x08 - Dia Max"));
+							// set max dia to value
+							EEPROM.write(G_BP_DIAS_MAX_ADDR, value);
+							g_bp_diastolic_threshold_max = value;
 							break;
 						default:
 							break;
 					}
 				}
 				// Handle 2-byte temperature
-				else if (res.length == 4 && (field == 0x03 || field == 0x04)) {
-					uint16_t value = (res.payload[2] << 8) | res.payload[3];
+				else if (length == 4 && (field == 0x03 || field == 0x04)) {
+					uint16_t value = (payload[2] << 8) | payload[3];
 					if (field == 0x03) {
-						temp_min = value;
+						log_msg("DEBUG", F("0x03 - Temp Min"));
+						// set min temp to value
+						EEPROM.write(G_TEMP_MIN_ADDR, value);
+						g_temp_threshold_min = value;
 					}
 					else if (field == 0x04) {
-						temp_max = value;
+						log_msg("DEBUG", F("0x04 - Temp Max"));
+						// set max temp to value
+						EEPROM.write(G_TEMP_MAX_ADDR, value);
+						g_temp_threshold_max = value;
 					}
 				}
 			}
 			break;
 		case 0x30: // Request reading
+			log_msg("DEBUG", F("0x30 - Request reading cmd"));
 			switch (field) {
-				case 0x01: read_bp = true; break;
-				case 0x02: read_temp = true; break;
-				case 0x03: read_hr = true; break;
+				case 0x01:
+					log_msg("DEBUG", F("0x01 - Request BP"));
+					// read_bp = true;
+					alert_request_read_bp();
+					break;
+				case 0x02:
+					log_msg("DEBUG", F("0x02 - Request TEMP"));
+					// read_temp = true;
+					alert_request_read_temp();
+					break;
+				case 0x03:
+					log_msg("DEBUG", F("0x03 - Request HR"));
+					// read_hr = true;
+					alert_request_read_hr();
+					break;
 			}
 			break;
 		default:
 			break;
 	}
 }
-// void onDownlinkMessage(const ttn_response_t &response) {
-	// typeof(response) dummy;
-	// Serial.println("Received downlink message");
-	// if (response.port == 1 && response.payload.length() > 0) {
-	//	uint8_t command = response.payload[0];	// Read the first byte as command
-	//	switch (command) {
-	//		case 0x00:
-	//			Serial.println("Command: Request Reading");
-	//			// requestReading();  // Call your function
-	//			break;
-	//		// Future cases: handle other commands like threshold setting
-	//		// case 0x02:
-	//			// e.g., set threshold logic
-	//			// break;
-	//		default:
-	//			Serial.print("Unknown command received: 0x");
-	//			Serial.println(command, HEX);
-	//			break;
-	//	}
-	// }
-	// else {
-	//	Serial.println("Downlink message ignored (wrong port or empty payload).");
-	// }
-}
-
-// void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
-//	log_msg("INFO", F("Downlink message received"));
-// }
 
 void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 	if (len > MAX_MSG_SIZE) {
@@ -672,5 +682,39 @@ void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 		log_msg("INFO", F("Added message to retry queue"));
 	} else {
 		log_msg("WARN", F("Retry queue full, message dropped"));
+	}
+}
+
+void alert_request_read_bp() {
+	log_msg("DEBUG", F("Request to measure BP"));
+}
+
+void alert_request_read_temp() {
+	log_msg("DEBUG", F("Request to measure TEMP"));
+}
+
+void alert_request_read_hr() {
+	log_msg("DEBUG", F("Request to measure HR"));
+}
+
+void send_empty_uplink() {
+	DateTime now = RTClib::now();
+	Serial.print("Timestamp: ");
+	Serial.print(now.day());
+	Serial.print("/");
+	Serial.print(now.month());
+	Serial.print("/");
+	Serial.print(now.year());
+	Serial.print(" ");
+	Serial.print(now.hour());
+	Serial.print(":");
+	Serial.print(now.minute());
+	Serial.print(":");
+	Serial.print(now.second());
+	uint32_t current_minute = now.hour() * 60 + now.minute();
+	if ((current_minute % 5 == 0) && (current_minute != g_last_uplink_minute)) {
+		log_msg("DEBUG", F("Sending empty uplink"));
+		ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
+		g_last_uplink_minute = current_minute;
 	}
 }

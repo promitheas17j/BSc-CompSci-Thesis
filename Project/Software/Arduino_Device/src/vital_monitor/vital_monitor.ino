@@ -9,7 +9,8 @@
 Waveshare_LCD1602 lcd(16,2);
 SoftwareSerial HM10_UART(9, 10);
 DS3231 rtc;
-TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
+TheThingsNetwork ttn(Serial1, Serial, TTN_FP_EU868);
+// TheThingsNetwork ttn(Serial1, Serial, TTN_FP_EU868);
 
 const char *appEui = "0004A30B001BF78C";
 const char *appKey = "493BE84C0FE8713FCD58F382A522A63F";
@@ -31,6 +32,8 @@ uint8_t g_hr_threshold_max;
 uint16_t g_temp_threshold_min;
 uint16_t g_temp_threshold_max;
 
+uint32_t g_last_uplink_minute;
+
 struct ButtonDebounce g_prev_button = {LOW, LOW, 0};
 struct ButtonDebounce g_select_button = {LOW, LOW, 0};
 struct ButtonDebounce g_next_button = {LOW, LOW, 0};
@@ -50,15 +53,7 @@ uint8_t tx_retry_count = 0;
 void setup() {
 	Serial.begin(9600);
 	Serial1.begin(57600);
-	// rtc.begin();
-	// The following lines can be uncommented to set the date and time
 	EEPROM.begin();
-	// Wait for Serial connection before proceeding with the rest of the code if debug enabled
-	// if (debug_enabled) {
-	// 	while (!Serial) {
-	// 		;
-	// 	}
-	// }
 	log_msg("INFO", F("Booting..."));
 	HM10_UART.begin(9600);
 	lcd.init();
@@ -144,9 +139,9 @@ void setup() {
 
 	log_msg("INFO", F("Setting up LoRa network..."));
 	ttn.onMessage(onDownlinkMessage);
-	// ttn.showStatus(); // Print modem version and status
 	ttn.join(appEui, appKey);
 	log_msg("INFO", F("Joined TTN successfully"));
+	g_last_uplink_minute = 0;
 }
 
 void loop() {
@@ -186,6 +181,8 @@ void loop() {
 	// bool h12;
 	// bool hPM;
 	// Serial.print(" " + String(rtc.getHour(h12, hPM)) + ":" + String(rtc.getMinute()) + ":" + String(rtc.getSecond()) + "\n");
+
+	send_empty_uplink();
 
 	g_prev_button_state = debounceReadButton(BTN_PREV, &g_prev_button);
 	g_select_button_state = debounceReadButton(BTN_SELECT, &g_select_button);

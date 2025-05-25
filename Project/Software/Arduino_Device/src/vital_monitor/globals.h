@@ -44,10 +44,6 @@
 #define MAX_QUEUE_ITEMS 10
 #define MAX_MSG_SIZE 12
 
-#define debugSerial Serial
-#define loraSerial Serial1
-#define freqPlan TTN_FP_EU868
-
 extern uint8_t tx_retry_queue[MAX_QUEUE_ITEMS][MAX_MSG_SIZE];
 extern uint8_t tx_retry_lengths[MAX_QUEUE_ITEMS];
 extern uint8_t tx_retry_head;
@@ -73,6 +69,8 @@ extern uint8_t g_hr_threshold_max;
 
 extern uint16_t g_temp_threshold_min;
 extern uint16_t g_temp_threshold_max;
+
+extern uint32_t g_last_uplink_minute;
 
 extern char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
