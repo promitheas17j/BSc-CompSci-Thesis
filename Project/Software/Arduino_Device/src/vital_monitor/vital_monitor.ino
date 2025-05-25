@@ -121,16 +121,6 @@ void setup() {
 	digitalWrite(BUZZER, HIGH);
 	delay(100);
 	digitalWrite(BUZZER, LOW);
-	// log_msg("INFO", F("BP SYST MIN = "), (unsigned)g_bp_systolic_threshold_min);
-	// log_msg("INFO", F("BP SYST MAX = "), (unsigned)g_bp_systolic_threshold_max);
-	// log_msg("INFO", F("BP DIAS MIN = "), (unsigned)g_bp_diastolic_threshold_min);
-	// log_msg("INFO", F("BP DIAS MAX = "), (unsigned)g_bp_diastolic_threshold_max);
-	// log_msg("INFO", F("TEMP MIN = "), (unsigned)g_temp_threshold_min);
-	// log_msg("INFO", F("TEMP MAX = "), (unsigned)g_temp_threshold_max);
-	// log_msg("INFO", F("HR MIN = "), (unsigned)g_hr_threshold_min);
-	// log_msg("INFO", F("HR MAX = "), (unsigned)g_hr_threshold_max);
-	// log_msg("INFO", F("Booted"));
-
 	ttn.onMessage(onDownlinkMessage);
 	ttn.join(appEui, appKey);
 	g_last_uplink_minute = 0;
