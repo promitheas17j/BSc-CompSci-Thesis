@@ -534,7 +534,6 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 	uint8_t cmd   = payload[0];
 	uint8_t field = payload[1];
 	if (cmd == 0x20) {  // Set Thresholds
-		log_msg("DEBUG", F("CMD 0x20: Set thresholds"));
 		switch (field) {
 			case 0x01: // HR Min/Max (1 byte each)
 				if (length >= 4) {
@@ -542,7 +541,6 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 					g_hr_threshold_max = payload[3];
 					EEPROM.write(G_HR_MIN_ADDR, g_hr_threshold_min);
 					EEPROM.write(G_HR_MAX_ADDR, g_hr_threshold_max);
-					log_msg("DEBUG", F("HR thresholds updated"));
 				}
 				break;
 			case 0x02: // TEMP Min/Max (2 bytes each)
@@ -553,7 +551,6 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 					EEPROM.write(G_TEMP_MIN_ADDR + 1, (uint8_t)(g_temp_threshold_min >> 8));
 					EEPROM.write(G_TEMP_MAX_ADDR, (uint8_t)g_temp_threshold_max);
 					EEPROM.write(G_TEMP_MAX_ADDR + 1, (uint8_t)(g_temp_threshold_max >> 8));
-					log_msg("DEBUG", F("TEMP thresholds updated"));
 				}
 				break;
 			case 0x03: // BP SYS/DIA Min/Max (1 byte each)
@@ -566,7 +563,6 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 					EEPROM.write(G_BP_SYS_MAX_ADDR, g_bp_systolic_threshold_max);
 					EEPROM.write(G_BP_DIAS_MIN_ADDR, g_bp_diastolic_threshold_min);
 					EEPROM.write(G_BP_DIAS_MAX_ADDR, g_bp_diastolic_threshold_max);
-					log_msg("DEBUG", F("BP thresholds updated"));
 				}
 				break;
 			default:
@@ -575,11 +571,10 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 		}
 	}
 	else if (cmd == 0x30) {  // Request Reading
-		log_msg("DEBUG", F("CMD 0x30: Request reading"));
 		switch (field) {
-			case 0x01: alert_request_read_bp(); break;
-			case 0x02: alert_request_read_temp(); break;
-			case 0x03: alert_request_read_hr(); break;
+			case 0x01: alert_request_read("bp"); break;
+			case 0x02: alert_request_read("temp"); break;
+			case 0x03: alert_request_read("hr"); break;
 			default: log_msg("WARN", F("Unknown reading field")); break;
 		}
 	}
@@ -700,35 +695,78 @@ void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 	}
 }
 
-void alert_request_read_bp() {
-	log_msg("DEBUG", F("Request to measure BP"));
-}
-
-void alert_request_read_temp() {
-	log_msg("DEBUG", F("Request to measure TEMP"));
-}
-
-void alert_request_read_hr() {
-	log_msg("DEBUG", F("Request to measure HR"));
+void alert_request_read(const char* vital) {
+	if (vital == "bp") {
+		lcd.clear();
+		lcd.setCursor(0, 0);
+		lcd.send_string("Please measure:");
+		lcd.setCursor(0, 1);
+		lcd.send_string("Blood Pressure");
+	}
+	else if (vital == "temp") {
+		lcd.clear();
+		lcd.setCursor(0, 0);
+		lcd.send_string("Please measure:");
+		lcd.setCursor(0, 1);
+		lcd.send_string("Temperature");
+	}
+	else if (vital == "hr") {
+		lcd.clear();
+		lcd.setCursor(0, 0);
+		lcd.send_string("Please measure:");
+		lcd.setCursor(0, 1);
+		lcd.send_string("Heart Rate");
+	}
+	else {
+		log_msg("DEBUG", F("Invalid vital sign passed to request reading func"));
+	}
+	delay(5000);
+	lcd.clear();
+	g_last_option_index_displayed = 255;
 }
 
 void send_empty_uplink() {
 	DateTime now = RTClib::now();
-	// Serial.print("Timestamp: ");
-	// Serial.print(now.day());
-	// Serial.print("/");
-	// Serial.print(now.month());
-	// Serial.print("/");
-	// Serial.print(now.year());
-	// Serial.print(" ");
-	// Serial.print(now.hour());
-	// Serial.print(":");
-	// Serial.print(now.minute());
-	// Serial.print(":");
-	// Serial.println(now.second());
 	uint32_t current_minute = now.hour() * 60 + now.minute();
 	if ((current_minute % 5 == 0) && (current_minute != g_last_uplink_minute)) {
 		ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
 		g_last_uplink_minute = current_minute;
+	}
+}
+
+void handle_scheduled_readings() {
+	DateTime now = RTClib::now();
+	static uint8_t hr_last_triggered_minute = 255;
+	static uint8_t hr_last_reading_hour = 255;
+	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
+		return;
+	}
+	// BP once at 08:00
+	if (now.hour() == 8 && now.minute() == 0 && !g_waiting_for_reading_bp) {
+		g_waiting_for_reading_bp = true;
+		alert_request_read("bp");
+		g_previous_state = CONNECTED;
+		g_current_state = READING;
+		return;
+	}
+	// TEMP 5x/12h
+	if ((now.hour() == 8 || now.hour() == 11 || now.hour() == 14 || now.hour() == 17 || now.hour() == 20) && now.minute() == 0 && !g_waiting_for_reading_temp) {
+		g_waiting_for_reading_temp = true;
+		alert_request_read("temp");
+		g_previous_state = CONNECTED;
+		g_current_state = READING;
+		return;
+	}
+	// HR every hour, 3 readings spaced 2 minutes apart, take the average
+	if (now.minute() == 0 && now.hour() != hr_last_reading_hour) {
+		hr_last_reading_hour = now.hour();
+		g_hr_readings_taken_this_hour = 0;
+		g_hr_readings_sum = 0;
+		hr_last_triggered_minute = 255;
+	}
+	if ((now.minute() % 2) == 0 && now.minute() != hr_last_triggered_minute && g_hr_readings_taken_this_hour < 3) {
+		hr_last_triggered_minute = now.minute();
+		g_waiting_for_reading_hr = true;
+		alert_request_read("hr");
 	}
 }

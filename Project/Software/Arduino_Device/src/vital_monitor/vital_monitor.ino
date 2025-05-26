@@ -29,9 +29,11 @@ uint8_t g_bp_diastolic_threshold_min;
 uint8_t g_bp_diastolic_threshold_max;
 uint8_t g_hr_threshold_min;
 uint8_t g_hr_threshold_max;
+uint8_t g_hr_readings_taken_this_hour = 0;
 
 uint16_t g_temp_threshold_min;
 uint16_t g_temp_threshold_max;
+uint16_t g_hr_readings_sum = 0;
 
 uint32_t g_last_uplink_minute;
 
@@ -40,6 +42,9 @@ struct ButtonDebounce g_select_button = {LOW, LOW, 0};
 struct ButtonDebounce g_next_button = {LOW, LOW, 0};
 
 bool g_multi_reset = false;
+bool g_waiting_for_reading_bp = false;
+bool g_waiting_for_reading_temp = false;
+bool g_waiting_for_reading_hr = false;
 
 bool debug_enabled = true;
 
@@ -166,6 +171,12 @@ void loop() {
 	// bool h12;
 	// bool hPM;
 	// Serial.print(" " + String(rtc.getHour(h12, hPM)) + ":" + String(rtc.getMinute()) + ":" + String(rtc.getSecond()) + "\n");
+
+	static unsigned long last_schedule_check = 0;
+	if ((millis() - last_schedule_check) >= 60000UL) {
+		last_schedule_check = millis();
+		handle_scheduled_readings();
+	}
 
 	if (g_current_state != READING && g_current_state != PROCESSING && g_current_state != TRANSMITTING) {
 		send_empty_uplink();

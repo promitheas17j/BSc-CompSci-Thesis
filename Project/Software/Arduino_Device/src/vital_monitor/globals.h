@@ -69,9 +69,11 @@ extern uint8_t g_bp_diastolic_threshold_min;
 extern uint8_t g_bp_diastolic_threshold_max;
 extern uint8_t g_hr_threshold_min;
 extern uint8_t g_hr_threshold_max;
+extern uint8_t g_hr_readings_taken_this_hour;
 
 extern uint16_t g_temp_threshold_min;
 extern uint16_t g_temp_threshold_max;
+extern uint16_t g_hr_readings_sum;
 
 extern uint32_t g_last_uplink_minute;
 
@@ -90,5 +92,8 @@ extern struct ButtonDebounce g_next_button;
 extern bool debug_enabled;
 extern bool g_selection_pending;
 extern bool g_multi_reset;
+extern bool g_waiting_for_reading_bp;
+extern bool g_waiting_for_reading_temp;
+extern bool g_waiting_for_reading_hr;
 
 #endif

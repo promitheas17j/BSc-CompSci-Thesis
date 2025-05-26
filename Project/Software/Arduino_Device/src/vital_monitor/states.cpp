@@ -194,9 +194,9 @@ states state_reading() {
 			}
 			// DEBUGGING
 			log_msg("DEBUG-2", input_buffer);
-			char dbg[32];
-			snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
-			log_msg("DEBUG", dbg);
+			// char dbg[32];
+			// snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
+			// log_msg("DEBUG", dbg);
 			for (size_t i = 0; i < strlen(input_buffer); ++i) {
 				char cinfo[16];
 				sprintf(cinfo, "[%u]=%02X (%c)", i, input_buffer[i], input_buffer[i]);
@@ -240,6 +240,9 @@ states state_processing() {
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
 		if (sscanf(g_received_data_buffer + 3, "%hhu/%hhu", &sys, &dia) == 2) {
+			if (g_waiting_for_reading_bp) {
+				return TRANSMITTING;
+			}
 			bool ok = (sys >= g_bp_systolic_threshold_min &&
 					sys <= g_bp_systolic_threshold_max &&
 					dia >= g_bp_diastolic_threshold_min &&
@@ -256,6 +259,9 @@ states state_processing() {
 	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
 		uint8_t whole, decimal;
 		if ((sscanf(g_received_data_buffer + 5, "%hhu.%hhu", &whole, &decimal) == 2)) { // && (g_received_data_buffer[5 + n] == '\0')) {
+			if (g_waiting_for_reading_temp) {
+				return TRANSMITTING;
+			}
 			uint16_t temperature = whole * 10 + decimal;
 			bool ok = (temperature >= g_temp_threshold_min && temperature <= g_temp_threshold_max);
 			if (!ok) {
@@ -269,6 +275,23 @@ states state_processing() {
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
 		// char *p = g_received_data_buffer + 3;
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
+		if (g_waiting_for_reading_hr) {
+			log_msg("DEBUG", F("Scheduled HR received"));
+			g_hr_readings_sum += hr;
+			g_hr_readings_taken_this_hour++;
+			char debug_msg[40];
+			snprintf(debug_msg, sizeof(debug_msg), "[DEBUG]: HR reading #%u = %u", g_hr_readings_taken_this_hour, hr);
+			Serial.println(debug_msg);
+			if (g_hr_readings_taken_this_hour == 3) {
+				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
+				Serial.println("[DEBUG]: HR average ready. Trasnmitting. %u" + (g_hr_readings_sum + 1) / 3);
+				return TRANSMITTING;
+			}
+			else {
+				log_msg("DEBUG", "Waiting for more HR readings");
+				return CONNECTED;
+			}
+		}
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		if (!ok) {
 			return TRANSMITTING;
@@ -293,6 +316,15 @@ states state_transmitting() {
 			}
 		}
 		if (success) {
+			if (strncmp(g_received_data_buffer, "BP:", 3) == 0 && g_waiting_for_reading_bp) {
+				g_waiting_for_reading_bp = false;
+			}
+			else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0 && g_waiting_for_reading_temp) {
+				g_waiting_for_reading_temp = false;
+			}
+			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
+				g_waiting_for_reading_hr = false;
+			}
 			log_msg("INFO", F("Data sent successfully"));
 			break;
 		} else {
