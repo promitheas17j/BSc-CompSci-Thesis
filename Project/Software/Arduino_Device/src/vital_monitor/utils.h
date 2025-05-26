@@ -264,9 +264,9 @@ template <typename T> states multi_threshold_setup(
 void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port);
 void add_to_tx_retry_queue(const uint8_t *data, uint8_t len);
 void alert_request_read(const char* vital);
-void alert_request_read_bp();
-void alert_request_read_temp();
-void alert_request_read_hr();
+// void alert_request_read_bp();
+// void alert_request_read_temp();
+// void alert_request_read_hr();
 void send_empty_uplink();
 void handle_scheduled_readings();
 
