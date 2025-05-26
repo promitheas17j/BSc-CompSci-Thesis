@@ -572,10 +572,18 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 	}
 	else if (cmd == 0x30) {  // Request Reading
 		switch (field) {
-			case 0x01: alert_request_read("bp"); break;
-			case 0x02: alert_request_read("temp"); break;
-			case 0x03: alert_request_read("hr"); break;
-			default: log_msg("WARN", F("Unknown reading field")); break;
+			case 0x01:
+				alert_request_read("bp");
+				break;
+			case 0x02:
+				alert_request_read("temp");
+				break;
+			case 0x03:
+				alert_request_read("hr");
+				break;
+			default:
+				log_msg("WARN", F("Unknown reading field"));
+				break;
 		}
 	}
 }
@@ -697,6 +705,7 @@ void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 
 void alert_request_read(const char* vital) {
 	if (vital == "bp") {
+		g_waiting_for_reading_bp = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
 		lcd.send_string("Please measure:");
@@ -704,6 +713,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Blood Pressure");
 	}
 	else if (vital == "temp") {
+		g_waiting_for_reading_temp = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
 		lcd.send_string("Please measure:");
@@ -711,6 +721,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Temperature");
 	}
 	else if (vital == "hr") {
+		g_waiting_for_reading_hr = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
 		lcd.send_string("Please measure:");
