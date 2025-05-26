@@ -148,8 +148,8 @@ states state_connected() {
 }
 
 states state_reading() {
-	char input_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
-	uint8_t index = 0;
+	static char input_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
+	static uint8_t index = 0;
 	static unsigned long last_high_time = 0;
 	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
 	static uint8_t attempt_count = 0;
