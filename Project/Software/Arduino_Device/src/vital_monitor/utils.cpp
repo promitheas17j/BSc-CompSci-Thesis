@@ -746,6 +746,7 @@ void send_empty_uplink() {
 }
 
 void handle_scheduled_readings() {
+	// TODO: Add debugging messages to make sure it works correctly.
 	DateTime now = RTClib::now();
 	static uint8_t hr_last_triggered_minute = 255;
 	static uint8_t hr_last_reading_hour = 255;
