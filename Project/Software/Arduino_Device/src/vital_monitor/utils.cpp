@@ -566,7 +566,7 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				}
 				break;
 			default:
-				log_msg("WARN", F("Unknown threshold field"));
+				log_msg("WARN", "Unknown threshold field");
 				break;
 		}
 	}
@@ -582,7 +582,7 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				alert_request_read("hr");
 				break;
 			default:
-				log_msg("WARN", F("Unknown reading field"));
+				log_msg("WARN", "Unknown reading field");
 				break;
 		}
 	}
@@ -711,6 +711,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Please measure:");
 		lcd.setCursor(0, 1);
 		lcd.send_string("Blood Pressure");
+		notify_event(EVT_REQUEST_RECEIVED);
 	}
 	else if (vital == "temp") {
 		g_waiting_for_reading_temp = true;
@@ -719,6 +720,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Please measure:");
 		lcd.setCursor(0, 1);
 		lcd.send_string("Temperature");
+		notify_event(EVT_REQUEST_RECEIVED);
 	}
 	else if (vital == "hr") {
 		g_waiting_for_reading_hr = true;
@@ -727,6 +729,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Please measure:");
 		lcd.setCursor(0, 1);
 		lcd.send_string("Heart Rate");
+		notify_event(EVT_REQUEST_RECEIVED);
 	}
 	else {
 		log_msg("DEBUG", F("Invalid vital sign passed to request reading func"));
@@ -780,5 +783,74 @@ void handle_scheduled_readings() {
 		hr_last_triggered_minute = now.minute();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
+	}
+}
+
+void blink_led(uint8_t pin, uint8_t count, uint16_t duration) {
+	for (uint8_t i = 0; i < count; i++) {
+		digitalWrite(pin, HIGH);
+		delay(duration);
+		digitalWrite(pin, LOW);
+		delay(duration);
+	}
+}
+
+void beep(uint16_t freq, uint16_t duration) {
+	tone(BUZZER, freq, duration);
+	delay(duration);
+	noTone(BUZZER);
+}
+
+void notify_event(EventType event) {
+	switch (event) {
+		case EVT_BT_CONNECTED:
+			beep(1000, 100);
+			digitalWrite(LED_GREEN, HIGH);
+			delay(100);
+			digitalWrite(LED_GREEN, LOW);
+			break;
+		case EVT_BT_DISCONNECTED:
+			blink_led(LED_RED, 2, 300);
+			beep(400, 300);
+			break;
+		case EVT_INVALID_VALUE:
+			beep(600, 150);
+			blink_led(LED_YELLOW, 1, 150);
+			break;
+		case EVT_FAILED_READING:
+			blink_led(LED_RED, 3, 100);
+			beep(500, 100);
+			break;
+		case EVT_OUT_OF_BOUNDS:
+			blink_led(LED_YELLOW, 2, 200);
+			beep(800, 200);
+			break;
+		case EVT_REQUEST_RECEIVED:
+			beep(700, 100);
+			delay(50);
+			beep(1000, 100);
+			blink_led(LED_GREEN, 1, 100);
+			break;
+		case EVT_THRESHOLDS_UPDATED:
+			blink_led(LED_GREEN, 2, 150);
+			beep(1200, 150);
+			break;
+		case EVT_THRESHOLDS_ERROR:
+			digitalWrite(LED_RED, HIGH);
+			beep(300, 1000);
+			digitalWrite(LED_RED, LOW);
+			break;
+		case EVT_TX_FAILED:
+			digitalWrite(LED_RED, HIGH);
+			beep(500, 800);
+			digitalWrite(LED_RED, LOW);
+			break;
+		case EVT_TX_SUCCESS:
+			digitalWrite(LED_GREEN, HIGH);
+			delay(150);
+			digitalWrite(LED_GREEN, LOW);
+			break;
+		default:
+			log_msg("WARN", "Invalid event");
 	}
 }

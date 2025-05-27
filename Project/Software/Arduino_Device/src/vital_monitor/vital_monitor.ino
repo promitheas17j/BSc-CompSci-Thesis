@@ -1,6 +1,5 @@
 // vital_monitor.ino
 // TODO: Implement taking readings at set times of the day
-// TODO: Implement non-LCD ui elements (LEDs, Buzzer) for each event
 
 #include "globals.h"
 #include "menu.h"
@@ -135,43 +134,6 @@ void setup() {
 }
 
 void loop() {
-	// while (digitalRead(BTN_SELECT) == LOW) {
-		// rtc.setHour(13);     // Set the time to 12:00:00 (24hr format)
-		// rtc.setMinute(32);
-		// rtc.setSecond();
-		// rtc.setDate(9);   // Set the date to January 1st, 2014
-	// }
-	// bool CenturyBit;
-	// Serial.print("20"+String(rtc.getYear()) + "-" + String(rtc.getMonth(CenturyBit)) + "-" + String(rtc.getDate()) + " - ");
-	// switch (rtc.getDoW()) {
-	// 	case 1:
-	// 		Serial.print("Mon");
-	// 		break;
-	// 	case 2:
-	// 		Serial.print("Tue");
-	// 		break;
-	// 	case 3:
-	// 		Serial.print("Wed");
-	// 		break;
-	// 	case 4:
-	// 		Serial.print("Thu");
-	// 		break;
-	// 	case 5:
-	// 		Serial.print("Fri");
-	// 		break;
-	// 	case 6:
-	// 		Serial.print("Sat");
-	// 		break;
-	// 	case 7:
-	// 		Serial.print("Sun");
-	// 		break;
-	// 	default:
-	// 		break;
-	// }
-	// bool h12;
-	// bool hPM;
-	// Serial.print(" " + String(rtc.getHour(h12, hPM)) + ":" + String(rtc.getMinute()) + ":" + String(rtc.getSecond()) + "\n");
-
 	static unsigned long last_schedule_check = 0;
 	if ((millis() - last_schedule_check) >= 60000UL) {
 		last_schedule_check = millis();

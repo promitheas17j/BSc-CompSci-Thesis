@@ -26,7 +26,7 @@ defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI)
 #else
 	// Set the I2C data pin (SDA) to GPIO4
 	// Set the I2C clock pin (SCL) to GPIO5
-	// Wire.setPins(4, 5); // WARN: Comment this line out to get it to work
+	// Wire.setPins(4, 5);
 	Wire.begin();	   // Begin I2C communication
 #endif
 	_showfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;  // Set the display function: 4-bit mode, 1 line, 5x8 character font
