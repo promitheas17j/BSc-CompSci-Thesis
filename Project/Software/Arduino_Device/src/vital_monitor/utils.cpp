@@ -169,7 +169,7 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 	if (port != 1 || length < 2) return;
 	uint8_t cmd   = payload[0];
 	uint8_t field = payload[1];
-	if (cmd == 0x20) {  // Set Thresholds
+	if (cmd == 0x20) {	// Set Thresholds
 		switch (field) {
 			case 0x01: // HR Min/Max (1 byte each)
 				if (length >= 4) {
@@ -288,19 +288,14 @@ void send_empty_uplink() {
 }
 
 void handle_scheduled_readings() {
-	// TODO: Add debugging messages to make sure it works correctly.
-	// FIX: For BP and TEMP, after alerting the user the LCD goes blank
 	DateTime now = RTClib::now();
-	static uint8_t hr_last_triggered_minute = 255;
-	static uint8_t hr_last_reading_hour = 255;
 	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
 		return;
 	}
 	// BP once at 08:20 (to not conflict with HR reading which is at 08:00)
-	if ((
-		((now.hour() == 8) && now.minute() == 20) ||
-		(now.hour() == 20 && now.minute() == 10)) ||
-		(now.hour() == 20 && now.minute() == 15) &&
+	if (((now.hour() == 8 && now.minute() == 20) ||
+		 (now.hour() == 20 && now.minute() == 10) ||
+		 (now.hour() == 20 && now.minute() == 15)) &&
 		!g_waiting_for_reading_bp) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
@@ -309,35 +304,94 @@ void handle_scheduled_readings() {
 		return;
 	}
 	// TEMP 5x/12h
-	if ((
-		(now.hour() == 8 && now.minute() == 30) ||
-		(now.hour() == 11 && now.minute() == 0) ||
-		(now.hour() == 14 && now.minute() == 0) ||
-		(now.hour() == 17 && now.minute() == 0) ||
-		(now.hour() == 20 && now.minute() == 0) ||
-		(now.hour() == 21 && now.minute() == 0) &&
-		!g_waiting_for_reading_temp)) {
+	if (((now.hour() == 8 && now.minute() == 30) ||
+		 (now.hour() == 11 && now.minute() == 0) ||
+		 (now.hour() == 14 && now.minute() == 0) ||
+		 (now.hour() == 17 && now.minute() == 0) ||
+		 (now.hour() == 20 && now.minute() == 0) ||
+		 (now.hour() == 21 && now.minute() == 0)) &&
+		!g_waiting_for_reading_temp) {
+		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
 		g_previous_state = CONNECTED;
 		g_current_state = READING;
 		return;
 	}
 	// HR every hour, 3 readings spaced 2 minutes apart, take the average
+	// Track scheduling state for HR
+	static uint8_t hr_last_triggered_minute = 255;
+	static uint8_t hr_last_reading_hour = 255;
+	static uint8_t hr_target_minute = 0;
+	// At the top of the hour, reset HR tracking
 	if (now.minute() == 0 && now.hour() != hr_last_reading_hour) {
 		hr_last_reading_hour = now.hour();
 		g_hr_readings_taken_this_hour = 0;
 		g_hr_readings_sum = 0;
 		hr_last_triggered_minute = 255;
+		hr_target_minute = 0;  // Next expected reading is at :00
 	}
-	if ((now.minute() % 2) == 0 && now.minute() != hr_last_triggered_minute && g_hr_readings_taken_this_hour < 3) {
+	// Prompt for HR only at valid intervals (00, 02, 04)
+	if (g_hr_readings_taken_this_hour < 3 &&
+		now.minute() == hr_target_minute &&
+		now.minute() != hr_last_triggered_minute) {
 		hr_last_triggered_minute = now.minute();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-	}
-	if (now.minute() == 59) {
-		g_hr_readings_taken_this_hour = 0;
+		return;
 	}
 }
+
+// void handle_scheduled_readings() {
+//	// TODO: Add debugging messages to make sure it works correctly.
+//	// FIX: For BP and TEMP, after alerting the user the LCD goes blank
+//	DateTime now = RTClib::now();
+//	static uint8_t hr_last_triggered_minute = 255;
+//	static uint8_t hr_last_reading_hour = 255;
+//	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
+//		return;
+//	}
+//	// BP once at 08:20 (to not conflict with HR reading which is at 08:00)
+//	if ((
+//		((now.hour() == 8) && now.minute() == 20) ||
+//		(now.hour() == 20 && now.minute() == 10)) ||
+//		(now.hour() == 20 && now.minute() == 15) &&
+//		!g_waiting_for_reading_bp) {
+//		g_waiting_for_reading_bp = true;
+//		alert_request_read("bp");
+//		g_previous_state = CONNECTED;
+//		g_current_state = READING;
+//		return;
+//	}
+//	// TEMP 5x/12h
+//	if ((
+//		(now.hour() == 8 && now.minute() == 30) ||
+//		(now.hour() == 11 && now.minute() == 0) ||
+//		(now.hour() == 14 && now.minute() == 0) ||
+//		(now.hour() == 17 && now.minute() == 0) ||
+//		(now.hour() == 20 && now.minute() == 0) ||
+//		(now.hour() == 21 && now.minute() == 0) &&
+//		!g_waiting_for_reading_temp)) {
+//		alert_request_read("temp");
+//		g_previous_state = CONNECTED;
+//		g_current_state = READING;
+//		return;
+//	}
+//	// HR every hour, 3 readings spaced 2 minutes apart, take the average
+//	if (now.minute() == 0 && now.hour() != hr_last_reading_hour) {
+//		hr_last_reading_hour = now.hour();
+//		g_hr_readings_taken_this_hour = 0;
+//		g_hr_readings_sum = 0;
+//		hr_last_triggered_minute = 255;
+//	}
+//	if ((now.minute() % 2) == 0 && now.minute() != hr_last_triggered_minute && g_hr_readings_taken_this_hour < 3) {
+//		hr_last_triggered_minute = now.minute();
+//		g_waiting_for_reading_hr = true;
+//		alert_request_read("hr");
+//	}
+//	if (now.minute() == 59) {
+//		g_hr_readings_taken_this_hour = 0;
+//	}
+// }
 
 void blink_led(uint8_t pin, uint8_t count, uint16_t duration) {
 	for (uint8_t i = 0; i < count; i++) {
