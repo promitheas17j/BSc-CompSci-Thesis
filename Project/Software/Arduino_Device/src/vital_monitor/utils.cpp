@@ -24,31 +24,31 @@ uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 	return btn->stable_state;
 }
 
-void log_msg(const char *msg_level, const __FlashStringHelper *msg) {
-	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-		return;
-	}
-	Serial.print("[");
-	Serial.print(msg_level);
-	Serial.print("]: ");
-	Serial.println(msg);
-}
+// void log_msg(const char *msg_level, const __FlashStringHelper *msg) {
+// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+// 		return;
+// 	}
+// 	Serial.print("[");
+// 	Serial.print(msg_level);
+// 	Serial.print("]: ");
+// 	Serial.println(msg);
+// }
 
-void log_msg(const char *msg_level, const __FlashStringHelper *msg, const bool optional_val) {
-	Serial.print("[");
-	Serial.print(msg_level);
-	Serial.print("] ");
-	Serial.print(msg);
-	Serial.println(optional_val ? "true" : "false");
-}
+// void log_msg(const char *msg_level, const __FlashStringHelper *msg, const bool optional_val) {
+// 	Serial.print("[");
+// 	Serial.print(msg_level);
+// 	Serial.print("] ");
+// 	Serial.print(msg);
+// 	Serial.println(optional_val ? "true" : "false");
+// }
 
-void log_msg(const char *msg_level, const __FlashStringHelper *msg, unsigned optional_val) {
-	Serial.print("[");
-	Serial.print(msg_level);
-	Serial.print("] ");
-	Serial.print(msg);
-	Serial.println(optional_val);
-}
+// void log_msg(const char *msg_level, const __FlashStringHelper *msg, unsigned optional_val) {
+// 	Serial.print("[");
+// 	Serial.print(msg_level);
+// 	Serial.print("] ");
+// 	Serial.print(msg);
+// 	Serial.println(optional_val);
+// }
 
 void log_msg(const char *msg_level, const char *msg) {
 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
@@ -566,7 +566,7 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				}
 				break;
 			default:
-				log_msg("WARN", F("Unknown threshold field"));
+				log_msg("WARN", "Unknown threshold field");
 				break;
 		}
 	}
@@ -582,7 +582,7 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				alert_request_read("hr");
 				break;
 			default:
-				log_msg("WARN", F("Unknown reading field"));
+				log_msg("WARN", "Unknown reading field");
 				break;
 		}
 	}
@@ -697,9 +697,9 @@ void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
 		tx_retry_count++;
 
-		log_msg("INFO", F("Added message to retry queue"));
+		log_msg("INFO", "Added message to retry queue");
 	} else {
-		log_msg("WARN", F("Retry queue full, message dropped"));
+		log_msg("WARN", "Retry queue full, message dropped");
 	}
 }
 
@@ -729,7 +729,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Heart Rate");
 	}
 	else {
-		log_msg("DEBUG", F("Invalid vital sign passed to request reading func"));
+		log_msg("DEBUG", "Invalid vital sign passed to request reading func");
 	}
 	delay(5000);
 	lcd.clear();
@@ -780,5 +780,73 @@ void handle_scheduled_readings() {
 		hr_last_triggered_minute = now.minute();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
+	}
+}
+
+void blink_led(uint8_t pin, uint8_t count, uint16_t duration) {
+	for (uint8_t i = 0; i < count; i++) {
+		digitalWrite(pin, HIGH);
+		delay(duration);
+		digitalWrite(pin, LOW);
+		delay(duration);
+	}
+}
+
+void beep(uint16_t freq, uint16_t duration) {
+	tone(BUZZER, freq, duration);
+	delay(duration);
+	noTone(BUZZER);
+}
+
+void notify_event(EventType event) {
+	switch (event) {
+		case EVT_BT_CONNECTED:
+			beep(1000, 100);
+			blink_led(LED_GREEN, 1, 100);
+			break;
+		case EVT_BT_DISCONNECTED:
+			beep(400, 300);
+			blink_led(LED_RED, 2, 300);
+			break;
+		case EVT_INVALID_VALUE:
+			beep(600, 150);
+			blink_led(LED_YELLOW, 1, 150);
+			break;
+		case EVT_FAILED_READING:
+			beep(500, 100);
+			blink_led(LED_RED, 3, 100);
+			break;
+		case EVT_OUT_OF_BOUNDS:
+			beep(800, 200);
+			blink_led(LED_YELLOW, 2, 200);
+			break;
+		case EVT_REQUEST_RECEIVED:
+			beep(700, 100);
+			delay(50);
+			beep(1000, 100);
+			blink_led(LED_GREEN, 1, 100);
+			break;
+		case EVT_THRESHOLDS_UPDATED:
+			beep(1200, 150);
+			blink_led(LED_GREEN, 2, 150);
+			break;
+		case EVT_THRESHOLDS_ERROR:
+			digitalWrite(LED_RED, HIGH);
+			beep(300, 1000);
+			digitalWrite(LED_RED, LOW);
+			break;
+		case EVT_TX_FAILED:
+			digitalWrite(LED_RED, HIGH);
+			beep(500, 800);
+			digitalWrite(LED_RED, LOW);
+			break;
+		case EVT_TX_SUCCESS:
+			digitalWrite(LED_GREEN, HIGH);
+			delay(150);
+			digitalWrite(LED_GREEN, LOW);
+			break;
+		default:
+			log_msg("WARN", "Unknown event type");
+			break;
 	}
 }

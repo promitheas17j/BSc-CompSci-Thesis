@@ -1,14 +1,16 @@
 // utils.h
 
-#ifndef UTILS_H
-#define UTILS_H
+// #ifndef UTILS_H
+// #define UTILS_H
+
+#pragma once
 
 #include "globals.h"
 #include "states.h"
 #include <stdint.h>
-#include <EEPROM.h>
-#include <WString.h>
-#include <TheThingsNetwork.h>
+// #include <EEPROM.h>
+// #include <WString.h>
+// #include <TheThingsNetwork.h>
 
 struct ButtonDebounce {
 	uint8_t stable_state;
@@ -16,13 +18,23 @@ struct ButtonDebounce {
 	unsigned long last_debounce_time;
 };
 
+enum EventType {
+	EVT_BT_CONNECTED,
+	EVT_BT_DISCONNECTED,
+	EVT_INVALID_VALUE,
+	EVT_FAILED_READING,
+	EVT_OUT_OF_BOUNDS,
+	EVT_REQUEST_RECEIVED,
+	EVT_THRESHOLDS_UPDATED,
+	EVT_THRESHOLDS_ERROR,
+	EVT_TX_FAILED,
+	EVT_TX_SUCCESS
+};
+
 uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn);
-void log_msg(const char *msg_level, const __FlashStringHelper *msg);
-void log_msg(const char *msg_level, const __FlashStringHelper *msg, const bool optional_val);
-void log_msg(const char *msg_level, const __FlashStringHelper *msg, unsigned optional_val);
 void log_msg(const char *msg_level, const char *msg);
 void cycle_leds();
-const char* state_to_string(states s);
+inline const char* state_to_string(states s);
 bool validate_message(const char *msg);
 void update_led_based_on_state();
 
@@ -37,7 +49,8 @@ bool handle_value_adjust(
 	unsigned long repeat_interval = 100
 );
 
-template <typename T> bool handle_value_adjust(
+template <typename T>
+inline bool handle_value_adjust(
 	T* value,
 	T min_val,
 	T max_val,
@@ -94,26 +107,9 @@ template <typename T> bool handle_value_adjust(
 	Tap for single change, hold for quick continuous change. (hold+repeat)
 	Returns true if 'value' changed during the current call
 */
-// bool handle_value_adjust_u8(
-// 	uint8_t *value,
-// 	uint8_t min_val,
-// 	uint8_t max_val,
-// 	uint8_t step = 1,
-// 	unsigned long hold_delay = 500,
-// 	unsigned long repeat_interval = 100
-// );
-
-// bool handle_value_adjust_u16(
-// 	uint16_t *value,
-// 	uint16_t min_val,
-// 	uint16_t max_val,
-// 	uint16_t step = 1,
-// 	unsigned long hold_delay = 500,
-// 	unsigned long repeat_interval = 100
-// );
-
 // Shared threshold setup
-template <typename T> states multi_threshold_setup(
+template <typename T>
+inline states multi_threshold_setup(
 	const __FlashStringHelper* prompts[],
 	T* values[],
 	const T lo[],
@@ -204,70 +200,13 @@ template <typename T> states multi_threshold_setup(
 	return current_state;
 }
 
-/*
-	To be called for setup menus that are uint8_t
-	Runs a multi-step setup UI
-	- labels[i]			: text for vital being set or edited i (e.g. "SYST min:")
-	- values[i]			: pointer to the uint8_t being set or edited
-	- lo[i], hi[i]		: min/max bounds of each vital sign being set or edited
-	- addrs[i]			: address of start of EEPROM memory location for the vital being set or edited
-	- count				: how many steps
-	- current_state		: the current state's enum value (e.g. SETUP_BP)
-	- previous_state	: state to return to when done (e.g. SETUP)
-
-	On each call it will:
-	1) clear + redraw the one line if value changed or step just advanced
-	2) call handle_value_adjust() to bump the current value
-	3) on SELECT rising-edge will write to EEPROM and advance to the next vital for this setup (e.g. SETUP_BP [systolic min] -> SETUP_BP [systolic max])
-	4) when step == count, reset and return the previous_state
-*/
-// states multi_threshold_setup_u8(
-// 	const char*		prompts[],
-// 	uint8_t*		values[],
-// 	const uint8_t	lo[],
-// 	const uint8_t	hi[],
-// 	const uint8_t	addrs[],
-// 	uint8_t			count,
-// 	states			current_state,
-// 	states			previous_state
-// );
-
-/*
-	To be called for temperature setup menu (temperature is uint16_t)
-	Runs a multi-step setup UI
-	- labels[i]			: text for vital being set or edited i (e.g. "SYST min:")
-	- values[i]			: pointer to the uint8_t being set or edited
-	- lo[i], hi[i]		: min/max bounds of each vital sign being set or edited
-	- addrs[i]			: address of start of EEPROM memory location for the vital being set or edited
-	- count				: how many steps
-	- current_state		: the current state's enum value (e.g. SETUP_BP)
-	- previous_state	: state to return to when done (e.g. SETUP)
-
-	On each call it will:
-	1) clear + redraw the one line if value changed or step just advanced
-	2) call handle_value_adjust() to bump the current value
-	3) on SELECT rising-edge will write to EEPROM and advance to the next vital for this setup (e.g. SETUP_BP [systolic min] -> SETUP_BP [systolic max])
-	4) when step == count, reset and return the previous_state
-*/
-
-// states multi_threshold_setup_u16(
-// 	const char*		prompts[],
-// 	uint16_t*		values[],
-// 	const uint16_t	lo[],
-// 	const uint16_t	hi[],
-// 	const uint16_t	addrs[],
-// 	uint16_t		count,
-// 	states			current_state,
-// 	states			previous_state
-// );
-
 void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port);
 void add_to_tx_retry_queue(const uint8_t *data, uint8_t len);
 void alert_request_read(const char* vital);
-// void alert_request_read_bp();
-// void alert_request_read_temp();
-// void alert_request_read_hr();
 void send_empty_uplink();
 void handle_scheduled_readings();
+void notify_event(EventType event);
+void beep(uint16_t freq, uint16_t duration);
+void blink_led(uint8_t pin, uint8_t count, uint16_t duration);
 
-#endif
+// #endif

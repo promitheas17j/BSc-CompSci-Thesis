@@ -61,30 +61,30 @@
 // SN3193 Register Definitions
 #define SHUTDOWN_REG  0x00         // Register for software shutdown mode
 #define BREATING_CONTROL_REG  0x01 // Register for breathing effect control
-#define LED_MODE_REG  0x02        // Register for LED mode control
-#define LED_NORNAL_MODE  0x00     // Normal mode for LED operation
-#define LED_BREATH_MODE  0x20     // Breathing mode for LED operation
+// #define LED_MODE_REG  0x02        // Register for LED mode control
+// #define LED_NORNAL_MODE  0x00     // Normal mode for LED operation
+// #define LED_BREATH_MODE  0x20     // Breathing mode for LED operation
 
 #define CURRENT_SETTING_REG  0x03 // Register to set the output current
-#define PWM_1_REG  0x04          // PWM duty cycle data for channel 1
-#define PWM_2_REG  0x05          // PWM duty cycle data for channel 2
-#define PWM_3_REG  0x06          // PWM duty cycle data for channel 3
-#define PWM_UPDATE_REG  0x07     // Register to load PWM settings
+// #define PWM_1_REG  0x04          // PWM duty cycle data for channel 1
+// #define PWM_2_REG  0x05          // PWM duty cycle data for channel 2
+// #define PWM_3_REG  0x06          // PWM duty cycle data for channel 3
+// #define PWM_UPDATE_REG  0x07     // Register to load PWM settings
 
-#define T0_1_REG  0x0A           // Set T0 time for OUT1
-#define T0_2_REG  0x0B           // Set T0 time for OUT2
-#define T0_3_REG  0x0C           // Set T0 time for OUT3
+// #define T0_1_REG  0x0A           // Set T0 time for OUT1
+// #define T0_2_REG  0x0B           // Set T0 time for OUT2
+// #define T0_3_REG  0x0C           // Set T0 time for OUT3
 
-#define T1T2_1_REG  0x10         // Set T1&T2 time for OUT1
-#define T1T2_2_REG  0x11         // Set T1&T2 time for OUT2
-#define T1T2_3_REG  0x12         // Set T1&T2 time for OUT3
+// #define T1T2_1_REG  0x10         // Set T1&T2 time for OUT1
+// #define T1T2_2_REG  0x11         // Set T1&T2 time for OUT2
+// #define T1T2_3_REG  0x12         // Set T1&T2 time for OUT3
 
-#define T3T4_1_REG  0x16         // Set T3&T4 time for OUT1
-#define T3T4_2_REG  0x17         // Set T3&T4 time for OUT2
-#define T3T4_3_REG  0x18         // Set T3&T4 time for OUT3
+// #define T3T4_1_REG  0x16         // Set T3&T4 time for OUT1
+// #define T3T4_2_REG  0x17         // Set T3&T4 time for OUT2
+// #define T3T4_3_REG  0x18         // Set T3&T4 time for OUT3
 
-#define TIME_UPDATE_REG  0x1C    // Register to load time register data
-#define LED_CONTROL_REG  0x1D    // Register to enable OUT1~OUT3 (LED outputs)
+// #define TIME_UPDATE_REG  0x1C    // Register to load time register data
+// #define LED_CONTROL_REG  0x1D    // Register to enable OUT1~OUT3 (LED outputs)
 #define RESET_REG  0x2F          // Register to reset all registers to default values
 
 /**
@@ -104,20 +104,20 @@ public:
     void data(uint8_t value);              // Send data to the LCD
     void send_string(const char *str);     // Display a string on the LCD
     void send_string(const __FlashStringHelper *fstr); // My overload
-    void noCursor();                       // Hide the cursor
-    void cursor();                         // Show the cursor
-    void scrollDisplayLeft();              // Scroll the display content to the left
-    void scrollDisplayRight();             // Scroll the display content to the right
-    void leftToRight();                    // Set text flow from left to right
-    void rightToLeft();                   // Set text flow from right to left
-    void noAutoscroll();                   // Disable auto-scrolling of text
-    void autoscroll();                     // Enable auto-scrolling of text
-    void createChar(uint8_t location, uint8_t charmap[]);  // Create a custom character in the LCD's memory
+    // void noCursor();                       // Hide the cursor
+    // void cursor();                         // Show the cursor
+    // void scrollDisplayLeft();              // Scroll the display content to the left
+    // void scrollDisplayRight();             // Scroll the display content to the right
+    // void leftToRight();                    // Set text flow from left to right
+    // void rightToLeft();                   // Set text flow from right to left
+    // void noAutoscroll();                   // Disable auto-scrolling of text
+    // void autoscroll();                     // Enable auto-scrolling of text
+    // void createChar(uint8_t location, uint8_t charmap[]);  // Create a custom character in the LCD's memory
 
     // SN3193 Backlight Control
-    void led_send(uint8_t cmd, uint8_t data);   // Send command and data to the SN3193 LED controller
-    void set_brightness(uint8_t value);         // Set the backlight brightness (0-100)
-    void set_led_mode(uint8_t mode);            // Set the backlight LED mode (Normal or Breathing)
+    // void led_send(uint8_t cmd, uint8_t data);   // Send command and data to the SN3193 LED controller
+    // void set_brightness(uint8_t value);         // Set the backlight brightness (0-100)
+    // void set_led_mode(uint8_t mode);            // Set the backlight LED mode (Normal or Breathing)
 
 private:
     void begin(uint8_t cols, uint8_t rows);      // Initialize the display with column and row settings
@@ -133,7 +133,7 @@ private:
     uint8_t _backlightval;                       // Backlight value for the LCD
 
     // SN3193 initialization for backlight
-    void led_begin();                           // Initialize the SN3193 LED controller
+    // void led_begin();                           // Initialize the SN3193 LED controller
 };
 
 #endif

@@ -41,8 +41,8 @@
 #define G_TEMP_THRESHOLD_MAX 450
 #define G_HR_THRESHOLD_MIN 60
 #define G_HR_THRESHOLD_MAX 100
-#define MAX_QUEUE_ITEMS 10
-#define MAX_MSG_SIZE 12
+#define MAX_QUEUE_ITEMS 4
+#define MAX_MSG_SIZE 11
 
 #define STR_MENU_NAV F("<    SELECT    >")
 #define STR_THRESHOLD_NAV F("< -  SELECT  + >")
