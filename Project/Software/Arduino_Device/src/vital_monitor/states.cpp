@@ -66,8 +66,6 @@ states state_setup_bp() {
 		bp_prompts, bp_values, bp_lo, bp_hi, bp_addr,
 		sizeof(bp_prompts) / sizeof(bp_prompts[0]),
 		SETUP_BP,      // this state’s enum
-		// g_current_state,
-		// SETUP          // return here when done
 		g_previous_state
 	);
 }
@@ -156,7 +154,7 @@ states state_reading() {
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
 	static bool first_entry = true;
 	if (first_entry) {
-		log_msg("INFO", "First entry into READING");
+		// log_msg("INFO", F("First entry into READING"));
 		while (HM10_UART.available()) {
 			HM10_UART.read();
 		}
@@ -169,21 +167,23 @@ states state_reading() {
 	}
 	else {
 		if ((millis() - last_high_time) > disconnect_threshold) {
-			log_msg("WARN", "Bluetooth DC in READING");
+			// log_msg("WARN", F("Bluetooth disconnected during READING"));
+			notify_event(EVT_BT_DISCONNECTED);
 			first_entry = false;
 			return DISCONNECTED;
 		}
 	}
 	while (HM10_UART.available()) {
 		if (attempt_count >= 3) { // too many failed attempts, return to previous state
-			log_msg("WARN", "Failed attempts > 3");
+			// log_msg("WARN", F("Too many failed attempts. Cancelling"));
+			notify_event(EVT_FAILED_READING);
 			attempt_count = 0;
 			first_entry = false;
 			return g_previous_state;
 		}
 		char incoming_byte = HM10_UART.read();
-		Serial.print(incoming_byte);
-		Serial.print("\n");
+		// Serial.print(incoming_byte);
+		// Serial.print("\n");
 		// log_msg("DEBUG-1", input_buffer);
 		// char debug_char[2] = {incoming_byte, '\0'};
 		if (incoming_byte == '\n') {
@@ -198,10 +198,11 @@ states state_reading() {
 			// snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
 			// log_msg("DEBUG", dbg);
 			// for (size_t i = 0; i < strlen(input_buffer); ++i) {
-				// char cinfo[16];
-				// sprintf(cinfo, "[%u]=%02X (%c)", i, input_buffer[i], input_buffer[i]);
-				// log_msg("BYTE", cinfo);
+			// 	char cinfo[16];
+			// 	sprintf(cinfo, "[%u]=%02X (%c)", i, input_buffer[i], input_buffer[i]);
+			// 	log_msg("BYTE", cinfo);
 			// }
+			// END DEBUGGING
 			if (len > 0 && input_buffer[len - 1] == '\r') {
 				input_buffer[len - 1] = '\0';
 			}
@@ -212,7 +213,7 @@ states state_reading() {
 			}
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
-				log_msg("INFO", "Valid data received. ACK sent.");
+				// log_msg("INFO", F("Valid data received. ACK sent."));
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				first_entry = true;
@@ -221,7 +222,8 @@ states state_reading() {
 			else {
 				attempt_count++;
 				HM10_UART.print("RETRY");
-				log_msg("INFO", "Invalid data received. Retry request sent.");
+				// log_msg("INFO", F("Invalid data received. Retry request sent."));
+				notify_event(EVT_INVALID_VALUE);
 			}
 			index = 0;
 		}
@@ -230,7 +232,8 @@ states state_reading() {
 		}
 		else { // Buffer overflow
 			index = 0;
-			log_msg("WARN", "Input buffer overflow. Resetting.");
+			// log_msg("WARN", F("Input buffer overflow. Resetting."));
+			notify_event(EVT_FAILED_READING);
 		}
 	}
 	return READING;
@@ -253,7 +256,8 @@ states state_processing() {
 			}
 		}
 		else {
-			log_msg("WARN", "BP parse error.");
+			// log_msg("WARN", F("BP parse error."));
+			notify_event(EVT_INVALID_VALUE);
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0) {
@@ -269,7 +273,8 @@ states state_processing() {
 			}
 		}
 		else {
-			log_msg("WARN", "TEMP parse error.");
+			// log_msg("WARN", F("TEMP parse error."));
+			notify_event(EVT_INVALID_VALUE);
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
@@ -288,7 +293,7 @@ states state_processing() {
 				return TRANSMITTING;
 			}
 			else {
-				log_msg("DEBUG", "Waiting for more HR readings");
+				// log_msg("DEBUG", "Waiting for more HR readings");
 				return CONNECTED;
 			}
 		}
@@ -298,13 +303,14 @@ states state_processing() {
 		}
 	}
 	else {
-		log_msg("WARN", "Unknown data type");
+		notify_event(EVT_INVALID_VALUE);
 	}
 	return CONNECTED;
 }
 
 states state_transmitting() {
 	// FIX: Not testing for ACK. Will set up dashboard and try again
+	// FIX: Not transmitting unless scheduled reading
 	bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
 		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
@@ -325,18 +331,19 @@ states state_transmitting() {
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
 			}
-			log_msg("INFO", "Data sent successfully");
+			// log_msg("INFO", F("Tx OK"));
 			break;
 		} else {
-			log_msg("WARN", "Transmission timed out. Retrying...");
+			log_msg("WARN", "Tx time out");
 		}
 	}
 	if (!success) {
-		log_msg("ERROR", "Failed to send after 3 attempts");
+		// log_msg("ERROR", "Failed to send after 3 attempts");
 		add_to_tx_retry_queue((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer));
 		lcd.clear();
 		lcd.setCursor(0, 0);
 		lcd.send_string("Send failed");
+		notify_event(EVT_TX_FAILED);
 		delay(5000);
 	}
 	return CONNECTED;
@@ -396,6 +403,7 @@ states check_bt_connection(states current_state) {
 	if (bt_pin_state == HIGH) {
 		if (!is_connected && (millis() - last_high_time > stable_threshold)) {
 			is_connected = true;
+			notify_event(EVT_BT_CONNECTED);
 			return CONNECTED;
 		}
 	}
@@ -403,6 +411,7 @@ states check_bt_connection(states current_state) {
 		last_high_time = millis();
 		if (is_connected) {
 			is_connected = false;
+			notify_event(EVT_BT_DISCONNECTED);
 			return DISCONNECTED;
 		}
 	}

@@ -17,29 +17,6 @@ const char *menu_connected[] = {"Read", "Setup", "Disconnect"};
 const char *menu_reading[] = {"Reading..."};
 const char *menu_processing[] = {"Processing..."};
 const char *menu_transmitting[] = {"Sending..."};
-// const char menu_disconnected_0[] PROGMEM = "No connection";
-// const char menu_disconnected_1[] PROGMEM = "Setup";
-// const char *const menu_disconnected[] PROGMEM = {menu_disconnected_0, menu_disconnected_1};
-
-// const char menu_setup_0[] PROGMEM = "Setup BP";
-// const char menu_setup_1[] PROGMEM = "Setup Temp";
-// const char menu_setup_2[] PROGMEM = "Setup HR";
-// const char menu_setup_3[] PROGMEM = "Back";
-// const char *const menu_setup[] PROGMEM = {menu_setup_0, menu_setup_1, menu_setup_2, menu_setup_3};
-
-// const char menu_connected_0[] PROGMEM = "Read";
-// const char menu_connected_1[] PROGMEM = "Setup";
-// const char menu_connected_2[] PROGMEM = "Disconnect";
-// const char *const menu_connected[] PROGMEM = {menu_connected_0, menu_connected_1, menu_connected_2};
-
-// const char menu_reading_0[] PROGMEM = "Reading...";
-// const char *const menu_reading[] PROGMEM = {menu_reading_0};
-
-// const char menu_processing_0[] PROGMEM = "Processing...";
-// const char *const menu_processing[] PROGMEM = {menu_processing_0};
-
-// const char menu_transmitting_0[] PROGMEM = "Transmitting...";
-// const char *const menu_transmitting[] PROGMEM = {menu_transmitting_0};
 
 struct Menu menu_table[] = {
 	{menu_disconnected, sizeof(menu_disconnected) / sizeof(menu_disconnected[0])},
@@ -134,23 +111,6 @@ uint8_t handle_menu_options_buttons(const char **options, uint8_t num_options) {
 	last_select_btn_state = g_select_button_state;
 	return 255; // 255 = nothing selected yet
 }
-
-// void lcd_print_line(const __FlashStringHelper* option, bool is_interactive) {
-// 	lcd.clear();
-// 	lcd.setCursor(0, 0);
-// 	// lcd.send_string(option);
-// 	char buffer[17];
-// 	strncpy_P(buffer, (PGM_P)option, sizeof(buffer) - 1);
-// 	buffer[sizeof(buffer) - 1] = '\0';
-// 	lcd.send_string(buffer);
-// 	lcd.setCursor(0, 1);
-// 	if (is_interactive) {
-// 		lcd.send_string(STR_MENU_NAV);
-// 	}
-// 	else {
-// 		lcd.send_string("");
-// 	}
-// }
 
 void lcd_print_line(const char *option, bool is_interactive) {
 	lcd.clear();

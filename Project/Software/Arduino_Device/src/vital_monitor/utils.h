@@ -1,8 +1,5 @@
 // utils.h
 
-// #ifndef UTILS_H
-// #define UTILS_H
-
 #pragma once
 
 #include "globals.h"
@@ -37,6 +34,9 @@ void cycle_leds();
 inline const char* state_to_string(states s);
 bool validate_message(const char *msg);
 void update_led_based_on_state();
+void notify_event(EventType event);
+void beep(uint16_t freq, uint16_t duration);
+void blink_led(uint8_t pin, uint8_t count, uint16_t duration);
 
 // Unified value adjustment
 template <typename T>
@@ -102,11 +102,6 @@ inline bool handle_value_adjust(
 	return changed;
 }
 
-/*
-	Decrease/increase a value with the Prev/Next buttons.
-	Tap for single change, hold for quick continuous change. (hold+repeat)
-	Returns true if 'value' changed during the current call
-*/
 // Shared threshold setup
 template <typename T>
 inline states multi_threshold_setup(
@@ -179,6 +174,7 @@ template <typename T> states multi_threshold_setup(
 			lcd.send_string("Err:Max  <  Min");
 			lcd.setCursor(0, 1);
 			lcd.send_string("Re-enter!");
+			notify_event(EVT_THRESHOLDS_ERROR);
 			delay(2000);
 			step--;
 			last_drawn = ~T(0);
@@ -208,5 +204,3 @@ void handle_scheduled_readings();
 void notify_event(EventType event);
 void beep(uint16_t freq, uint16_t duration);
 void blink_led(uint8_t pin, uint8_t count, uint16_t duration);
-
-// #endif

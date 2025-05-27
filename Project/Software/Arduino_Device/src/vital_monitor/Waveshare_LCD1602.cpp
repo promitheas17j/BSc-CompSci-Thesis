@@ -25,6 +25,10 @@ void Waveshare_LCD1602::init()
 #else
 	// Set the I2C data pin (SDA) to GPIO4
 	// Set the I2C clock pin (SCL) to GPIO5
+<<<<<<< HEAD
+=======
+	// Wire.setPins(4, 5);
+>>>>>>> optimisations
 	Wire.begin();	   // Begin I2C communication
 #endif
 	if (_cols == 0) _cols = 16;

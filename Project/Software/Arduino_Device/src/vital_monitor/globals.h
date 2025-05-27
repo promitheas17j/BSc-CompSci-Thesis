@@ -1,7 +1,6 @@
 // globals.h
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#pragma once
 
 // #include "utils.h"
 #include "states.h"
@@ -95,5 +94,3 @@ extern bool g_multi_reset;
 extern bool g_waiting_for_reading_bp;
 extern bool g_waiting_for_reading_temp;
 extern bool g_waiting_for_reading_hr;
-
-#endif

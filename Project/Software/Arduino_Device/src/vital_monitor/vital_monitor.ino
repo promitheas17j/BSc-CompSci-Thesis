@@ -1,6 +1,5 @@
 // vital_monitor.ino
 // TODO: Implement taking readings at set times of the day
-// TODO: Implement non-LCD ui elements (LEDs, Buzzer) for each event
 
 #include "globals.h"
 #include "menu.h"
@@ -136,7 +135,6 @@ void setup() {
 
 void loop() {
 	// notify_event(EVT_REQUEST_RECEIVED);
-
 	static unsigned long last_schedule_check = 0;
 	if ((millis() - last_schedule_check) >= 60000UL) {
 		last_schedule_check = millis();

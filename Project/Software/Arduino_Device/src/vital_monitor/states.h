@@ -1,7 +1,6 @@
 // states.h
 
-#ifndef STATES_H
-#define STATES_H
+#pragma once
 
 #include <stdint.h>
 
@@ -39,5 +38,3 @@ extern states state_transmitting();
 
 void change_state(states new_state);
 states check_bt_connection(states current_state);
-
-#endif
