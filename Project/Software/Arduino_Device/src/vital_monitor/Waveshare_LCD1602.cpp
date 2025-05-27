@@ -25,10 +25,7 @@ void Waveshare_LCD1602::init()
 #else
 	// Set the I2C data pin (SDA) to GPIO4
 	// Set the I2C clock pin (SCL) to GPIO5
-<<<<<<< HEAD
-=======
 	// Wire.setPins(4, 5);
->>>>>>> optimisations
 	Wire.begin();	   // Begin I2C communication
 #endif
 	if (_cols == 0) _cols = 16;
@@ -143,71 +140,71 @@ void Waveshare_LCD1602::send_string(const __FlashStringHelper *fstr) {
 // Disable the cursor (hide the cursor)
 // void Waveshare_LCD1602::noCursor()
 // {
-// 	_showcontrol &= ~LCD_CURSORON;	// Clear the LCD_CURSORON bit to disable the cursor
-// 	command(LCD_DISPLAYCONTROL | _showcontrol);  // Send the command to update the display control
+//	_showcontrol &= ~LCD_CURSORON;	// Clear the LCD_CURSORON bit to disable the cursor
+//	command(LCD_DISPLAYCONTROL | _showcontrol);  // Send the command to update the display control
 // }
 
 // Enable the cursor (show the cursor)
 // void Waveshare_LCD1602::cursor()
 // {
-// 	_showcontrol |= LCD_CURSORON;  // Set the LCD_CURSORON bit to enable the cursor
-// 	command(LCD_DISPLAYCONTROL | _showcontrol);  // Send the command to update the display control
+//	_showcontrol |= LCD_CURSORON;  // Set the LCD_CURSORON bit to enable the cursor
+//	command(LCD_DISPLAYCONTROL | _showcontrol);  // Send the command to update the display control
 // }
 
 // Scroll the display content to the left
 // void Waveshare_LCD1602::scrollDisplayLeft(void)
 // {
-// 	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);	// Shift the display left
+//	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);	// Shift the display left
 // }
 
 // // Scroll the display content to the right
 // void Waveshare_LCD1602::scrollDisplayRight(void)
 // {
-// 	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);  // Shift the display right
+//	command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);  // Shift the display right
 // }
 
 // Set the text direction to left-to-right
 // void Waveshare_LCD1602::leftToRight(void)
 // {
-// 	_showmode |= LCD_ENTRYLEFT;  // Set the entry mode for left-to-right direction
-// 	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
+//	_showmode |= LCD_ENTRYLEFT;  // Set the entry mode for left-to-right direction
+//	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
 // }
 
 // Set the text direction to right-to-left
 // void Waveshare_LCD1602::rightToLeft(void)
 // {
-// 	_showmode &= ~LCD_ENTRYLEFT;  // Clear the LCD_ENTRYLEFT bit for right-to-left direction
-// 	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
+//	_showmode &= ~LCD_ENTRYLEFT;  // Clear the LCD_ENTRYLEFT bit for right-to-left direction
+//	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
 // }
 
 // Disable auto-scrolling of text
 // void Waveshare_LCD1602::noAutoscroll(void)
 // {
-// 	_showmode &= ~LCD_ENTRYSHIFTINCREMENT;	// Clear the LCD_ENTRYSHIFTINCREMENT bit
-// 	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
+//	_showmode &= ~LCD_ENTRYSHIFTINCREMENT;	// Clear the LCD_ENTRYSHIFTINCREMENT bit
+//	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
 // }
 
 // Enable auto-scrolling of text
 // void Waveshare_LCD1602::autoscroll(void)
 // {
-// 	_showmode |= LCD_ENTRYSHIFTINCREMENT;  // Set the LCD_ENTRYSHIFTINCREMENT bit to enable auto-scroll
-// 	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
+//	_showmode |= LCD_ENTRYSHIFTINCREMENT;  // Set the LCD_ENTRYSHIFTINCREMENT bit to enable auto-scroll
+//	command(LCD_ENTRYMODESET | _showmode);	// Send the command to update the entry mode
 // }
 
 // Create a custom character on the LCD
 // void Waveshare_LCD1602::createChar(uint8_t location, uint8_t charmap[])
 // {
-// 	location &= 0x7;  // We only have 8 locations (0-7) for custom characters
-// 	command(LCD_SETCGRAMADDR | (location << 3));  // Set the address for the custom character in CGRAM
+//	location &= 0x7;  // We only have 8 locations (0-7) for custom characters
+//	command(LCD_SETCGRAMADDR | (location << 3));  // Set the address for the custom character in CGRAM
 
-// 	uint8_t data[9];
-// 	data[0] = 0x40;  // 0x40 indicates the start of character data
-// 	// Copy the character map into the data array
-// 	for (int i = 0; i < 8; i++)
-// 	{
-// 		data[i + 1] = charmap[i];  // Copy each byte of the character map
-// 	}
-// 	lcd_send(data, 9);	// Send the character data to the LCD
+//	uint8_t data[9];
+//	data[0] = 0x40;  // 0x40 indicates the start of character data
+//	// Copy the character map into the data array
+//	for (int i = 0; i < 8; i++)
+//	{
+//		data[i + 1] = charmap[i];  // Copy each byte of the character map
+//	}
+//	lcd_send(data, 9);	// Send the character data to the LCD
 // }
 
 
@@ -216,71 +213,71 @@ void Waveshare_LCD1602::send_string(const __FlashStringHelper *fstr) {
 // Send a command and data byte to the SN3193 chip over I2C
 // void Waveshare_LCD1602::led_send(uint8_t cmd, uint8_t data)
 // {
-// 	Wire.beginTransmission(SN3193_IIC_ADDRESS); // Start I2C transmission to the SN3193 chip
-// 	Wire.write(cmd);  // Send the command byte
-// 	delay(5);  // Small delay to ensure data is transmitted
-// 	Wire.write(data);  // Send the data byte
-// 	Wire.endTransmission(); // End the I2C transmission
+//	Wire.beginTransmission(SN3193_IIC_ADDRESS); // Start I2C transmission to the SN3193 chip
+//	Wire.write(cmd);  // Send the command byte
+//	delay(5);  // Small delay to ensure data is transmitted
+//	Wire.write(data);  // Send the data byte
+//	Wire.endTransmission(); // End the I2C transmission
 // }
 
 // // Initialize the LED controller (SN3193)
 // void Waveshare_LCD1602::led_begin()
 // {
-// 	// Configure the LED controller
-// 	led_send(SHUTDOWN_REG, 0x20);  // Wake up the chip from shutdown mode
-// 	led_send(LED_MODE_REG, LED_NORNAL_MODE);  // Set the LED to normal operation mode
-// 	led_send(CURRENT_SETTING_REG, 0x00);  // Set the maximum output current (42mA)
-// 	delay(10);	// Wait for settings to take effect
+//	// Configure the LED controller
+//	led_send(SHUTDOWN_REG, 0x20);  // Wake up the chip from shutdown mode
+//	led_send(LED_MODE_REG, LED_NORNAL_MODE);  // Set the LED to normal operation mode
+//	led_send(CURRENT_SETTING_REG, 0x00);  // Set the maximum output current (42mA)
+//	delay(10);	// Wait for settings to take effect
 
-// 	// Set the PWM duty cycle (0x00 to 0xFF)
-// 	led_send(PWM_1_REG, 0x00);	
-// 	delay(100);  // Wait for the PWM setting to stabilize
-// 	led_send(PWM_UPDATE_REG, 0x00);  // Apply the PWM settings
+//	// Set the PWM duty cycle (0x00 to 0xFF)
+//	led_send(PWM_1_REG, 0x00);	
+//	delay(100);  // Wait for the PWM setting to stabilize
+//	led_send(PWM_UPDATE_REG, 0x00);  // Apply the PWM settings
 
-// 	// Set time-related settings for each output channel (OUT1, OUT2, OUT3)
-// 	led_send(T0_1_REG, 0x40);  // Set T0 time for OUT1
-// 	led_send(T0_2_REG, 0x40);  // Set T0 time for OUT2
-// 	led_send(T0_3_REG, 0x40);  // Set T0 time for OUT3
-// 	delay(100);  // Wait for the time settings to take effect
+//	// Set time-related settings for each output channel (OUT1, OUT2, OUT3)
+//	led_send(T0_1_REG, 0x40);  // Set T0 time for OUT1
+//	led_send(T0_2_REG, 0x40);  // Set T0 time for OUT2
+//	led_send(T0_3_REG, 0x40);  // Set T0 time for OUT3
+//	delay(100);  // Wait for the time settings to take effect
 
-// 	// Set T1 and T2 times for each output channel
-// 	led_send(T1T2_1_REG, 0x26);  // Set T1&T2 times for OUT1
-// 	led_send(T1T2_2_REG, 0x26);  // Set T1&T2 times for OUT2
-// 	led_send(T1T2_3_REG, 0x26);  // Set T1&T2 times for OUT3
-// 	delay(100);  // Wait for the T1&T2 settings to take effect
+//	// Set T1 and T2 times for each output channel
+//	led_send(T1T2_1_REG, 0x26);  // Set T1&T2 times for OUT1
+//	led_send(T1T2_2_REG, 0x26);  // Set T1&T2 times for OUT2
+//	led_send(T1T2_3_REG, 0x26);  // Set T1&T2 times for OUT3
+//	delay(100);  // Wait for the T1&T2 settings to take effect
 
-// 	// Set T3 and T4 times for each output channel
-// 	led_send(T3T4_1_REG, 0x26);  // Set T3&T4 times for OUT1
-// 	led_send(T3T4_2_REG, 0x26);  // Set T3&T4 times for OUT2
-// 	led_send(T3T4_3_REG, 0x26);  // Set T3&T4 times for OUT3
-// 	delay(100);  // Wait for the T3&T4 settings to take effect
+//	// Set T3 and T4 times for each output channel
+//	led_send(T3T4_1_REG, 0x26);  // Set T3&T4 times for OUT1
+//	led_send(T3T4_2_REG, 0x26);  // Set T3&T4 times for OUT2
+//	led_send(T3T4_3_REG, 0x26);  // Set T3&T4 times for OUT3
+//	delay(100);  // Wait for the T3&T4 settings to take effect
 
-// 	// Enable the LED outputs (OUT1, OUT2, OUT3) and start LED operation
-// 	led_send(LED_CONTROL_REG, 0x01);  // Enable the outputs
-// 	led_send(TIME_UPDATE_REG, 0x00);  // Apply the time register settings
-// 	delay(100);  // Wait for the settings to take effect
+//	// Enable the LED outputs (OUT1, OUT2, OUT3) and start LED operation
+//	led_send(LED_CONTROL_REG, 0x01);  // Enable the outputs
+//	led_send(TIME_UPDATE_REG, 0x00);  // Apply the time register settings
+//	delay(100);  // Wait for the settings to take effect
 // }
 
 // // Set the brightness of the LEDs (value between 0 and 100)
 // void Waveshare_LCD1602::set_brightness(uint8_t value)
 // {
-// 	// Check if the input value is within the valid range (0-100)
-// 	if (value < 0 || value > 100)
-// 	{
-// 		Serial.println(F("Please enter a value between 0 and 100."));	// Print an error message if the value is invalid
-// 	}
-// 	else
-// 	{
-// 		// Set the PWM duty cycle based on the brightness percentage
-// 		led_send(PWM_1_REG, (int)(value * (0xFF / 100)));  // Convert percentage to 0-255 scale
-// 		delay(100);  // Wait for the PWM settings to take effect
-// 		led_send(PWM_UPDATE_REG, 0x00);  // Apply the PWM settings
-// 	}
+//	// Check if the input value is within the valid range (0-100)
+//	if (value < 0 || value > 100)
+//	{
+//		Serial.println(F("Please enter a value between 0 and 100."));	// Print an error message if the value is invalid
+//	}
+//	else
+//	{
+//		// Set the PWM duty cycle based on the brightness percentage
+//		led_send(PWM_1_REG, (int)(value * (0xFF / 100)));  // Convert percentage to 0-255 scale
+//		delay(100);  // Wait for the PWM settings to take effect
+//		led_send(PWM_UPDATE_REG, 0x00);  // Apply the PWM settings
+//	}
 // }
 
 // // Set the operation mode of the LEDs (e.g., breathing mode or steady mode)
 // void Waveshare_LCD1602::set_led_mode(uint8_t mode)
 // {
-// 	led_send(LED_MODE_REG, mode);  // Set the LED mode
-// 	// Mode options: 0x20 for breathing mode, 0x00 for steady mode
+//	led_send(LED_MODE_REG, mode);  // Set the LED mode
+//	// Mode options: 0x20 for breathing mode, 0x00 for steady mode
 // }
