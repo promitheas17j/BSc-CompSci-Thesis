@@ -140,6 +140,8 @@ void loop() {
 		last_schedule_check = millis();
 		handle_scheduled_readings();
 	}
+	// Serial.print("g_waiting_for_reading_hr: ");
+	// Serial.println((g_waiting_for_reading_hr) ? "True" : "False");
 
 	if (g_current_state != READING && g_current_state != PROCESSING && g_current_state != TRANSMITTING) {
 		send_empty_uplink();

@@ -278,7 +278,6 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		// char *p = g_received_data_buffer + 3;
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
 		if (g_waiting_for_reading_hr) {
 			log_msg("DEBUG", "Scheduled HR received");
@@ -289,7 +288,7 @@ states state_processing() {
 			// Serial.println(debug_msg);
 			if (g_hr_readings_taken_this_hour == 3) {
 				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-				Serial.println("[DEBUG]: HR average ready. Trasnmitting. %u" + (g_hr_readings_sum + 1) / 3);
+				Serial.println("HR average ready. Txing " + (uint8_t)(g_hr_readings_sum + 1) / 3);
 				return TRANSMITTING;
 			}
 			else {
@@ -314,6 +313,10 @@ states state_transmitting() {
 	bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
 		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
+		// lcd.clear();
+		// lcd.setCursor(0, 0);
+		// lcd.send_string((send_success) ? "True" : "False");
+		// delay(2000);
 		uint32_t start = millis();
 		while (millis() - start < 10000) {
 			if (send_success == true) {
@@ -333,9 +336,11 @@ states state_transmitting() {
 			}
 			// log_msg("INFO", F("Tx OK"));
 			break;
-		} else {
-			log_msg("WARN", "Tx time out");
 		}
+		lcd.clear();
+		lcd.setCursor(0, 0);
+		lcd.send_string("Send success");
+		delay(2000);
 	}
 	if (!success) {
 		// log_msg("ERROR", "Failed to send after 3 attempts");

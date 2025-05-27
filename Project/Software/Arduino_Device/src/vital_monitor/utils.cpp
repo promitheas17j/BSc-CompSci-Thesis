@@ -243,7 +243,7 @@ void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
 }
 
 void alert_request_read(const char* vital) {
-	if (vital == "bp") {
+	if (strncmp(vital, "bp", 3) == 0) {
 		g_waiting_for_reading_bp = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
@@ -252,7 +252,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Blood Pressure");
 		notify_event(EVT_REQUEST_RECEIVED);
 	}
-	else if (vital == "temp") {
+	else if (strncmp(vital, "temp", 5) == 0) {
 		g_waiting_for_reading_temp = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
@@ -261,7 +261,7 @@ void alert_request_read(const char* vital) {
 		lcd.send_string("Temperature");
 		notify_event(EVT_REQUEST_RECEIVED);
 	}
-	else if (vital == "hr") {
+	else if (strncmp(vital, "hr", 3) == 0) {
 		g_waiting_for_reading_hr = true;
 		lcd.clear();
 		lcd.setCursor(0, 0);
@@ -289,14 +289,19 @@ void send_empty_uplink() {
 
 void handle_scheduled_readings() {
 	// TODO: Add debugging messages to make sure it works correctly.
+	// FIX: For BP and TEMP, after alerting the user the LCD goes blank
 	DateTime now = RTClib::now();
 	static uint8_t hr_last_triggered_minute = 255;
 	static uint8_t hr_last_reading_hour = 255;
 	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
 		return;
 	}
-	// BP once at 08:00
-	if (now.hour() == 8 && now.minute() == 0 && !g_waiting_for_reading_bp) {
+	// BP once at 08:20 (to not conflict with HR reading which is at 08:00)
+	if ((
+		((now.hour() == 8) && now.minute() == 20) ||
+		(now.hour() == 20 && now.minute() == 10)) ||
+		(now.hour() == 20 && now.minute() == 15) &&
+		!g_waiting_for_reading_bp) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
 		g_previous_state = CONNECTED;
@@ -304,8 +309,14 @@ void handle_scheduled_readings() {
 		return;
 	}
 	// TEMP 5x/12h
-	if ((now.hour() == 8 || now.hour() == 11 || now.hour() == 14 || now.hour() == 17 || now.hour() == 20) && now.minute() == 0 && !g_waiting_for_reading_temp) {
-		g_waiting_for_reading_temp = true;
+	if ((
+		(now.hour() == 8 && now.minute() == 30) ||
+		(now.hour() == 11 && now.minute() == 0) ||
+		(now.hour() == 14 && now.minute() == 0) ||
+		(now.hour() == 17 && now.minute() == 0) ||
+		(now.hour() == 20 && now.minute() == 0) ||
+		(now.hour() == 21 && now.minute() == 0) &&
+		!g_waiting_for_reading_temp)) {
 		alert_request_read("temp");
 		g_previous_state = CONNECTED;
 		g_current_state = READING;
@@ -322,6 +333,9 @@ void handle_scheduled_readings() {
 		hr_last_triggered_minute = now.minute();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
+	}
+	if (now.minute() == 59) {
+		g_hr_readings_taken_this_hour = 0;
 	}
 }
 
