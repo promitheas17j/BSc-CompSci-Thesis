@@ -62,19 +62,22 @@ extern uint8_t g_select_button_state;
 extern uint8_t g_next_button_state;
 extern uint8_t g_current_option_index;
 extern uint8_t g_last_option_index_displayed;
+
 extern uint8_t g_bp_systolic_threshold_min;
 extern uint8_t g_bp_systolic_threshold_max;
 extern uint8_t g_bp_diastolic_threshold_min;
 extern uint8_t g_bp_diastolic_threshold_max;
 extern uint8_t g_hr_threshold_min;
 extern uint8_t g_hr_threshold_max;
+
 extern uint8_t g_hr_readings_taken_this_hour;
+extern uint8_t g_hr_target_minute;
 
 extern uint16_t g_temp_threshold_min;
 extern uint16_t g_temp_threshold_max;
 extern uint16_t g_hr_readings_sum;
 
-extern uint32_t g_last_uplink_minute;
+extern uint8_t g_last_uplink_minute;
 
 extern char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 

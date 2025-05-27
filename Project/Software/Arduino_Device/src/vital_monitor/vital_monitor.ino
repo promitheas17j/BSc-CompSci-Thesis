@@ -33,8 +33,9 @@ uint8_t g_hr_readings_taken_this_hour = 0;
 uint16_t g_temp_threshold_min;
 uint16_t g_temp_threshold_max;
 uint16_t g_hr_readings_sum = 0;
+uint8_t g_hr_target_minute = 0;
 
-uint32_t g_last_uplink_minute;
+uint8_t g_last_uplink_minute;
 
 struct ButtonDebounce g_prev_button = {LOW, LOW, 0};
 struct ButtonDebounce g_select_button = {LOW, LOW, 0};

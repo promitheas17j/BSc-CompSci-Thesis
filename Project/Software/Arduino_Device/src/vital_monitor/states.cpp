@@ -146,6 +146,7 @@ states state_connected() {
 }
 
 states state_reading() {
+	// TODO: Add timeout if no reading received to return to the CONNECTED state.
 	static char input_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 	static uint8_t index = 0;
 	static unsigned long last_high_time = 0;
@@ -278,33 +279,60 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
+		DateTime now = RTClib::now();
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
-		if (g_waiting_for_reading_hr) {
-			log_msg("DEBUG", "Scheduled HR received");
-			g_hr_readings_sum += hr;
-			g_hr_readings_taken_this_hour++;
-			// char debug_msg[40];
-			// snprintf(debug_msg, sizeof(debug_msg), "[DEBUG]: HR reading #%u = %u", g_hr_readings_taken_this_hour, hr);
-			// Serial.println(debug_msg);
+		if (g_hr_readings_taken_this_hour < 3) {
+			if (now.minute() == g_hr_target_minute) {
+				g_hr_readings_sum += hr;
+				g_hr_readings_taken_this_hour++;
+				g_hr_target_minute += 2;
+				log_msg("DEBUG", "Scheduled HR reading");
+			}
 			if (g_hr_readings_taken_this_hour == 3) {
 				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-				Serial.println("HR average ready. Txing " + (uint8_t)(g_hr_readings_sum + 1) / 3);
+				log_msg("DEBUG", "HR avg ready");
 				return TRANSMITTING;
 			}
-			else {
-				// log_msg("DEBUG", "Waiting for more HR readings");
-				return CONNECTED;
-			}
+			return CONNECTED;
+		}
+		else {
+			log_msg("DEBUG", "HR not in time range. Ignore");
+			return CONNECTED;
 		}
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		if (!ok) {
-			return TRANSMITTING;
+			notify_event(EVT_OUT_OF_BOUNDS);
 		}
 	}
-	else {
-		notify_event(EVT_INVALID_VALUE);
-	}
-	return CONNECTED;
+	return TRANSMITTING;
+	// else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
+	// 	uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
+	// 	if (g_waiting_for_reading_hr) {
+	// 		log_msg("DEBUG", "Scheduled HR received");
+	// 		g_hr_readings_sum += hr;
+	// 		g_hr_readings_taken_this_hour++;
+	// 		// char debug_msg[40];
+	// 		// snprintf(debug_msg, sizeof(debug_msg), "[DEBUG]: HR reading #%u = %u", g_hr_readings_taken_this_hour, hr);
+	// 		// Serial.println(debug_msg);
+	// 		if (g_hr_readings_taken_this_hour == 3) {
+	// 			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
+	// 			Serial.println("HR average ready. Txing " + (uint8_t)(g_hr_readings_sum + 1) / 3);
+	// 			return TRANSMITTING;
+	// 		}
+	// 		else {
+	// 			// log_msg("DEBUG", "Waiting for more HR readings");
+	// 			return CONNECTED;
+	// 		}
+	// 	}
+	// 	bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
+	// 	if (!ok) {
+	// 		return TRANSMITTING;
+	// 	}
+	// }
+	// else {
+	// 	notify_event(EVT_INVALID_VALUE);
+	// }
+	// return CONNECTED;
 }
 
 states state_transmitting() {
