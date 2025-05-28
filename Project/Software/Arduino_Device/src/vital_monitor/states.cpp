@@ -260,6 +260,7 @@ states state_reading() {
 
 states state_processing() {
 	// DateTime now = RTClib::now();
+	static uint32_t last_hr_reading_ms = 0;
 	Serial.print("HR readings taken: ");
 	Serial.println(g_hr_readings_taken_this_hour);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
@@ -302,13 +303,46 @@ states state_processing() {
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
 		// FIX: After Txing a valid HR average, it keeps asking every 2 minutes even within the same hour
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // NOTE: hr reading from the received data buffer means that it will always just pull the last value read
-		Serial.print("hr: ");
-		Serial.println(hr);
+		// Serial.print("hr: ");
+		// Serial.println(hr);
+		// Serial.print("N readings: ");
+		// Serial.print(g_hr_readings_taken_this_hour);
+		// Serial.print(", Waiting: ");
+		// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+		// Serial.print(", Sum: ");
+		// Serial.println(g_hr_readings_sum);
 		// Serial.print("hr sum A: ");
 		// Serial.println(g_hr_readings_sum);
+		if (!g_waiting_for_reading_hr) {
+			bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
+			if (!ok) {
+				notify_event(EVT_OUT_OF_BOUNDS);
+				return TRANSMITTING;
+			}
+			return CONNECTED;
+		}
 		if (g_hr_readings_taken_this_hour < 3 && g_waiting_for_reading_hr) {
+			// TODO: Add timer so that if HR requested but less than 2 minutes have passed between readings, to ignore the reading
+			if (((millis() - last_hr_reading_ms) < 114000) && last_hr_reading_ms != 0) { // timer to ignore readings taken before 2 minutes have elapsed, if we are in the process of taking an average
+				return CONNECTED;
+			}
 			g_hr_readings_sum += hr;
 			g_hr_readings_taken_this_hour++;
+			last_hr_reading_ms = millis();
+			// Serial.print("hr: ");
+			// Serial.println(hr);
+			// Serial.print("N readings: ");
+			// Serial.print(g_hr_readings_taken_this_hour);
+			// Serial.print(", Waiting: ");
+			// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+			// Serial.print(", Sum: ");
+			// Serial.println(g_hr_readings_sum);
+			if (g_hr_readings_taken_this_hour == 3) {
+				Serial.println("Txing");
+				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum / 3));
+				last_hr_reading_ms = 0;
+				return TRANSMITTING;
+			}
 			// g_waiting_for_reading_hr = false;
 			// Serial.print("waiting, readings taken: ");
 			// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
@@ -328,48 +362,14 @@ states state_processing() {
 			// Serial.println(g_hr_readings_taken_this_hour);
 			return CONNECTED;
 		}
-		if (g_hr_readings_taken_this_hour == 3) {
-			g_hr_readings_sum += hr; // last addition doesnt happen in upper if block as readings taken is 3
-			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-			return TRANSMITTING;
-		}
+		// if (g_hr_readings_taken_this_hour == 3) {
+		// 	g_hr_readings_sum += hr; // last addition doesnt happen in upper if block as readings taken is 3
+		// 	snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
+		// 	return TRANSMITTING;
+		// }
 		g_hr_readings_taken_this_hour++;
-		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
-		if (!ok) {
-			notify_event(EVT_OUT_OF_BOUNDS);
-			return TRANSMITTING;
-		}
 	}
 	return CONNECTED;
-	// return TRANSMITTING;
-	// else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-	// 	uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
-	// 	if (g_waiting_for_reading_hr) {
-	// 		log_msg("DEBUG", "Scheduled HR received");
-	// 		g_hr_readings_sum += hr;
-	// 		g_hr_readings_taken_this_hour++;
-	// 		// char debug_msg[40];
-	// 		// snprintf(debug_msg, sizeof(debug_msg), "[DEBUG]: HR reading #%u = %u", g_hr_readings_taken_this_hour, hr);
-	// 		// Serial.println(debug_msg);
-	// 		if (g_hr_readings_taken_this_hour == 3) {
-	// 			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-	// 			Serial.println("HR average ready. Txing " + (uint8_t)(g_hr_readings_sum + 1) / 3);
-	// 			return TRANSMITTING;
-	// 		}
-	// 		else {
-	// 			// log_msg("DEBUG", "Waiting for more HR readings");
-	// 			return CONNECTED;
-	// 		}
-	// 	}
-	// 	bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
-	// 	if (!ok) {
-	// 		return TRANSMITTING;
-	// 	}
-	// }
-	// else {
-	// 	notify_event(EVT_INVALID_VALUE);
-	// }
-	// return CONNECTED;
 }
 
 states state_transmitting() {
@@ -377,20 +377,8 @@ states state_transmitting() {
 	// Serial.println(g_received_data_buffer);
 	// bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
-		// bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
 		bool success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);
-		// lcd.clear();
-		// lcd.setCursor(0, 0);
-		// lcd.send_string((send_success) ? "True" : "False");
-		// delay(2000);
-		// uint32_t start = millis();
 		delay(1000);
-		// while (millis() - start < 10000) {
-		// 	if (send_success == true) {
-		// 		success = true;
-		// 		break;
-		// 	}
-		// }
 		if (success) {
 			if (strncmp(g_received_data_buffer, "BP:", 3) == 0 && g_waiting_for_reading_bp) {
 				g_waiting_for_reading_bp = false;
@@ -401,7 +389,7 @@ states state_transmitting() {
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
 				g_hr_readings_sum = 0;
-				g_hr_readings_taken_this_hour = 0;
+				// g_hr_readings_taken_this_hour = 0;
 				// Serial.println("Tx success check clear");
 				return CONNECTED;
 			}
@@ -459,15 +447,15 @@ void change_state(states new_state) {
 
 states check_bt_connection(states current_state) {
 	// const unsigned long stable_threshold = 3000, check_interval = 500; // 3 second HIGH, only check 2 times per second
-	const unsigned long stable_threshold = 1000, stabilisation_period = 5000; // 3 second HIGH, wait 5 seconds after boot before checking
-	static unsigned long last_high_time = 0;
+	const unsigned long stable_threshold = 3000, stabilisation_period = 5000; // 3 second HIGH, wait 5 seconds after boot before checking
+	// static unsigned long last_high_time = 0;
+	static unsigned long high_start_time = 0;
 	// static unsigned long last_check_time = 0;
 	static bool is_connected = false;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
 	if ((millis() - g_startup_time) < stabilisation_period) {
 		return current_state;
 	}
-
 	// States that ignore connection changes completely:
 	if (current_state == PROCESSING ||
 			current_state == TRANSMITTING ||
@@ -478,19 +466,37 @@ states check_bt_connection(states current_state) {
 		return current_state;
 	}
 	if (bt_pin_state == HIGH) {
-		if (!is_connected && (millis() - last_high_time > stable_threshold)) {
+		if (high_start_time == 0) {
+			high_start_time = millis(); // first detection of HIGH
+		}
+		else if (!is_connected && (millis() - high_start_time > stable_threshold)) {
 			is_connected = true;
 			notify_event(EVT_BT_CONNECTED);
 			return CONNECTED;
 		}
 	}
 	else {
-		last_high_time = millis();
+		high_start_time = 0; // reset if connection drops
 		if (is_connected) {
 			is_connected = false;
 			notify_event(EVT_BT_DISCONNECTED);
 			return DISCONNECTED;
 		}
 	}
+	// if (bt_pin_state == HIGH) {
+	// 	if (!is_connected && (millis() - last_high_time > stable_threshold)) {
+	// 		is_connected = true;
+	// 		notify_event(EVT_BT_CONNECTED);
+	// 		return CONNECTED;
+	// 	}
+	// }
+	// else {
+	// 	last_high_time = millis();
+	// 	if (is_connected) {
+	// 		is_connected = false;
+	// 		notify_event(EVT_BT_DISCONNECTED);
+	// 		return DISCONNECTED;
+	// 	}
+	// }
 	return current_state;
 }
