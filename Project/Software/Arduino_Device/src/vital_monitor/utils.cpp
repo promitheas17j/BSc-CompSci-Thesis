@@ -293,7 +293,7 @@ void send_empty_uplink() {
 	}
 	last_checked_minute = now.minute();
 	if ((now.minute() % 5 == 0) && (now.minute() != g_last_uplink_minute)) {
-		ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
+		ttn.sendBytes((const uint8_t[]){0x10}, 1, 1);
 		g_last_uplink_minute = now.minute();
 	}
 }
@@ -337,22 +337,13 @@ void handle_scheduled_readings() {
 		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-		// g_hr_readings_taken_this_hour++;
 	}
-	// if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
-		// Serial.println("POINT 2");
-		// hr_last_triggered_minute = now.minute();
-		// g_waiting_for_reading_hr = true;
-		// alert_request_read("hr");
-		// g_hr_target_minute += 2; // schedule next attempt in 2 minutes
-		// // Serial.print("")
-	// }
-	Serial.print("N readings: Waiting: Sum: ");
-	Serial.print(g_hr_readings_taken_this_hour);
-	Serial.print(", ");
-	Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
-	Serial.print(", ");
-	Serial.println(g_hr_readings_sum);
+	// Serial.print("N readings: ");
+	// Serial.print(g_hr_readings_taken_this_hour);
+	// Serial.print(" ,Waiting: ");
+	// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+	// Serial.print(" ,Sum: ");
+	// Serial.println(g_hr_readings_sum);
 	return;
 }
 
@@ -468,6 +459,7 @@ void notify_event(EventType event) {
 		case EVT_TX_SUCCESS:
 			digitalWrite(LED_GREEN, HIGH);
 			delay(150);
+			beep(600, 300);
 			digitalWrite(LED_GREEN, LOW);
 			break;
 		default:
