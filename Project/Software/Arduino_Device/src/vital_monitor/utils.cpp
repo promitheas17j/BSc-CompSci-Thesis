@@ -351,6 +351,10 @@ void handle_scheduled_readings() {
 	// if 3 readings not taken yet, and its the correct time and not duplicate
 	static unsigned long last_hr_reading_ms = 0;
 	static unsigned long hr_reading_interval_ms = 2UL * 60 * 1000; // 2 minutes
+	// FIX: reset g_hr_readings_taken_this_hour on minute 00
+	if (now.minute() == 0) {
+		g_hr_readings_taken_this_hour = 0;
+	}
 	if ((g_hr_readings_taken_this_hour < 3) && (millis() - last_hr_reading_ms >= hr_reading_interval_ms)) {
 		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
@@ -365,7 +369,6 @@ void handle_scheduled_readings() {
 		// g_hr_target_minute += 2; // schedule next attempt in 2 minutes
 		// // Serial.print("")
 	// }
-	Serial.println("POINT 3");
 	return;
 }
 

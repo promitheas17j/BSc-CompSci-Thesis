@@ -24,6 +24,7 @@ struct StateTable stateTable[] = {
 const uint8_t NUM_STATES = sizeof(stateTable) / sizeof(stateTable[0]);
 
 states state_disconnected() {
+	// TODO: Check if wiring Vcc of HM-10 to a pin on the arduino and bringing low for a second here can disconnect all devices
 	// digitalWrite(LED_BLUE, LOW);
 	return DISCONNECTED;
 }
@@ -146,7 +147,6 @@ states state_connected() {
 }
 
 states state_reading() {
-	// TODO: Add timeout if no reading received to return to the CONNECTED state.
 	static char input_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 	static uint8_t index = 0;
 	static unsigned long last_high_time = 0;
@@ -300,12 +300,12 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // FIX: hr reading fro mthe received data buffer means that it will always just pull the last value read
+		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // NOTE: hr reading from the received data buffer means that it will always just pull the last value read
 		Serial.print("hr: ");
 		Serial.println(hr);
 		Serial.print("hr sum A: ");
 		Serial.println(g_hr_readings_sum);
-		if (g_hr_readings_taken_this_hour < 3) { // FIX: even though readings taken shows as 3, for some reason this block is not entered
+		if (g_hr_readings_taken_this_hour < 3) {
 			// Serial.print("minute:target_minute: ");
 			// Serial.print(now.minute());
 			// Serial.print(":");
@@ -409,6 +409,7 @@ states state_transmitting() {
 				g_waiting_for_reading_hr = false;
 				g_hr_readings_sum = 0;
 				g_hr_readings_taken_this_hour = 0;
+				Serial.println("Tx success check clear");
 				return CONNECTED;
 			}
 			// log_msg("INFO", F("Tx OK"));
