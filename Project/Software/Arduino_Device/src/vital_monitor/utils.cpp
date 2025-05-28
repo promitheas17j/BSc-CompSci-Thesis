@@ -310,7 +310,7 @@ void handle_scheduled_readings() {
 	}
 	// BP once at 08:21 (to not conflict with HR reading which is at 08:00 and on even minutes)
 	if (((now.hour() == 8 && now.minute() == 21) ||
-		 (now.hour() == 22 && now.minute() == 15)) && // NOTE: second time is for debugging purposes. Remove when ready
+		 (now.hour() == 13 && now.minute() == 15)) && // NOTE: second time is for debugging purposes. Remove when ready
 		!g_waiting_for_reading_bp) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
@@ -324,7 +324,7 @@ void handle_scheduled_readings() {
 		 (now.hour() == 14 && now.minute() == 1) ||
 		 (now.hour() == 17 && now.minute() == 1) ||
 		 (now.hour() == 20 && now.minute() == 1) ||
-		 (now.hour() == 22 && now.minute() == 21)) && // NOTE: last time is for debugging purposes. Remove when ready
+		 (now.hour() == 13 && now.minute() == 21)) && // NOTE: last time is for debugging purposes. Remove when ready
 		!g_waiting_for_reading_temp) {
 		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
@@ -351,7 +351,6 @@ void handle_scheduled_readings() {
 	// if 3 readings not taken yet, and its the correct time and not duplicate
 	static unsigned long last_hr_reading_ms = 0;
 	static unsigned long hr_reading_interval_ms = 2UL * 60 * 1000; // 2 minutes
-	// FIX: reset g_hr_readings_taken_this_hour on minute 00
 	if (now.minute() == 0) {
 		g_hr_readings_taken_this_hour = 0;
 	}

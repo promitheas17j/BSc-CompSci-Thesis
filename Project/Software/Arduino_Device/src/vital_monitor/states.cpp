@@ -185,8 +185,8 @@ states state_reading() {
 	}
 	// Serial.println("Pre-HM10-UART");
 	while (HM10_UART.available()) {
-		Serial.print("attempt_count: ");
-		Serial.println(attempt_count);
+		// Serial.print("attempt_count: ");
+		// Serial.println(attempt_count);
 		if (attempt_count >= 3) { // too many failed attempts, return to previous state
 			// log_msg("WARN", F("Too many failed attempts. Cancelling"));
 			notify_event(EVT_FAILED_READING);
@@ -207,8 +207,8 @@ states state_reading() {
 				input_buffer[len - 1] = '\0';
 			}
 			// DEBUGGING
-			Serial.print("DEBUG-2 ");
-			Serial.println(input_buffer);
+			// Serial.print("DEBUG-2 ");
+			// Serial.println(input_buffer);
 			// char dbg[32];
 			// snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
 			// log_msg("DEBUG", dbg);
@@ -234,8 +234,8 @@ states state_reading() {
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				first_entry = true;
-				Serial.print("READING: ");
-				Serial.println(g_received_data_buffer);
+				// Serial.print("READING: ");
+				// Serial.println(g_received_data_buffer);
 				return PROCESSING;
 			}
 			else {
@@ -303,17 +303,14 @@ states state_processing() {
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // NOTE: hr reading from the received data buffer means that it will always just pull the last value read
 		Serial.print("hr: ");
 		Serial.println(hr);
-		Serial.print("hr sum A: ");
-		Serial.println(g_hr_readings_sum);
+		// Serial.print("hr sum A: ");
+		// Serial.println(g_hr_readings_sum);
 		if (g_hr_readings_taken_this_hour < 3) {
-			// Serial.print("minute:target_minute: ");
-			// Serial.print(now.minute());
-			// Serial.print(":");
-			// Serial.println(g_hr_target_minute);
 			g_hr_readings_sum += hr;
+			// g_hr_readings_taken_this_hour++;
+			// g_waiting_for_reading_hr = false;
 			// Serial.print("hr sum B: ");
 			// Serial.println(g_hr_readings_sum);
-			// g_hr_readings_taken_this_hour++;
 			// g_hr_target_minute += 2;
 			// Serial.println("Scheduled HR reading");
 			// if (now.minute() == g_hr_target_minute) {
@@ -334,12 +331,12 @@ states state_processing() {
 		// }
 		if (g_hr_readings_taken_this_hour == 3) {
 			g_hr_readings_sum += hr; // last addition doesnt happen in upper if block as readings taken is 3
-			Serial.print("hr sum C: ");
-			Serial.println(g_hr_readings_sum);
+			// Serial.print("hr sum C: ");
+			// Serial.println(g_hr_readings_sum);
 			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-			Serial.print("HR AVG BUF: ");
-			Serial.println(g_received_data_buffer);
-			Serial.print("HR avg ready");
+			// Serial.print("HR AVG BUF: ");
+			// Serial.println(g_received_data_buffer);
+			// Serial.print("HR avg ready");
 			return TRANSMITTING;
 		}
 		g_hr_readings_taken_this_hour++;
@@ -380,12 +377,12 @@ states state_processing() {
 }
 
 states state_transmitting() {
-	// FIX: after Txing HR average, unwanted Tx of overflow value (0x48523A3833 - 310617192499 base 10)
-	Serial.print("Sending payload: ");
-	Serial.println(g_received_data_buffer);
-	bool success = false;
+	// Serial.print("Sending payload: ");
+	// Serial.println(g_received_data_buffer);
+	// bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
-		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
+		// bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
+		bool success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);
 		// lcd.clear();
 		// lcd.setCursor(0, 0);
 		// lcd.send_string((send_success) ? "True" : "False");
@@ -409,27 +406,26 @@ states state_transmitting() {
 				g_waiting_for_reading_hr = false;
 				g_hr_readings_sum = 0;
 				g_hr_readings_taken_this_hour = 0;
-				Serial.println("Tx success check clear");
+				// Serial.println("Tx success check clear");
 				return CONNECTED;
 			}
-			// log_msg("INFO", F("Tx OK"));
-			break;
-			Serial.print("Tx payload: ");
-			Serial.println(g_received_data_buffer);
+			// Serial.print("Tx payload (cleared after printing): ");
+			// Serial.println(g_received_data_buffer);
+			g_received_data_buffer[0] = '\0';
+			lcd.clear();
+			lcd.setCursor(0, 0);
+			lcd.send_string("Send success");
+			notify_event(EVT_TX_SUCCESS);
+			delay(2000);
+			return CONNECTED;
 		}
-		lcd.clear();
-		lcd.setCursor(0, 0);
-		lcd.send_string("Send success");
-		delay(2000);
-	}
-	if (!success) {
-		// log_msg("ERROR", "Failed to send after 3 attempts");
-		// add_to_tx_retry_queue((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer));
-		lcd.clear();
-		lcd.setCursor(0, 0);
-		lcd.send_string("Send failed");
-		notify_event(EVT_TX_FAILED);
-		delay(5000);
+		else {
+			lcd.clear();
+			lcd.setCursor(0, 0);
+			lcd.send_string("Send failed");
+			notify_event(EVT_TX_FAILED);
+			delay(5000);
+		}
 	}
 	return CONNECTED;
 }
