@@ -195,8 +195,8 @@ states state_reading() {
 			return g_previous_state;
 		}
 		char incoming_byte = HM10_UART.read();
-		Serial.print("Recvd byte: ");
-		Serial.println(incoming_byte, HEX);
+		// Serial.print("Recvd byte: ");
+		// Serial.println(incoming_byte, HEX);
 		// Serial.print("\n");
 		// log_msg("DEBUG-1", input_buffer);
 		// char debug_char[2] = {incoming_byte, '\0'};
@@ -207,7 +207,7 @@ states state_reading() {
 				input_buffer[len - 1] = '\0';
 			}
 			// DEBUGGING
-			Serial.print("DEBUG-2");
+			Serial.print("DEBUG-2 ");
 			Serial.println(input_buffer);
 			// char dbg[32];
 			// snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
@@ -226,8 +226,8 @@ states state_reading() {
 				memmove(input_buffer, input_buffer + 1, strlen(input_buffer)); // shift left
 				input_buffer[strlen(input_buffer) - 1] = '\0'; // remove trailing "
 			}
-			Serial.print("Raw: ");
-			Serial.println(input_buffer);
+			// Serial.print("Raw: ");
+			// Serial.println(input_buffer);
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
 				// log_msg("INFO", F("Valid data received. ACK sent."));
@@ -260,11 +260,7 @@ states state_reading() {
 
 states state_processing() {
 	DateTime now = RTClib::now();
-	Serial.print("Now min: ");
-	Serial.println(now.minute());
-	Serial.print("Expected HR min: ");
-	Serial.println(g_hr_target_minute);
-	Serial.print("Readings taken: ");
+	Serial.print("HR readings taken: ");
 	Serial.println(g_hr_readings_taken_this_hour);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
@@ -304,35 +300,49 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
+		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // FIX: hr reading fro mthe received data buffer means that it will always just pull the last value read
 		Serial.print("hr: ");
 		Serial.println(hr);
-		if (g_hr_readings_taken_this_hour < 3) {
-			Serial.print("minute:target_minute: ");
-			Serial.print(now.minute());
-			Serial.print(":");
-			Serial.println(g_hr_target_minute);
-			if (now.minute() == g_hr_target_minute) {
-				g_hr_readings_sum += hr;
-				g_hr_readings_taken_this_hour++;
-				g_hr_target_minute += 2;
-				// log_msg("DEBUG", "Scheduled HR reading");
-			}
-			Serial.print("readings taken: ");
-			Serial.println(g_hr_readings_taken_this_hour);
+		Serial.print("hr sum A: ");
+		Serial.println(g_hr_readings_sum);
+		if (g_hr_readings_taken_this_hour < 3) { // FIX: even though readings taken shows as 3, for some reason this block is not entered
+			// Serial.print("minute:target_minute: ");
+			// Serial.print(now.minute());
+			// Serial.print(":");
+			// Serial.println(g_hr_target_minute);
+			g_hr_readings_sum += hr;
+			// Serial.print("hr sum B: ");
+			// Serial.println(g_hr_readings_sum);
+			// g_hr_readings_taken_this_hour++;
+			// g_hr_target_minute += 2;
+			// Serial.println("Scheduled HR reading");
+			// if (now.minute() == g_hr_target_minute) {
+			// 	g_hr_readings_sum += hr;
+			// 	Serial.print("hr sum: ");
+			// 	Serial.println(g_hr_readings_sum);
+			// 	g_hr_readings_taken_this_hour++;
+			// 	g_hr_target_minute += 2;
+			// 	// log_msg("DEBUG", "Scheduled HR reading");
+			// }
+			// Serial.print("readings taken: ");
+			// Serial.println(g_hr_readings_taken_this_hour);
 			return CONNECTED;
 		}
-		else {
+		// else {
 			// log_msg("DEBUG", "HR not in time range. Ignore");
-			return CONNECTED;
-		}
+			// return CONNECTED;
+		// }
 		if (g_hr_readings_taken_this_hour == 3) {
+			g_hr_readings_sum += hr; // last addition doesnt happen in upper if block as readings taken is 3
+			Serial.print("hr sum C: ");
+			Serial.println(g_hr_readings_sum);
 			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-			Serial.print("HR AVF BUF: ");
+			Serial.print("HR AVG BUF: ");
 			Serial.println(g_received_data_buffer);
 			Serial.print("HR avg ready");
 			return TRANSMITTING;
 		}
+		g_hr_readings_taken_this_hour++;
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		if (!ok) {
 			notify_event(EVT_OUT_OF_BOUNDS);
@@ -370,8 +380,7 @@ states state_processing() {
 }
 
 states state_transmitting() {
-	// FIX: Not testing for ACK. Will set up dashboard and try again
-	// FIX: Not transmitting unless scheduled reading
+	// FIX: after Txing HR average, unwanted Tx of overflow value (0x48523A3833 - 310617192499 base 10)
 	Serial.print("Sending payload: ");
 	Serial.println(g_received_data_buffer);
 	bool success = false;
@@ -398,6 +407,8 @@ states state_transmitting() {
 			}
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
+				g_hr_readings_sum = 0;
+				g_hr_readings_taken_this_hour = 0;
 				return CONNECTED;
 			}
 			// log_msg("INFO", F("Tx OK"));
