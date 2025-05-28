@@ -97,3 +97,4 @@ extern bool g_multi_reset;
 extern bool g_waiting_for_reading_bp;
 extern bool g_waiting_for_reading_temp;
 extern bool g_waiting_for_reading_hr;
+extern bool g_time_synched;

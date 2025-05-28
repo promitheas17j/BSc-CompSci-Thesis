@@ -9,7 +9,7 @@
 
 Waveshare_LCD1602 lcd(16,2);
 SoftwareSerial HM10_UART(9, 10);
-DS3231 rtc;
+DS3231 myRTC;
 TheThingsNetwork ttn(Serial1, Serial, TTN_FP_EU868);
 
 const char *appEui = "0004A30B001BF78C";
@@ -47,6 +47,8 @@ bool g_waiting_for_reading_temp = false;
 bool g_waiting_for_reading_hr = false;
 
 bool debug_enabled = true;
+
+bool g_time_synched = false;
 
 char g_received_data_buffer[G_RECEIVED_DATA_BUFFER_SIZE];
 
@@ -128,14 +130,21 @@ void setup() {
 	digitalWrite(BUZZER, HIGH);
 	delay(100);
 	digitalWrite(BUZZER, LOW);
+	g_time_synched = false;
 	ttn.onMessage(onDownlinkMessage);
 	ttn.join(appEui, appKey);
 	g_last_uplink_minute = 0;
-	ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
+	ttn.sendBytes((const uint8_t[]){0x10}, 1, 1); // Request to get accurate time from cloud
+	myRTC.setMinute(26);
 }
 
 void loop() {
-	// notify_event(EVT_REQUEST_RECEIVED);
+	// DateTime now = RTClib::now();
+	// Serial.print(now.hour());
+	// Serial.print(":");
+	// Serial.print(now.minute());
+	// Serial.print(":");
+	// Serial.println(now.second());
 	static unsigned long last_schedule_check = 0;
 	if ((millis() - last_schedule_check) >= 60000UL) {
 		last_schedule_check = millis();

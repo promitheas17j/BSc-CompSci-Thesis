@@ -29,7 +29,7 @@ enum EventType {
 };
 
 uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn);
-void log_msg(const char *msg_level, const char *msg);
+// void log_msg(const char *msg_level, const char *msg);
 void cycle_leds();
 inline const char* state_to_string(states s);
 bool validate_message(const char *msg);

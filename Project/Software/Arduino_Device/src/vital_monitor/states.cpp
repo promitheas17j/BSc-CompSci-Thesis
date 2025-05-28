@@ -140,7 +140,7 @@ states state_setup_hr() {
 }
 
 states state_connected() {
-	log_msg("INFO", "Bluetooth device connected.");
+	// log_msg("INFO", "Bluetooth device connected.");
 	// digitalWrite(LED_BLUE, HIGH);
 	return CONNECTED;
 }
@@ -153,6 +153,7 @@ states state_reading() {
 	const unsigned long disconnect_threshold = 2000; // 2 seconds of LOW before triggering
 	static uint8_t attempt_count = 0;
 	uint8_t bt_pin_state = digitalRead(BT_STATE);
+	static unsigned long entry_time = 0;
 	static bool first_entry = true;
 	if (first_entry) {
 		// log_msg("INFO", F("First entry into READING"));
@@ -161,7 +162,15 @@ states state_reading() {
 		}
 		index = 0;
 		memset(input_buffer, 0, sizeof(input_buffer));
+		entry_time = millis();
 		first_entry = false;
+	}
+	if ((millis() - entry_time) > 10000) { // timeout timer
+		Serial.println("Timeout");
+		notify_event(EVT_FAILED_READING);
+		first_entry = true;
+		attempt_count = 0;
+		return g_previous_state;
 	}
 	if (bt_pin_state == HIGH) {
 		last_high_time = millis();
@@ -174,7 +183,10 @@ states state_reading() {
 			return DISCONNECTED;
 		}
 	}
+	// Serial.println("Pre-HM10-UART");
 	while (HM10_UART.available()) {
+		Serial.print("attempt_count: ");
+		Serial.println(attempt_count);
 		if (attempt_count >= 3) { // too many failed attempts, return to previous state
 			// log_msg("WARN", F("Too many failed attempts. Cancelling"));
 			notify_event(EVT_FAILED_READING);
@@ -183,7 +195,8 @@ states state_reading() {
 			return g_previous_state;
 		}
 		char incoming_byte = HM10_UART.read();
-		// Serial.print(incoming_byte);
+		Serial.print("Recvd byte: ");
+		Serial.println(incoming_byte, HEX);
 		// Serial.print("\n");
 		// log_msg("DEBUG-1", input_buffer);
 		// char debug_char[2] = {incoming_byte, '\0'};
@@ -194,7 +207,8 @@ states state_reading() {
 				input_buffer[len - 1] = '\0';
 			}
 			// DEBUGGING
-			// log_msg("DEBUG-2", input_buffer);
+			Serial.print("DEBUG-2");
+			Serial.println(input_buffer);
 			// char dbg[32];
 			// snprintf(dbg, sizeof(dbg), "LEN=%u", strlen(input_buffer));
 			// log_msg("DEBUG", dbg);
@@ -212,12 +226,16 @@ states state_reading() {
 				memmove(input_buffer, input_buffer + 1, strlen(input_buffer)); // shift left
 				input_buffer[strlen(input_buffer) - 1] = '\0'; // remove trailing "
 			}
+			Serial.print("Raw: ");
+			Serial.println(input_buffer);
 			if (validate_message(input_buffer)) {
 				HM10_UART.print("ACK");
 				// log_msg("INFO", F("Valid data received. ACK sent."));
 				strncpy(g_received_data_buffer, input_buffer, sizeof(g_received_data_buffer));
 				g_received_data_buffer[sizeof(g_received_data_buffer) - 1] = '\0'; // ensure that the last character is the null terminator no matter what
 				first_entry = true;
+				Serial.print("READING: ");
+				Serial.println(g_received_data_buffer);
 				return PROCESSING;
 			}
 			else {
@@ -241,6 +259,13 @@ states state_reading() {
 }
 
 states state_processing() {
+	DateTime now = RTClib::now();
+	Serial.print("Now min: ");
+	Serial.println(now.minute());
+	Serial.print("Expected HR min: ");
+	Serial.println(g_hr_target_minute);
+	Serial.print("Readings taken: ");
+	Serial.println(g_hr_readings_taken_this_hour);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
 		if (sscanf(g_received_data_buffer + 3, "%hhu/%hhu", &sys, &dia) == 2) {
@@ -279,25 +304,34 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		DateTime now = RTClib::now();
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
+		Serial.print("hr: ");
+		Serial.println(hr);
 		if (g_hr_readings_taken_this_hour < 3) {
+			Serial.print("minute:target_minute: ");
+			Serial.print(now.minute());
+			Serial.print(":");
+			Serial.println(g_hr_target_minute);
 			if (now.minute() == g_hr_target_minute) {
 				g_hr_readings_sum += hr;
 				g_hr_readings_taken_this_hour++;
 				g_hr_target_minute += 2;
-				log_msg("DEBUG", "Scheduled HR reading");
+				// log_msg("DEBUG", "Scheduled HR reading");
 			}
-			if (g_hr_readings_taken_this_hour == 3) {
-				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
-				log_msg("DEBUG", "HR avg ready");
-				return TRANSMITTING;
-			}
+			Serial.print("readings taken: ");
+			Serial.println(g_hr_readings_taken_this_hour);
 			return CONNECTED;
 		}
 		else {
-			log_msg("DEBUG", "HR not in time range. Ignore");
+			// log_msg("DEBUG", "HR not in time range. Ignore");
 			return CONNECTED;
+		}
+		if (g_hr_readings_taken_this_hour == 3) {
+			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
+			Serial.print("HR AVF BUF: ");
+			Serial.println(g_received_data_buffer);
+			Serial.print("HR avg ready");
+			return TRANSMITTING;
 		}
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		if (!ok) {
@@ -338,6 +372,8 @@ states state_processing() {
 states state_transmitting() {
 	// FIX: Not testing for ACK. Will set up dashboard and try again
 	// FIX: Not transmitting unless scheduled reading
+	Serial.print("Sending payload: ");
+	Serial.println(g_received_data_buffer);
 	bool success = false;
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
 		bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
@@ -346,12 +382,13 @@ states state_transmitting() {
 		// lcd.send_string((send_success) ? "True" : "False");
 		// delay(2000);
 		uint32_t start = millis();
-		while (millis() - start < 10000) {
-			if (send_success == true) {
-				success = true;
-				break;
-			}
-		}
+		delay(1000);
+		// while (millis() - start < 10000) {
+		// 	if (send_success == true) {
+		// 		success = true;
+		// 		break;
+		// 	}
+		// }
 		if (success) {
 			if (strncmp(g_received_data_buffer, "BP:", 3) == 0 && g_waiting_for_reading_bp) {
 				g_waiting_for_reading_bp = false;
@@ -361,9 +398,12 @@ states state_transmitting() {
 			}
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
+				return CONNECTED;
 			}
 			// log_msg("INFO", F("Tx OK"));
 			break;
+			Serial.print("Tx payload: ");
+			Serial.println(g_received_data_buffer);
 		}
 		lcd.clear();
 		lcd.setCursor(0, 0);
@@ -372,7 +412,7 @@ states state_transmitting() {
 	}
 	if (!success) {
 		// log_msg("ERROR", "Failed to send after 3 attempts");
-		add_to_tx_retry_queue((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer));
+		// add_to_tx_retry_queue((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer));
 		lcd.clear();
 		lcd.setCursor(0, 0);
 		lcd.send_string("Send failed");

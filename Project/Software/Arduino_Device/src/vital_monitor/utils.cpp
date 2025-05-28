@@ -24,15 +24,15 @@ uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 	return btn->stable_state;
 }
 
-void log_msg(const char *msg_level, const char *msg) {
-	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-		return;
-	}
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "[%s]: %s", msg_level, msg);
-	Serial.print(buffer);
-	Serial.print("\n");
-}
+// void log_msg(const char *msg_level, const char *msg) {
+// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+// 		return;
+// 	}
+// 	char buffer[64];
+// 	snprintf(buffer, sizeof(buffer), "[%s]: %s", msg_level, msg);
+// 	Serial.print(buffer);
+// 	Serial.print("\n");
+// }
 
 void cycle_leds() {
 	uint8_t cycle_time = 100;
@@ -166,7 +166,16 @@ void update_led_based_on_state() {
 
 // Callback to handle downlink messages
 void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
-	if (port != 1 || length < 2) return;
+	// If this is a time sync
+	if (length == 3 && payload[0] < 24 && payload[1] < 60 && payload[2] < 60) {
+		myRTC.setHour(payload[0]);
+		myRTC.setMinute(payload[1]);
+		myRTC.setSecond(payload[2]);
+		// Serial.println("Time synced via downlink.");
+	}
+	if (port != 1 || length < 2) {
+		return;
+	}
 	uint8_t cmd   = payload[0];
 	uint8_t field = payload[1];
 	if (cmd == 0x20) {	// Set Thresholds
@@ -202,7 +211,6 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				}
 				break;
 			default:
-				log_msg("WARN", "Unknown threshold field");
 				break;
 		}
 	}
@@ -218,29 +226,28 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				alert_request_read("hr");
 				break;
 			default:
-				log_msg("WARN", "Unknown reading field");
 				break;
 		}
 	}
 }
 
-void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
-	if (len > MAX_MSG_SIZE) {
-		len = MAX_MSG_SIZE;
-	}
+// void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
+// 	if (len > MAX_MSG_SIZE) {
+// 		len = MAX_MSG_SIZE;
+// 	}
 
-	if (tx_retry_count < MAX_QUEUE_ITEMS) {
-		memcpy(tx_retry_queue[tx_retry_tail], data, len);
-		tx_retry_lengths[tx_retry_tail] = len;
+// 	if (tx_retry_count < MAX_QUEUE_ITEMS) {
+// 		memcpy(tx_retry_queue[tx_retry_tail], data, len);
+// 		tx_retry_lengths[tx_retry_tail] = len;
 
-		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
-		tx_retry_count++;
+// 		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
+// 		tx_retry_count++;
 
-		log_msg("INFO", "Added message to retry queue");
-	} else {
-		log_msg("WARN", "Retry queue full, message dropped");
-	}
-}
+// 		log_msg("INFO", "Added message to retry queue");
+// 	} else {
+// 		log_msg("WARN", "Retry queue full, message dropped");
+// 	}
+// }
 
 void alert_request_read(const char* vital) {
 	if (strncmp(vital, "bp", 3) == 0) {
@@ -271,7 +278,7 @@ void alert_request_read(const char* vital) {
 		notify_event(EVT_REQUEST_RECEIVED);
 	}
 	else {
-		log_msg("DEBUG", "Invalid vital sign passed to request reading func");
+		// log_msg("DEBUG", "Invalid vital sign passed to request reading func");
 	}
 	delay(5000);
 	lcd.clear();
@@ -280,15 +287,24 @@ void alert_request_read(const char* vital) {
 
 void send_empty_uplink() {
 	DateTime now = RTClib::now();
-	uint32_t current_minute = now.hour() * 60 + now.minute();
-	if ((current_minute % 5 == 0) && (current_minute != g_last_uplink_minute)) {
+	static uint8_t last_checked_minute = 255;
+	if (now.minute() ==  last_checked_minute) {
+		return;
+	}
+	last_checked_minute = now.minute();
+	if ((now.minute() % 5 == 0) && (now.minute() != g_last_uplink_minute)) {
 		ttn.sendBytes((const uint8_t[]){0x00}, 1, 1);
-		g_last_uplink_minute = current_minute;
+		g_last_uplink_minute = now.minute();
 	}
 }
 
 void handle_scheduled_readings() {
 	DateTime now = RTClib::now();
+	// Serial.print(now.hour());
+	// Serial.print(":");
+	// Serial.print(now.minute());
+	// Serial.print(":");
+	// Serial.println(now.second());
 	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
 		return;
 	}
@@ -320,24 +336,29 @@ void handle_scheduled_readings() {
 	// Track scheduling state for HR
 	static uint8_t hr_last_triggered_minute = 255;
 	static uint8_t hr_last_reading_hour = 255;
-	// static uint8_t hr_target_minute = 0;
-	// At the top of the hour, reset HR tracking
-	if (now.minute() == 0 && now.hour() != hr_last_reading_hour) {
+	// If new hour, reset HR reading progress
+	if (now.hour() != hr_last_reading_hour) {
+		// Serial.println("POINT 1: hour() != last_reading_hour");
 		hr_last_reading_hour = now.hour();
 		g_hr_readings_taken_this_hour = 0;
 		g_hr_readings_sum = 0;
 		hr_last_triggered_minute = 255;
-		g_hr_target_minute = 0;  // Next expected reading is at :00
+		g_hr_target_minute = now.minute(); // start as soon as possible
+		// if ((g_hr_target_minute % 2) != 0) { // align to next even minute
+			// g_hr_target_minute++;
+		// }
 	}
-	// Prompt for HR only at valid intervals (00, 02, 04)
-	if (g_hr_readings_taken_this_hour < 3 &&
-		now.minute() == g_hr_target_minute &&
-		now.minute() != hr_last_triggered_minute) {
+	// if 3 readings not taken yet, and its the correct time and not duplicate
+	if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
+		Serial.println("POINT 2");
 		hr_last_triggered_minute = now.minute();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-		return;
+		g_hr_target_minute += 2; // schedule next attempt in 2 minutes
+		// Serial.print("")
 	}
+	Serial.println("POINT 3");
+	return;
 }
 
 // void handle_scheduled_readings() {
@@ -457,6 +478,7 @@ void notify_event(EventType event) {
 			digitalWrite(LED_GREEN, LOW);
 			break;
 		default:
-			log_msg("WARN", "Invalid event");
+			// log_msg("WARN", "Invalid event");
+			break;
 	}
 }
