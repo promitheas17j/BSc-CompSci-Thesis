@@ -300,17 +300,12 @@ void send_empty_uplink() {
 
 void handle_scheduled_readings() {
 	DateTime now = RTClib::now();
-	// Serial.print(now.hour());
-	// Serial.print(":");
-	// Serial.print(now.minute());
-	// Serial.print(":");
-	// Serial.println(now.second());
 	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
 		return;
 	}
 	// BP once at 08:21 (to not conflict with HR reading which is at 08:00 and on even minutes)
 	if (((now.hour() == 8 && now.minute() == 21) ||
-		 (now.hour() == 13 && now.minute() == 15)) && // NOTE: second time is for debugging purposes. Remove when ready
+		 (now.hour() == 13 && now.minute() == 49)) && // NOTE: second time is for debugging purposes. Remove when ready
 		!g_waiting_for_reading_bp) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
@@ -324,7 +319,7 @@ void handle_scheduled_readings() {
 		 (now.hour() == 14 && now.minute() == 1) ||
 		 (now.hour() == 17 && now.minute() == 1) ||
 		 (now.hour() == 20 && now.minute() == 1) ||
-		 (now.hour() == 13 && now.minute() == 21)) && // NOTE: last time is for debugging purposes. Remove when ready
+		 (now.hour() == 13 && now.minute() == 41)) && // NOTE: last time is for debugging purposes. Remove when ready
 		!g_waiting_for_reading_temp) {
 		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
@@ -358,7 +353,7 @@ void handle_scheduled_readings() {
 		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-		g_hr_readings_taken_this_hour++;
+		// g_hr_readings_taken_this_hour++; // NOTE: Commented this out to try to prevent incremementing when any vital reading is taken instead of just an HR
 	}
 	// if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
 		// Serial.println("POINT 2");
