@@ -307,8 +307,8 @@ states state_processing() {
 		// Serial.println(g_hr_readings_sum);
 		if (g_hr_readings_taken_this_hour < 3) {
 			g_hr_readings_sum += hr;
-			g_hr_readings_taken_this_hour++;
-			g_waiting_for_reading_hr = true;
+			// g_hr_readings_taken_this_hour++;
+			// g_waiting_for_reading_hr = false;
 			// Serial.print("hr sum B: ");
 			// Serial.println(g_hr_readings_sum);
 			// g_hr_target_minute += 2;
@@ -331,7 +331,6 @@ states state_processing() {
 		// }
 		if (g_hr_readings_taken_this_hour == 3) {
 			g_hr_readings_sum += hr; // last addition doesnt happen in upper if block as readings taken is 3
-			g_waiting_for_reading_hr = false;
 			// Serial.print("hr sum C: ");
 			// Serial.println(g_hr_readings_sum);
 			snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum + 1) / 3);
@@ -381,9 +380,6 @@ states state_transmitting() {
 	// Serial.print("Sending payload: ");
 	// Serial.println(g_received_data_buffer);
 	// bool success = false;
-	if ((strncmp(g_received_data_buffer, "HR:", 3) == 0) && g_waiting_for_reading_hr && (g_hr_readings_taken_this_hour < 3)) {
-		return CONNECTED; // in the process of collecting HR readings to average. It should still transmit if g_received_data_buffer is a TEMP or BP reading.
-	}
 	for (uint8_t attempt = 1; attempt <= 3; ++attempt) {
 		// bool send_success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);  // Port 1
 		bool success = ttn.sendBytes((const uint8_t*)g_received_data_buffer, strlen((const char*)g_received_data_buffer), 1);
@@ -393,6 +389,12 @@ states state_transmitting() {
 		// delay(2000);
 		uint32_t start = millis();
 		delay(1000);
+		// while (millis() - start < 10000) {
+		// 	if (send_success == true) {
+		// 		success = true;
+		// 		break;
+		// 	}
+		// }
 		if (success) {
 			if (strncmp(g_received_data_buffer, "BP:", 3) == 0 && g_waiting_for_reading_bp) {
 				g_waiting_for_reading_bp = false;
@@ -400,13 +402,15 @@ states state_transmitting() {
 			else if (strncmp(g_received_data_buffer, "TEMP:", 5) == 0 && g_waiting_for_reading_temp) {
 				g_waiting_for_reading_temp = false;
 			}
-			// else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
 				g_hr_readings_sum = 0;
 				g_hr_readings_taken_this_hour = 0;
+				// Serial.println("Tx success check clear");
 				return CONNECTED;
 			}
+			// Serial.print("Tx payload (cleared after printing): ");
+			// Serial.println(g_received_data_buffer);
 			g_received_data_buffer[0] = '\0';
 			lcd.clear();
 			lcd.setCursor(0, 0);
