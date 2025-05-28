@@ -259,7 +259,7 @@ states state_reading() {
 }
 
 states state_processing() {
-	DateTime now = RTClib::now();
+	// DateTime now = RTClib::now();
 	Serial.print("HR readings taken: ");
 	Serial.println(g_hr_readings_taken_this_hour);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
@@ -300,14 +300,15 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
+		// FIX: After Txing a valid HR average, it keeps asking every 2 minutes even within the same hour
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // NOTE: hr reading from the received data buffer means that it will always just pull the last value read
 		Serial.print("hr: ");
 		Serial.println(hr);
 		// Serial.print("hr sum A: ");
 		// Serial.println(g_hr_readings_sum);
-		if (g_hr_readings_taken_this_hour < 3) {
+		if (g_hr_readings_taken_this_hour < 3 && g_waiting_for_reading_hr) {
 			g_hr_readings_sum += hr;
-			// g_hr_readings_taken_this_hour++;
+			g_hr_readings_taken_this_hour++;
 			// g_waiting_for_reading_hr = false;
 			// Serial.print("waiting, readings taken: ");
 			// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
@@ -336,9 +337,11 @@ states state_processing() {
 		bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 		if (!ok) {
 			notify_event(EVT_OUT_OF_BOUNDS);
+			return TRANSMITTING;
 		}
 	}
-	return TRANSMITTING;
+	return CONNECTED;
+	// return TRANSMITTING;
 	// else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
 	// 	uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3);
 	// 	if (g_waiting_for_reading_hr) {
@@ -380,7 +383,7 @@ states state_transmitting() {
 		// lcd.setCursor(0, 0);
 		// lcd.send_string((send_success) ? "True" : "False");
 		// delay(2000);
-		uint32_t start = millis();
+		// uint32_t start = millis();
 		delay(1000);
 		// while (millis() - start < 10000) {
 		// 	if (send_success == true) {

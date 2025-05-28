@@ -300,22 +300,15 @@ void send_empty_uplink() {
 
 void handle_scheduled_readings() {
 	DateTime now = RTClib::now();
-	// Serial.print(now.hour());
-	// Serial.print(":");
-	// Serial.print(now.minute());
-	// Serial.print(":");
-	// Serial.println(now.second());
 	if (g_current_state == READING || g_current_state == PROCESSING || g_current_state == TRANSMITTING) {
 		return;
 	}
 	// BP once at 08:21 (to not conflict with HR reading which is at 08:00 and on even minutes)
-	if (((now.hour() == 8 && now.minute() == 21) ||
-		 (now.hour() == 13 && now.minute() == 15)) && // NOTE: second time is for debugging purposes. Remove when ready
-		!g_waiting_for_reading_bp) {
+	if (((now.hour() == 8 && now.minute() == 21) // ||
+		 /* (now.hour() == 19 && now.minute() == 41)) */ && // NOTE: second time is for debugging purposes. Remove when ready
+		!g_waiting_for_reading_bp)) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
-		// g_previous_state = CONNECTED;
-		// g_current_state = READING;
 		return;
 	}
 	// TEMP 5x/12h
@@ -323,9 +316,9 @@ void handle_scheduled_readings() {
 		 (now.hour() == 11 && now.minute() == 1) ||
 		 (now.hour() == 14 && now.minute() == 1) ||
 		 (now.hour() == 17 && now.minute() == 1) ||
-		 (now.hour() == 20 && now.minute() == 1) ||
-		 (now.hour() == 13 && now.minute() == 21)) && // NOTE: last time is for debugging purposes. Remove when ready
-		!g_waiting_for_reading_temp) {
+		 (now.hour() == 20 && now.minute() == 1) // ||
+		 /* (now.hour() == 20 && now.minute() == 1)) */ && // NOTE: last time is for debugging purposes. Remove when ready
+		!g_waiting_for_reading_temp)) {
 		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
 		// g_previous_state = CONNECTED;
@@ -333,22 +326,8 @@ void handle_scheduled_readings() {
 		return;
 	}
 	// HR every hour, 3 readings spaced 2 minutes apart, take the average
-	// Track scheduling state for HR
-	// static uint8_t hr_last_triggered_minute = 255;
-	// static uint8_t hr_last_reading_hour = 255;
-	// If new hour, reset HR reading progress
-	// if (now.hour() != hr_last_reading_hour) {
-		// Serial.println("POINT 1: hour() != last_reading_hour");
-		// hr_last_reading_hour = now.hour();
-		// g_hr_readings_taken_this_hour = 0;
-		// g_hr_readings_sum = 0;
-		// hr_last_triggered_minute = 255;
-		// g_hr_target_minute = now.minute(); // start as soon as possible
-		// if ((g_hr_target_minute % 2) != 0) { // align to next even minute
-			// g_hr_target_minute++;
-		// }
-	// }
-	// if 3 readings not taken yet, and its the correct time and not duplicate
+	// Serial.print("waiting for reading hr: ");
+	// Serial.println((g_waiting_for_reading_hr) ? " True" : "False");
 	static unsigned long last_hr_reading_ms = 0;
 	static unsigned long hr_reading_interval_ms = 2UL * 60 * 1000; // 2 minutes
 	if (now.minute() == 0) {
@@ -358,7 +337,7 @@ void handle_scheduled_readings() {
 		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-		g_hr_readings_taken_this_hour++;
+		// g_hr_readings_taken_this_hour++;
 	}
 	// if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
 		// Serial.println("POINT 2");
@@ -368,6 +347,12 @@ void handle_scheduled_readings() {
 		// g_hr_target_minute += 2; // schedule next attempt in 2 minutes
 		// // Serial.print("")
 	// }
+	Serial.print("N readings: Waiting: Sum: ");
+	Serial.print(g_hr_readings_taken_this_hour);
+	Serial.print(", ");
+	Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+	Serial.print(", ");
+	Serial.println(g_hr_readings_sum);
 	return;
 }
 
