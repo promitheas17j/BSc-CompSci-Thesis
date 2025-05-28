@@ -334,36 +334,42 @@ void handle_scheduled_readings() {
 	}
 	// HR every hour, 3 readings spaced 2 minutes apart, take the average
 	// Track scheduling state for HR
-	static uint8_t hr_last_triggered_minute = 255;
-	static uint8_t hr_last_reading_hour = 255;
+	// static uint8_t hr_last_triggered_minute = 255;
+	// static uint8_t hr_last_reading_hour = 255;
 	// If new hour, reset HR reading progress
-	if (now.hour() != hr_last_reading_hour) {
+	// if (now.hour() != hr_last_reading_hour) {
 		// Serial.println("POINT 1: hour() != last_reading_hour");
-		hr_last_reading_hour = now.hour();
-		g_hr_readings_taken_this_hour = 0;
-		g_hr_readings_sum = 0;
-		hr_last_triggered_minute = 255;
-		g_hr_target_minute = now.minute(); // start as soon as possible
+		// hr_last_reading_hour = now.hour();
+		// g_hr_readings_taken_this_hour = 0;
+		// g_hr_readings_sum = 0;
+		// hr_last_triggered_minute = 255;
+		// g_hr_target_minute = now.minute(); // start as soon as possible
 		// if ((g_hr_target_minute % 2) != 0) { // align to next even minute
 			// g_hr_target_minute++;
 		// }
-	}
+	// }
 	// if 3 readings not taken yet, and its the correct time and not duplicate
-	if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
-		Serial.println("POINT 2");
-		hr_last_triggered_minute = now.minute();
+	static unsigned long last_hr_reading_ms = 0;
+	static unsigned long hr_reading_interval_ms = 2UL * 60 * 1000; // 2 minutes
+	if ((g_hr_readings_taken_this_hour < 3) && (millis() - last_hr_reading_ms >= hr_reading_interval_ms)) {
+		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
-		g_hr_target_minute += 2; // schedule next attempt in 2 minutes
-		// Serial.print("")
+		g_hr_readings_taken_this_hour++;
 	}
+	// if ((g_hr_readings_taken_this_hour < 3) && (now.minute() == g_hr_target_minute) && (now.minute() != hr_last_triggered_minute)) {
+		// Serial.println("POINT 2");
+		// hr_last_triggered_minute = now.minute();
+		// g_waiting_for_reading_hr = true;
+		// alert_request_read("hr");
+		// g_hr_target_minute += 2; // schedule next attempt in 2 minutes
+		// // Serial.print("")
+	// }
 	Serial.println("POINT 3");
 	return;
 }
 
 // void handle_scheduled_readings() {
-//	// TODO: Add debugging messages to make sure it works correctly.
-//	// FIX: For BP and TEMP, after alerting the user the LCD goes blank
 //	DateTime now = RTClib::now();
 //	static uint8_t hr_last_triggered_minute = 255;
 //	static uint8_t hr_last_reading_hour = 255;
