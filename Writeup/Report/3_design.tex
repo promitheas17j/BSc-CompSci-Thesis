@@ -45,7 +45,7 @@ The Vital Sign Monitoring System allows for on-demand monitoring of key physiolo
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{diagrams/use_case_diagram}
-	\caption{How medical staff and patients each interact with the system}
+	\caption{Medical staff and patient interactions with the system}
 	\label{fig:use_case_diagram}
 \end{figure}
 
@@ -234,11 +234,52 @@ The three-button interface allows for very basic user interaction in the form of
 \section{User Interface Design} % Section 3.5
 The device's user interface was made to be simple and easy to use, accommodating embedded technology limitations while guaranteeing medical staff and patients alike could easily interact with it. Push buttons, an LCD screen, a buzzer, and a group of LEDs make up the interface's four primary elements. Each one has a distinct function in communicating system status while occasionally their feedback cues may overlap to tell the user the same thing in different ways (e.g. Error displayed on the LCD while simultaneously a buzzer tone sounds corresponding to that error).
 
+In addition to the device UI, there is the cloud dashboard UI, which I made using the TagoIO platform. It is split into four sections:
+\begin{enumerate}
+	\item \textbf{Commands:} This is where medical staff can send commands to the device such as a request for a reading or remote setting of vital sign thresholds (see Appendix~\ref{appendix:tagoio_commands}).
+	\item \textbf{Blood Pressure:} This is where recevied blood pressure data can be visualised in two forms --- a vertical column view, and a line chart. (see Appendix~\ref{appendix:tagoio_bp})
+	\item \textbf{Temperature:} This is where received temperature data can be visualised as a line chart. (see Appendix~\ref{appendix:tagoio_temp})
+	\item \textbf{Heart Rate:} This is where received heart rate data can be visualised as a line chart. (see Appendix~\ref{appendix:tagoio_hr})
+\end{enumerate}
+
+Finally, I made a simple mobile app for testing purposes, to allow me to simply simulate medical sensors and their interactions with the system. The app's UI has four screens, with the main screen changing its appearance based on the connection status.
+\begin{enumerate}
+	\item \textbf{Main screen when first opening the app:} Contains an area to display simple logs, a button to clear the logs, and a button to start scanning for Bluetooth devices (see Appendix~\ref{appendix:app_ui_disconnected}).
+	\item \textbf{Main screen when scanning for bluetooth devices:} When the button to start scanning is pressed, it changes to contain the text "Stop Scanning", and a list of available Bluetooth devices appears below it. When an item in the list is clicked, a connection is attempted to that device (see Appendix~\ref{appendix:app_ui_scanning})
+	\item \textbf{Main screen when a connection has been established:} Contains an area to display logs, a button to disconnect the Bluetooth connection, and buttons to enter the screens for sending data to the device. (see Appendix~\ref{appendix:app_ui_connected}).
+	\item \textbf{Screen for sending blood pressure data:} Contains an area to display simple logs, a back button, two text boxes to enter the systolic and diastolic values, and a button to send the data (see Appendix~\ref{appendix:app_ui_bp}).
+	\item \textbf{Screen for sending temperature data:} Contains an area to display simple logs, a back button, a text boxe to enter the temperature value, and a button to send the data (see Appendix~\ref{appendix:app_ui_temp}).
+	\item \textbf{Screen for sending heart rate data:} Contains an area to display simple logs, a back button, a text boxe to enter the heart rate value, and a button to send the data (see Appendix~\ref{appendix:app_ui_hr}).
+\end{enumerate}
+
 \subsubsection{Input Mechanism: Push Buttons}
 Three push buttons are used by the system to facilitate option selection and menu navigation. These buttons are used to confirm selections and navigate through the available options (such as "Setup", "Read", or "Disconnect"). Only valid menu options are displayed at any given point thanks to the context-dependent functionality based on the current system state (as described in the state machine). Debouncing is handled in software to prevent unpredictable inputs.
 
 \subsubsection{Visual Feedback: LCD Display}
 A single 16x2 LCD module gives visual feedback to the user. This display, which shows menus, configuration options, and error alerts, acts as the primary means of communication between the user and the system. For instance, it shows any errors that may occur, or displays messages indicating to the patient that a request has come in from the cloud platform by a clinician. It is ideal for portable medical equipment due to its low power consumption, compact footprint, and microcontroller compatibility.
+
+Below are examples of the two types of interactable menus. The first two are displayed when there is no active connection (Figure \ref{fig:ui_disconnected}) and when there is (Figure \ref{fig:ui_connected}), respectively, and demonstrate how the UI lets the user know that they can press the corresponding buttons to go left, right, or select the displayed option. The third image shows the menu displayed when setting the vital sign thresholds locally (Figure \ref{fig:ui_set_temp}). The difference between the set threshold menus and the regular ones is that in this one there are no options to cycle through, instead the vital sign being set is displayed (TEMP in this case) followed by the current value. The previous and next buttons now act as decrement/increment buttons, and this is conveyed to the user by adding a "-" and "+" symbol on the side of the corresponding buttons.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/device_ui_disconnected}
+	\caption{Device UI when there are no active Bluetooth connections (see Appendix~\ref{appendix:ui_disconnected} for full size view)}
+	\label{fig:ui_disconnected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/device_ui_connected}
+	\caption{Device UI when there are active Bluetooth connections (see Appendix~\ref{appendix:ui_connected} for full size view)}
+	\label{fig:ui_connected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/device_ui_set_temp}
+	\caption{Device UI when locally setting the temperature thresholds (see Appendix~\ref{appendix:ui_setup_temp} for full size view)}
+	\label{fig:ui_set_temp}
+\end{figure}
 
 \subsubsection{Visual Feedback: Status Indicator LEDs}
 Four LEDs are incorporated inside this device to give instantaneous, nonverbal feedback about connectivity and system status. Without looking at the LCD interface, users can rapidly determine operational conditions at a glance thanks to their clear and extremely simple nature. A different system state (not referring to states in the context of the state machine but rather operational conditions), such as regular operation, warnings, critical alerts, or connectivity status, is linked to each LED. By providing a quick overview of vital sign evaluations and device performance, this improves usability in clinical settings.

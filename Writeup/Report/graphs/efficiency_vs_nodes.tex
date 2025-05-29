@@ -11,9 +11,11 @@
 	title style={font=\small}
 ]
 \addplot[
+	only marks,
 	color=teal,
 	mark=*,
-	thick
+	% thick
+	mark options={scale=1}
 ] table [x=Nodes, y=Efficiency, col sep=comma] {graphs/efficiency_vs_nodes_all.csv};
 \end{axis}
 \end{tikzpicture}

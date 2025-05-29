@@ -1,12 +1,17 @@
 \section*{Acknowledgements}
 \addcontentsline{toc}{chapter}{Acknowledgements}
-Write some text for someone that you would like to say thank you for the completion of this work
+I would like to express my gratitude to my supervisor, Dr. Konstantinos Katzis, for his constant encouragement, technical guidance, and enlightening critique during this project. His advice was extremely useful to me as I navigated the technical and conceptual challenges of creating a reliable embedded healthcare system, particularly given the fact that this was my first experience with electronics design and construction.
+
+I also want to express my gratitude to my panellist, Dr. Costas Iordanou, for his careful review of this report and his insightful suggestions, which significantly improved its clarity and thoroughness.
 
 \newpage
 \section*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-Write a page of text explaining the project, what you wanted to do, what was done, how it was done and what has been achieved. 
+In order to ensure patient safety and detect issues early, it is essential to monitor the patient's vital signs during the post-operative phase. The design and implementation of an Internet of Things (IoT)-based monitoring system that can gather vital sign data from commercially available medical sensors with Bluetooth capabilities and send important readings to the cloud via the LoRaWAN communication protocol is presented in this thesis. The system incorporates a 16x2 LCD, tactile buttons, LED indicators, a buzzer for multimodal feedback, all driven by a custom menu-driven user interface. It is built on an Arduino-compatible device.
 
+The behaviour of the device is controlled by a finite state machine (FSM), which enables reliable state changes depending on sensor data, human input, and Bluetooth communication status. Out-of-range data is sent automatically to a remote monitoring platform according to preset conditions, and readings are verified and evaluated against user-configured thresholds. To test the system in a variety of realistic scenarios and replicate sensor data, an accompanying mobile application was developed. Remote control, data logging, and cloud-based alerting were made possible through integration with TagoIO and The Things Network (TTN).
+
+The prototype showed reliable collection of data, threshold evaluation, and error handling during the implementation and testing stages. This work offers a post-operative care solution that is scalable, power-efficient, and adaptable, even in environments without easy access to hospital infrastructure such as remote rural locations. Issues including managing Bluetooth disconnections and integrating proprietary sensors are examined, along with potential solutions.
 \newpage
 %temporarily set the line height to 1.0
 {\setstretch{1.0}
