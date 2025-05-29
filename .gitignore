@@ -3,4 +3,5 @@ Project/Hardware/Hardware-backups/
 *.lck
 Writeup/Report/*.log
 Writeup/Report/*.aux
+Writeup/*Presentation*
 README.pdf
