@@ -192,10 +192,14 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 				if (length >= 6) {
 					g_temp_threshold_min = (payload[2] << 8) | payload[3];
 					g_temp_threshold_max = (payload[4] << 8) | payload[5];
+					// Serial.println(g_temp_threshold_min);
+					// Serial.println(g_temp_threshold_max);
 					EEPROM.write(G_TEMP_MIN_ADDR, (uint8_t)g_temp_threshold_min);
 					EEPROM.write(G_TEMP_MIN_ADDR + 1, (uint8_t)(g_temp_threshold_min >> 8));
 					EEPROM.write(G_TEMP_MAX_ADDR, (uint8_t)g_temp_threshold_max);
 					EEPROM.write(G_TEMP_MAX_ADDR + 1, (uint8_t)(g_temp_threshold_max >> 8));
+					// Serial.print("min: ");
+					// Serial.println(EEPROM.read(G_TEMP_MIN_ADDR) | (EEPROM.read(G_TEMP_MIN_ADDR + 1) << 8));
 				}
 				break;
 			case 0x03: // BP SYS/DIA Min/Max (1 byte each)
@@ -343,12 +347,12 @@ void handle_scheduled_readings() {
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
 	}
-	Serial.print("N readings: ");
-	Serial.print(g_hr_readings_taken_this_hour);
-	Serial.print(" ,Waiting: ");
-	Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
-	Serial.print(" ,Sum: ");
-	Serial.println(g_hr_readings_sum);
+	// Serial.print("N readings: ");
+	// Serial.print(g_hr_readings_taken_this_hour);
+	// Serial.print(" ,Waiting: ");
+	// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+	// Serial.print(" ,Sum: ");
+	// Serial.println(g_hr_readings_sum);
 	return;
 }
 
