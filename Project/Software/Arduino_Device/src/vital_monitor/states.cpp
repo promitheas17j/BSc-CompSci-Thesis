@@ -166,7 +166,7 @@ states state_reading() {
 		first_entry = false;
 	}
 	if ((millis() - entry_time) > 10000) { // timeout timer
-		Serial.println("Timeout");
+		// Serial.println("Timeout");
 		notify_event(EVT_FAILED_READING);
 		first_entry = true;
 		attempt_count = 0;
@@ -261,8 +261,8 @@ states state_reading() {
 states state_processing() {
 	// DateTime now = RTClib::now();
 	static uint32_t last_hr_reading_ms = 0;
-	Serial.print("HR readings taken: ");
-	Serial.println(g_hr_readings_taken_this_hour);
+	// Serial.print("HR readings taken: ");
+	// Serial.println(g_hr_readings_taken_this_hour);
 	if (strncmp(g_received_data_buffer, "BP:", 3) == 0) {
 		uint8_t sys, dia;
 		if (sscanf(g_received_data_buffer + 3, "%hhu/%hhu", &sys, &dia) == 2) {
@@ -301,7 +301,6 @@ states state_processing() {
 		}
 	}
 	else if (strncmp(g_received_data_buffer, "HR:", 3) == 0) {
-		// FIX: After Txing a valid HR average, it keeps asking every 2 minutes even within the same hour
 		uint8_t hr = (uint8_t)atoi(g_received_data_buffer + 3); // NOTE: hr reading from the received data buffer means that it will always just pull the last value read
 		// Serial.print("hr: ");
 		// Serial.println(hr);
@@ -322,7 +321,6 @@ states state_processing() {
 			return CONNECTED;
 		}
 		if (g_hr_readings_taken_this_hour < 3 && g_waiting_for_reading_hr) {
-			// TODO: Add timer so that if HR requested but less than 2 minutes have passed between readings, to ignore the reading
 			if (((millis() - last_hr_reading_ms) < 114000) && last_hr_reading_ms != 0) { // timer to ignore readings taken before 2 minutes have elapsed, if we are in the process of taking an average
 				return CONNECTED;
 			}
@@ -338,7 +336,7 @@ states state_processing() {
 			// Serial.print(", Sum: ");
 			// Serial.println(g_hr_readings_sum);
 			if (g_hr_readings_taken_this_hour == 3) {
-				Serial.println("Txing");
+				// Serial.println("Txing");
 				snprintf(g_received_data_buffer, sizeof(g_received_data_buffer), "HR:%u", (g_hr_readings_sum / 3));
 				last_hr_reading_ms = 0;
 				return TRANSMITTING;

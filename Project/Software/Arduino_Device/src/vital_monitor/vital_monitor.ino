@@ -125,7 +125,7 @@ void setup() {
 	// digitalWrite(LED_GREEN, LOW);
 	// digitalWrite(LED_YELLOW, LOW);
 	// digitalWrite(LED_RED, LOW);
-	cycle_leds();
+	// cycle_leds();
 	digitalWrite(BUZZER, HIGH);
 	delay(100);
 	digitalWrite(BUZZER, LOW);
@@ -134,7 +134,7 @@ void setup() {
 	ttn.join(appEui, appKey);
 	g_last_uplink_minute = 0;
 	ttn.sendBytes((const uint8_t[]){0x10}, 1, 1); // Request to get accurate time from cloud
-	myRTC.setMinute(26);
+	// myRTC.setMinute(26);
 }
 
 void loop() {

@@ -34,24 +34,24 @@ uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 // 	Serial.print("\n");
 // }
 
-void cycle_leds() {
-	uint8_t cycle_time = 100;
-	digitalWrite(LED_BLUE, HIGH);
-	delay(cycle_time);
-	digitalWrite(LED_BLUE, LOW);
-	delay(cycle_time);
-	digitalWrite(LED_GREEN, HIGH);
-	delay(cycle_time);
-	digitalWrite(LED_GREEN, LOW);
-	delay(cycle_time);
-	digitalWrite(LED_YELLOW, HIGH);
-	delay(cycle_time);
-	digitalWrite(LED_YELLOW, LOW);
-	delay(cycle_time);
-	digitalWrite(LED_RED, HIGH);
-	delay(cycle_time);
-	digitalWrite(LED_RED, LOW);
-}
+// void cycle_leds() {
+// 	uint8_t cycle_time = 100;
+// 	digitalWrite(LED_BLUE, HIGH);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_BLUE, LOW);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_GREEN, HIGH);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_GREEN, LOW);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_YELLOW, HIGH);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_YELLOW, LOW);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_RED, HIGH);
+// 	delay(cycle_time);
+// 	digitalWrite(LED_RED, LOW);
+// }
 
 const char* state_to_string(states s) {
 	switch (s) {
@@ -286,15 +286,22 @@ void alert_request_read(const char* vital) {
 }
 
 void send_empty_uplink() {
-	DateTime now = RTClib::now();
-	static uint8_t last_checked_minute = 255;
-	if (now.minute() ==  last_checked_minute) {
-		return;
+	static uint32_t last_empty_uplink_ms = 0;
+	static uint32_t last_timesynch_uplink_ms = 0;
+	const uint32_t now= millis();
+	if (now - last_empty_uplink_ms >= 60000UL) {
+		ttn.sendBytes((const uint8_t[]){0x3F}, 1, 1);
+		last_empty_uplink_ms = now;
 	}
-	last_checked_minute = now.minute();
-	if ((now.minute() % 5 == 0) && (now.minute() != g_last_uplink_minute)) {
+	if (now - last_timesynch_uplink_ms >= 300000UL) {
 		ttn.sendBytes((const uint8_t[]){0x10}, 1, 1);
-		g_last_uplink_minute = now.minute();
+		last_timesynch_uplink_ms = now;
+		DateTime now = RTClib::now();
+		Serial.print(now.hour());
+		Serial.print(":");
+		Serial.print(now.minute());
+		Serial.print(":");
+		Serial.println(now.second());
 	}
 }
 
@@ -304,8 +311,7 @@ void handle_scheduled_readings() {
 		return;
 	}
 	// BP once at 08:21 (to not conflict with HR reading which is at 08:00 and on even minutes)
-	if (((now.hour() == 8 && now.minute() == 21) // ||
-		 /* (now.hour() == 19 && now.minute() == 41)) */ && // NOTE: second time is for debugging purposes. Remove when ready
+	if (((now.hour() == 8 && now.minute() == 21) &&
 		!g_waiting_for_reading_bp)) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
@@ -316,8 +322,7 @@ void handle_scheduled_readings() {
 		 (now.hour() == 11 && now.minute() == 1) ||
 		 (now.hour() == 14 && now.minute() == 1) ||
 		 (now.hour() == 17 && now.minute() == 1) ||
-		 (now.hour() == 20 && now.minute() == 1) // ||
-		 /* (now.hour() == 20 && now.minute() == 1)) */ && // NOTE: last time is for debugging purposes. Remove when ready
+		 (now.hour() == 20 && now.minute() == 1) &&
 		!g_waiting_for_reading_temp)) {
 		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
@@ -338,12 +343,12 @@ void handle_scheduled_readings() {
 		g_waiting_for_reading_hr = true;
 		alert_request_read("hr");
 	}
-	// Serial.print("N readings: ");
-	// Serial.print(g_hr_readings_taken_this_hour);
-	// Serial.print(" ,Waiting: ");
-	// Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
-	// Serial.print(" ,Sum: ");
-	// Serial.println(g_hr_readings_sum);
+	Serial.print("N readings: ");
+	Serial.print(g_hr_readings_taken_this_hour);
+	Serial.print(" ,Waiting: ");
+	Serial.print((g_waiting_for_reading_hr ? "True" : "False"));
+	Serial.print(" ,Sum: ");
+	Serial.println(g_hr_readings_sum);
 	return;
 }
 
