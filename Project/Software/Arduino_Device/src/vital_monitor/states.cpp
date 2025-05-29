@@ -312,7 +312,8 @@ states state_processing() {
 		// Serial.println(g_hr_readings_sum);
 		// Serial.print("hr sum A: ");
 		// Serial.println(g_hr_readings_sum);
-		if (!g_waiting_for_reading_hr) {
+		if (!g_waiting_for_reading_hr || (g_avg_hr_sent_this_hour)) {
+		// if (!g_waiting_for_reading_hr) {
 			bool ok = (hr >= g_hr_threshold_min && hr <= g_hr_threshold_max);
 			if (!ok) {
 				notify_event(EVT_OUT_OF_BOUNDS);
@@ -387,6 +388,7 @@ states state_transmitting() {
 			else if (strncmp(g_received_data_buffer, "HR:", 3) == 0 && g_waiting_for_reading_hr) {
 				g_waiting_for_reading_hr = false;
 				g_hr_readings_sum = 0;
+				g_avg_hr_sent_this_hour = true;
 				// g_hr_readings_taken_this_hour = 0;
 				// Serial.println("Tx success check clear");
 				return CONNECTED;

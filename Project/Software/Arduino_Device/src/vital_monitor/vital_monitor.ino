@@ -44,6 +44,7 @@ bool g_multi_reset = false;
 bool g_waiting_for_reading_bp = false;
 bool g_waiting_for_reading_temp = false;
 bool g_waiting_for_reading_hr = false;
+bool g_avg_hr_sent_this_hour = false;
 
 bool debug_enabled = true;
 
