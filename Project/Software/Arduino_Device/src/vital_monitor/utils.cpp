@@ -25,32 +25,32 @@ uint8_t debounceReadButton(uint8_t pin, struct ButtonDebounce* btn) {
 }
 
 // void log_msg(const char *msg_level, const char *msg) {
-// 	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
-// 		return;
-// 	}
-// 	char buffer[64];
-// 	snprintf(buffer, sizeof(buffer), "[%s]: %s", msg_level, msg);
-// 	Serial.print(buffer);
-// 	Serial.print("\n");
+//	if (!debug_enabled && strcmp(msg_level, "DEBUG") == 0) {
+//		return;
+//	}
+//	char buffer[64];
+//	snprintf(buffer, sizeof(buffer), "[%s]: %s", msg_level, msg);
+//	Serial.print(buffer);
+//	Serial.print("\n");
 // }
 
 // void cycle_leds() {
-// 	uint8_t cycle_time = 100;
-// 	digitalWrite(LED_BLUE, HIGH);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_BLUE, LOW);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_GREEN, HIGH);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_GREEN, LOW);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_YELLOW, HIGH);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_YELLOW, LOW);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_RED, HIGH);
-// 	delay(cycle_time);
-// 	digitalWrite(LED_RED, LOW);
+//	uint8_t cycle_time = 100;
+//	digitalWrite(LED_BLUE, HIGH);
+//	delay(cycle_time);
+//	digitalWrite(LED_BLUE, LOW);
+//	delay(cycle_time);
+//	digitalWrite(LED_GREEN, HIGH);
+//	delay(cycle_time);
+//	digitalWrite(LED_GREEN, LOW);
+//	delay(cycle_time);
+//	digitalWrite(LED_YELLOW, HIGH);
+//	delay(cycle_time);
+//	digitalWrite(LED_YELLOW, LOW);
+//	delay(cycle_time);
+//	digitalWrite(LED_RED, HIGH);
+//	delay(cycle_time);
+//	digitalWrite(LED_RED, LOW);
 // }
 
 const char* state_to_string(states s) {
@@ -236,21 +236,21 @@ void onDownlinkMessage(const uint8_t *payload, size_t length, port_t port) {
 }
 
 // void add_to_tx_retry_queue(const uint8_t *data, uint8_t len) {
-// 	if (len > MAX_MSG_SIZE) {
-// 		len = MAX_MSG_SIZE;
-// 	}
+//	if (len > MAX_MSG_SIZE) {
+//		len = MAX_MSG_SIZE;
+//	}
 
-// 	if (tx_retry_count < MAX_QUEUE_ITEMS) {
-// 		memcpy(tx_retry_queue[tx_retry_tail], data, len);
-// 		tx_retry_lengths[tx_retry_tail] = len;
+//	if (tx_retry_count < MAX_QUEUE_ITEMS) {
+//		memcpy(tx_retry_queue[tx_retry_tail], data, len);
+//		tx_retry_lengths[tx_retry_tail] = len;
 
-// 		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
-// 		tx_retry_count++;
+//		tx_retry_tail = (tx_retry_tail + 1) % MAX_QUEUE_ITEMS;
+//		tx_retry_count++;
 
-// 		log_msg("INFO", "Added message to retry queue");
-// 	} else {
-// 		log_msg("WARN", "Retry queue full, message dropped");
-// 	}
+//		log_msg("INFO", "Added message to retry queue");
+//	} else {
+//		log_msg("WARN", "Retry queue full, message dropped");
+//	}
 // }
 
 void alert_request_read(const char* vital) {
@@ -315,8 +315,8 @@ void handle_scheduled_readings() {
 		return;
 	}
 	// BP once at 08:21 (to not conflict with HR reading which is at 08:00 and on even minutes)
-	if (((now.hour() == 20 && now.minute() == 51) &&
-	// if (((now.hour() == 8 && now.minute() == 21) &&
+	// if (((now.hour() == 22 && now.minute() == 57) &&
+	if (((now.hour() == 8 && now.minute() == 21) &&
 		!g_waiting_for_reading_bp)) {
 		g_waiting_for_reading_bp = true;
 		alert_request_read("bp");
@@ -327,8 +327,8 @@ void handle_scheduled_readings() {
 		 (now.hour() == 11 && now.minute() == 1) ||
 		 (now.hour() == 14 && now.minute() == 1) ||
 		 (now.hour() == 17 && now.minute() == 1) ||
-		 (now.hour() == 20 && now.minute() == 41) &&
-		 // (now.hour() == 20 && now.minute() == 1) &&
+		 (now.hour() == 20 && now.minute() == 1) &&
+		 // (now.hour() == 22 && now.minute() == 59) &&
 		!g_waiting_for_reading_temp)) {
 		g_waiting_for_reading_temp = true;
 		alert_request_read("temp");
@@ -345,6 +345,7 @@ void handle_scheduled_readings() {
 		g_hr_readings_taken_this_hour = 0;
 		g_avg_hr_sent_this_hour = false;
 	}
+	// if ((g_hr_readings_taken_this_hour < 3) && (millis() - last_hr_reading_ms >= hr_reading_interval_ms) && (now.minute() < 57) && (now.minute() > 30)) {
 	if ((g_hr_readings_taken_this_hour < 3) && (millis() - last_hr_reading_ms >= hr_reading_interval_ms)) {
 		last_hr_reading_ms = millis();
 		g_waiting_for_reading_hr = true;
