@@ -293,7 +293,7 @@ void send_empty_uplink() {
 	static uint32_t last_empty_uplink_ms = 0;
 	static uint32_t last_timesynch_uplink_ms = 0;
 	const uint32_t now= millis();
-	if (now - last_empty_uplink_ms >= 60000UL) {
+	if (now - last_empty_uplink_ms >= 90000UL) {
 		ttn.sendBytes((const uint8_t[]){0x3F}, 1, 1);
 		last_empty_uplink_ms = now;
 	}
